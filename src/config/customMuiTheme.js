@@ -42,5 +42,8 @@ export const customMuiTheme = createTheme({
         }
       }
     }
+  },
+  colors: {
+    softGrey: "#414F60"
   }
 });
