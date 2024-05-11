@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import XIcon from '@mui/icons-material/X';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
@@ -7,16 +7,11 @@ import logo from '../assets/abreviatura.png'
 
 function BrandingAndCopyright() {
   return <>
-    <Stack
-      alignItems={{ xs: 'center', sm: 'flex-start' }}
-      spacing={2}
-    >
-      <img
-        src={logo}
-        alt="brandLogo"
-        style={{ maxWidth: 60 }} />
-      <Typography
-        sx={{ fontSize: '0.8rem', color: 'whitesmoke' }}>
+    <Stack alignItems={{ xs: 'center', sm: 'flex-start' }} spacing={2}>
+      <Box sx={{ maxWidth: { xs: 60, sm: 100} }}>
+        <img src={logo} alt="brandLogo" style={{maxWidth: '100%'}}/>
+      </Box>
+      <Typography variant="footerFont" sx={{ textAlign: { xs: 'center', sm: 'left'} }}>
         © 2024 BeEvents. Todos los derechos reservados.
       </Typography>
     </Stack>
@@ -25,37 +20,38 @@ function BrandingAndCopyright() {
 }
 
 function ContactAndFollow() {
-  const { iconGrey } = customMuiTheme.colors
+  const { softGrey, contrastGreen, iconGrey } = customMuiTheme.colors
 
   return <>
     <Stack
       direction={{ xs: 'column', sm: 'row' }}
       alignItems={{ xs: 'center', sm: 'flex-start' }}
-      spacing={2}
+      spacing={{xs: 2, md: 5}}
     >
-      {/**Contact stack*/}
-      <Stack
-        alignItems={{ xs: 'center', sm: 'flex-start' }}
+      {/**Divisory line*/}
+      <Stack 
+        sx={{
+          width: "1.5px",
+          height: '100%',
+          background: `linear-gradient(to bottom, ${softGrey}, ${contrastGreen})`
+        }}
       >
-        <Typography
-          variant="footerTitle">
+      </Stack>
+      {/**Contact stack*/}
+      <Stack alignItems={{ xs: 'center', sm: 'flex-start' }}>
+        <Typography variant="footerTitle">
           Contacto
         </Typography>
-        <Typography
-          sx={{ fontSize: '0.8rem', mt: 1.5, mb: 1, color: 'whitesmoke' }}>
+        <Typography variant="footerFont" sx={{ mt: 1.5, mb: 1 }}>
           ejemplo@mail.com
         </Typography>
-        <Typography
-          sx={{ fontSize: '0.8rem', color: 'whitesmoke' }}>
+        <Typography variant="footerFont">
           +54 11 3295 1030
         </Typography>
       </Stack>
       {/**Follow us stack*/}
-      <Stack
-        spacing={1.5}
-      >
-        <Typography
-          variant="footerTitle">
+      <Stack alignItems={{ xs: 'center', sm: 'flex-start' }} spacing={1.5}>
+        <Typography variant="footerTitle">
           Seguinos
         </Typography>
         <Stack
@@ -64,7 +60,7 @@ function ContactAndFollow() {
           alignItems='center'
         >
           <InstagramIcon sx={{ color: iconGrey }}></InstagramIcon>
-          <YouTubeIcon sx={{ color: iconGrey }}></YouTubeIcon>
+          <YouTubeIcon sx={{ color: iconGrey, mx: 2}}></YouTubeIcon>
           <XIcon sx={{ color: iconGrey }} fontSize="small"></XIcon>
         </Stack>
       </Stack>
@@ -74,21 +70,16 @@ function ContactAndFollow() {
 }
 
 export function Footer() {
-  const { softGrey, contrastGreen } = customMuiTheme.colors
+  const { softGrey } = customMuiTheme.colors
 
   return <>
     <Stack
       sx={{ backgroundColor: softGrey, padding: 4 }}
       direction={{ xs: 'column-reverse', sm: 'row' }}
       justifyContent={{ sm: 'space-evenly' }}
-      spacing={{ xs: 2, sm: 0 }}
+      spacing={ 4 }
     >
       <BrandingAndCopyright />
-      <Stack sx={{
-        width: "1.5px",
-        background: `linear-gradient(to bottom, ${softGrey}, ${contrastGreen})`
-        }}>
-      </Stack>
       <ContactAndFollow />
     </Stack>
   </>

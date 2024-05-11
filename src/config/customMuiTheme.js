@@ -3,6 +3,10 @@ import { blue, blueGrey, grey, lightBlue } from "@mui/material/colors";
 
 export const customMuiTheme = createTheme({
   typography: {
+    footerFont: {
+      fontSize: '0.8rem',
+      color: "whitesmoke"
+    },
     footerTitle: {
       fontSize: '1rem',
       fontWeight: 'bold',
