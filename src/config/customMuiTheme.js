@@ -1,8 +1,17 @@
 import { createTheme } from "@mui/material";
-import { blue, blueGrey, lightBlue } from "@mui/material/colors";
+import { blue, blueGrey, grey, lightBlue } from "@mui/material/colors";
 
 export const customMuiTheme = createTheme({
   typography: {
+    footerFont: {
+      fontSize: '0.8rem',
+      color: "whitesmoke"
+    },
+    footerTitle: {
+      fontSize: '1rem',
+      fontWeight: 'bold',
+      color: "#01BB89"
+    },
     h4: {
       fontWeight: 'bold',
       color: lightBlue[700],
@@ -12,11 +21,8 @@ export const customMuiTheme = createTheme({
       color: blue[800],
       fontSize: '1.5rem',
     },
-    subtitle1: {
-      fontSize: '1rem',
-    },
     subtitle2: {
-      fontSize: '1.2rem',
+      fontSize: '1.2rem'
     },
     button: {
       textTransform: 'none',
@@ -42,5 +48,10 @@ export const customMuiTheme = createTheme({
         }
       }
     }
+  },
+  colors: {
+    softGrey: "#414F60",
+    contrastGreen: "#01BB89",
+    iconGrey: grey[300]
   }
 });

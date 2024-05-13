@@ -5,6 +5,7 @@ import { TopMenu } from "./components/TopMenu";
 import { AppRouter } from "./AppRouter";
 import { getCurrentWeather } from "./services/WeatherService";
 import { WeatherIndicator } from "./components/WeatherIndicator";
+import { Footer } from "./components/Footer";
 
 export function App() {
   const [weatherData, setWeatherData] = useState();
@@ -19,7 +20,7 @@ export function App() {
 
   return (
     <BrowserRouter>
-      <Stack direction='column'>
+      <Stack direction='column' style={{ minHeight: '100vh' }}>
         <Grid container direction='row'>
           <Grid item xs={12} md={8}>
             <TopMenu />
@@ -28,10 +29,11 @@ export function App() {
             <WeatherIndicator weatherData={weatherData} />
           </Grid>
         </Grid>
-        <Box sx={{mx: { xs: 1, md: 4 }, my: 4}}>
+        <Box sx={{ mx: { xs: 1, md: 4 }, my: 4 }}>
           <AppRouter />
         </Box>
       </Stack>
+      <Footer />
     </BrowserRouter>
   )
 }
