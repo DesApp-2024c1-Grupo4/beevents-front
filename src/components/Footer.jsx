@@ -76,7 +76,7 @@ export function Footer() {
     <Stack
       sx={{ backgroundColor: softGrey, padding: 4 }}
       direction={{ xs: 'column-reverse', sm: 'row' }}
-      justifyContent={{ sm: 'space-evenly' }}
+      justifyContent={{ sm: 'space-between', lg: 'space-around' }}
       spacing={ 4 }
     >
       <BrandingAndCopyright />
