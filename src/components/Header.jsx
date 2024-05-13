@@ -85,6 +85,11 @@ export function Header() {
               sx={{
                 display: { xs: "block", md: "none" },
               }}
+              PaperProps={{
+                sx: {
+                  backgroundColor: "var(--primary-color)",
+                },
+              }}
             >
               <Button
                 component={Link}
