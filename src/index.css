@@ -3,13 +3,16 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color: #242424;
-  background-color: rgba(255, 255, 255, 0.87);
+  color: #ffffff;
+  /* background-color: var(--primary-color); */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --primary-color: #122940;
+  --secondary-color: #01bb89;
 }
 
 a {
@@ -25,4 +28,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: #13273d;
+  background: linear-gradient(90deg, #0e0e16 0%, #13273d 80%);
+  background: -webkit-linear-gradient(90deg, #0e0e16 0%, #13273d 80%);
+  background: -moz-linear-gradient(90deg, #0e0e16 0%, #13273d 80%);
 }
