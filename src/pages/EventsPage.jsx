@@ -1,9 +1,12 @@
 import React from "react";
+import Container from "@mui/material/Container";
 
 export function EventsPage() {
   return (
-    <div>
-      <h1>Soy la pagina de eventos</h1>
-    </div>
+    <Container maxWidth="lg">
+      <div>
+        <h1>Soy la pagina de eventos</h1>
+      </div>
+    </Container>
   );
 }
