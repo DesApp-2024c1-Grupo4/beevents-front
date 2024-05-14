@@ -1,6 +1,7 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Container, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, TextField } from "@mui/material";
+import { Box, Container, CssBaseline, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
+import logo from '../assets/abreviatura.png'
 
 function CreateAccountForm() {
   return <>
@@ -33,15 +34,22 @@ export function LoginPage() {
   var userCreatedAccount = false
 
   return userHasAnAccount &&
-    <Container maxWidth='xs' >
-      <Stack alignItems='center'>
+    <Container maxWidth='xs' sx={{ }}>
+      <Stack alignItems='center' spacing={2}>
+        <Box sx={{ maxWidth: { xs: 60, sm: 100 } }}>
+          <img src={logo} alt="brandLogo" style={{ maxWidth: '100%' }} />
+        </Box>
+        <Typography variant="title" sx={{ textAlign: 'center' }}>
+          Iniciar sesión
+        </Typography>
+      </Stack>
+      <Stack alignItems='center' spacing={2} sx={{ mx: 5, my: 3 }}>
         <TextField
           id="outlined-basic"
           label="Usuario"
           variant="outlined"
-          sx={{ m: 1 }}
         />
-        <FormControl sx={{ m: 1 }} variant="outlined">
+        <FormControl variant="outlined">
           <InputLabel htmlFor="outlined-adornment-password">Contraseña</InputLabel>
           <OutlinedInput
             id="outlined-adornment-password"
