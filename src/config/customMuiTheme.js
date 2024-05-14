@@ -10,6 +10,10 @@ export const customMuiTheme = createTheme({
       fontSize: '1rem',
       fontWeight: 'bold'
     },
+    info: {
+      fontSize: '0.7rem',
+      color: 'whitesmoke'
+    },
     footerFont: {
       fontSize: '0.8rem'
     },
@@ -58,6 +62,7 @@ export const customMuiTheme = createTheme({
   colors: {
     softGrey: "#414F60",
     contrastGreen: "#01BB89",
+    oceanicBlue: "#122940",
     iconGrey: grey[300]
   }
 });
