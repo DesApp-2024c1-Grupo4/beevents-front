@@ -1,5 +1,5 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Box, Button, Container, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import logo from '../assets/abreviatura.png'
 import { Link } from "react-router-dom";
@@ -32,7 +32,7 @@ export function LoginPage() {
     event.preventDefault();
   };
 
-  const { oceanicBlue, contrastGreen } = customMuiTheme.colors
+  const { contrastGreen } = customMuiTheme.colors
 
   {/**
     sx={{ backgroundColor: 'white' }}
@@ -41,66 +41,87 @@ export function LoginPage() {
   return userHasAnAccount && !needToRecoverPassword &&
     <Container
       maxWidth='xs'
-      >
+    >
       <Stack
         alignItems='center'
-        spacing={2}
-        >
+        spacing={3}
+        sx={{ mt: 8 }}
+      >
         {/**Logo and title stack */}
         <Stack
           alignItems='center'
-          spacing={2}>
+          spacing={{xs: 3, sm: 5}}>
           <Box sx={{ maxWidth: { xs: 60, sm: 100 } }}>
             <img src={logo} alt="brandLogo" style={{ maxWidth: '100%' }} />
           </Box>
           <Typography
-            variant="title">
+            variant="h1">
             Iniciar sesión
           </Typography>
         </Stack>
         {/**Form stack */}
-        <Box
-          sx={{
-            background: `linear-gradient(to bottom, ${contrastGreen}, black)`,
-            borderRadius: '10px'
-          }}>
-          <Stack
-            alignItems='center'
-            spacing={2}
+        <Stack
+          alignItems='center'
+          spacing={2}
+          className="border-grad"
+          sx={{ p: 3 }}>
+          <TextField
+            id="user"
+            label="Usuario"
+            variant="outlined"
+            sx={{ width: { xs: '225px', sm: '300px' } }}
+          />
+          <TextField
+            id='password'
+            label='Contraseña'
+            type={showPassword ? 'text' : 'password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{ width: { xs: '225px', sm: '300px' } }}
+          />
+          <Link
+            component="button"
+            variant='body2'
+            onClick={() => { }}
+          >
+            <Typography
+              variant="info"
+            >
+              ¿Olvidaste tu contraseña?
+            </Typography>
+          </Link>
+          <Button
+            size="large"
             sx={{
-              p: 3,
-              m: '1px',
-              borderRadius: '10px',
-              backgroundColor: oceanicBlue
+              px: 3,
+              display: 'block',
+              color: 'white',
+              backgroundColor: contrastGreen
             }}>
-            <TextField
-              id="outlined-basic"
-              label="Usuario"
-              variant="outlined"
-              sx={{ maxWidth: '225px' }}
-            />
-            <FormControl
-              variant="outlined"
-              sx={{ maxWidth: '225px' }}>
-              <InputLabel htmlFor="outlined-adornment-password">Contraseña</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password"
-                type={showPassword ? 'text' : 'password'}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
-              />
-            </FormControl>
+            <Typography
+              variant="h2"
+            >
+              Ingresar
+            </Typography>
+          </Button>
+          <Stack alignItems='center'>
+            <Typography
+              variant="info"
+            >
+              ¿Nuev@ en BeEvents?
+            </Typography>
             <Link
               component="button"
               variant='body2'
@@ -108,39 +129,13 @@ export function LoginPage() {
             >
               <Typography
                 variant="info"
-                >
-                ¿Olvidaste tu contraseña?
+              >
+                Crea tu cuenta
               </Typography>
             </Link>
-            <Button
-              variant="contained"
-              size="medium">
-              <Typography
-                variant="title"
-              >
-                Ingresar
-              </Typography>
-            </Button>
-            <Stack alignItems='center'>
-              <Typography
-                variant="info"
-                >
-                ¿Nuev@ en BeEvents?
-              </Typography>
-              <Link
-                component="button"
-                variant='body2'
-                onClick={() => { }}
-              >
-                <Typography
-                  variant="info"
-                  >
-                  Crea tu cuenta
-                </Typography>
-              </Link>
-            </Stack>
           </Stack>
-        </Box>
+        </Stack>
+
 
       </Stack>
 

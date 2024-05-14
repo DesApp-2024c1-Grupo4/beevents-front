@@ -6,12 +6,16 @@ export const customMuiTheme = createTheme({
     mode: "dark"
   },
   typography: {
-    title: {
-      fontSize: '1rem',
+    h1: {
+      fontSize: '1.4rem',
+      fontWeight: 'bold'
+    },
+    h2: {
+      fontSize: '1.2rem',
       fontWeight: 'bold'
     },
     info: {
-      fontSize: '0.7rem',
+      fontSize: '0.8rem',
       color: 'whitesmoke'
     },
     footerFont: {
