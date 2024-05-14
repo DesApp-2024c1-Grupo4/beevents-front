@@ -5,25 +5,12 @@ import logo from '../assets/abreviatura.png'
 import { Link } from "react-router-dom";
 import { customMuiTheme } from "../config/customMuiTheme";
 
-function CreateAccountForm() {
-  return <>
-  </>
-}
-
-function RecoverPasswordForm() {
-  return <>
-  </>
-}
-
-function AccountCreatedSuccessfully() {
-  return <>
-  </>
-}
-
-export function LoginPage() {
+export function RegisterPage() {
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showRepeatPassword, setRepeatPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleShowRepeatPassword = () => setRepeatPassword((show) => !show);
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
@@ -46,7 +33,7 @@ export function LoginPage() {
         </Box>
         <Typography
           variant="h1">
-          Iniciar sesión
+          Crear cuenta
         </Typography>
       </Stack>
       {/**Form stack */}
@@ -56,8 +43,8 @@ export function LoginPage() {
         className="border-grad"
         sx={{ p: 3 }}>
         <TextField
-          id="user"
-          label="Usuario"
+          id="email"
+          label="Email"
           variant="outlined"
           sx={{ width: { xs: '225px', sm: '300px' } }}
         />
@@ -81,16 +68,26 @@ export function LoginPage() {
           }}
           sx={{ width: { xs: '225px', sm: '300px' } }}
         />
-        <Link
-          component="button"
-          variant='body2'
-        >
-          <Typography
-            variant="info"
-          >
-            ¿Olvidaste tu contraseña?
-          </Typography>
-        </Link>
+        <TextField
+          id='repeatPassword'
+          label='Repetir contraseña'
+          type={showRepeatPassword ? 'text' : 'password'}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleShowRepeatPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showRepeatPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+          sx={{ width: { xs: '225px', sm: '300px' } }}
+        />
         <Button
           size="large"
           sx={{
@@ -102,27 +99,20 @@ export function LoginPage() {
           <Typography
             variant="h2"
           >
-            Ingresar
+            Crear
           </Typography>
         </Button>
-        <Stack alignItems='center'>
-          <Typography
-            variant="info"
-          >
-            ¿Nuev@ en BeEvents?
-          </Typography>
-          <Link
+        <Link
             component="button"
             variant='body2'
-            to="/auth/register"
+            to="/auth/login"
           >
             <Typography
               variant="info"
             >
-              Crea tu cuenta
+              ¿Ya tenés una cuenta?
             </Typography>
           </Link>
-        </Stack>
       </Stack>
     </Stack>
   </Container>
