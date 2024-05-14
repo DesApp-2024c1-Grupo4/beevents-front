@@ -2,6 +2,9 @@ import { createTheme } from "@mui/material";
 import { blue, blueGrey, grey, lightBlue } from "@mui/material/colors";
 
 export const customMuiTheme = createTheme({
+  palette: {
+    mode: "dark"
+  },
   typography: {
     footerFont: {
       fontSize: '0.8rem',
