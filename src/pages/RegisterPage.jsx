@@ -9,6 +9,14 @@ import validator from "validator";
 export function RegisterPage() {
   const { contrastGreen } = customMuiTheme.colors
 
+  {/**handle email error */}
+  const [emailValue, setEmailValue] = useState("");
+  const emailHasError = !validator.isEmpty(emailValue) && !validator.isEmail(emailValue)
+  const getEmailHelperText = emailHasError ? "Escribe un email válido" : "";
+  function handleEmailChange(event) {
+    setEmailValue(event.target.value);
+  }
+
   {/**handle show passwords and icons */}
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setRepeatPassword] = useState(false);
@@ -17,13 +25,21 @@ export function RegisterPage() {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-  
-  {/**handle email error */}
-  const [emailValue, setEmailValue] = useState("");
-  const hasError = !validator.isEmpty(emailValue) && !validator.isEmail(emailValue)
-  const getEmailHelperText = hasError ? "Escribe un email válido" : "";
-  function handleEmailChange(event) {
-    setEmailValue(event.target.value);
+  {/**handle password strength */}
+  const [passValue, setPassValue] = useState("");
+  const isWeak = !validator.isEmpty(passValue) && !validator.isStrongPassword(passValue)
+  const getPassHelperText = isWeak ?
+    <>
+      La contraseña debe tener:
+      <br/>• Al menos 8 caracteres de largo.
+      <br/>• Al menos 1 minúscula.
+      <br/>• Al menos 1 mayúscula.
+      <br/>• Al menos 1 número.
+      <br/>• Al menos 1 símbolo.
+    </>
+    : "";
+  function handlePassChange(event) {
+    setPassValue(event.target.value);
   }
 
   return <Container
@@ -59,12 +75,16 @@ export function RegisterPage() {
           value={emailValue}
           helperText={getEmailHelperText}
           onChange={handleEmailChange}
-          error={hasError}
+          error={emailHasError}
           sx={{ width: { xs: '225px', sm: '300px' } }}
         />
         <TextField
           id='password'
           label='Contraseña'
+          value={passValue}
+          helperText={getPassHelperText}
+          onChange={handlePassChange}
+          error={isWeak}
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
