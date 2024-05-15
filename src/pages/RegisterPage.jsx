@@ -1,12 +1,15 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, Button, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import logo from '../assets/abreviatura.png'
+import logo from '../assets/img/abreviatura.png'
 import { Link } from "react-router-dom";
 import { customMuiTheme } from "../config/customMuiTheme";
+import validator from "validator";
 
 export function RegisterPage() {
+  const { contrastGreen } = customMuiTheme.colors
 
+  {/**handle show passwords and icons */}
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setRepeatPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -14,7 +17,14 @@ export function RegisterPage() {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-  const { contrastGreen } = customMuiTheme.colors
+  
+  {/**handle email error */}
+  const [emailValue, setEmailValue] = useState("");
+  const hasError = !validator.isEmpty(emailValue) && !validator.isEmail(emailValue)
+  const getEmailHelperText = hasError ? "Escribe un email válido" : "";
+  function handleEmailChange(event) {
+    setEmailValue(event.target.value);
+  }
 
   return <Container
     maxWidth='xs'
@@ -46,6 +56,10 @@ export function RegisterPage() {
           id="email"
           label="Email"
           variant="outlined"
+          value={emailValue}
+          helperText={getEmailHelperText}
+          onChange={handleEmailChange}
+          error={hasError}
           sx={{ width: { xs: '225px', sm: '300px' } }}
         />
         <TextField
@@ -103,16 +117,16 @@ export function RegisterPage() {
           </Typography>
         </Button>
         <Link
-            component="button"
-            variant='body2'
-            to="/auth/login"
+          component="button"
+          variant='body2'
+          to="/auth/login"
+        >
+          <Typography
+            variant="info"
           >
-            <Typography
-              variant="info"
-            >
-              ¿Ya tenés una cuenta?
-            </Typography>
-          </Link>
+            ¿Ya tenés una cuenta?
+          </Typography>
+        </Link>
       </Stack>
     </Stack>
   </Container>

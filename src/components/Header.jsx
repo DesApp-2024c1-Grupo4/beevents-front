@@ -10,7 +10,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
-import Logo from "../assets/logo.png";
+import Logo from "../assets/img/logo.png";
 
 const pages = ["Inicio", "Eventos", "Ingresar"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];

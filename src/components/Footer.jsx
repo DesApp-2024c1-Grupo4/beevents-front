@@ -3,7 +3,7 @@ import XIcon from '@mui/icons-material/X';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import { customMuiTheme } from "../config/customMuiTheme";
-import logo from '../assets/abreviatura.png'
+import logo from '../assets/img/abreviatura.png'
 
 function BrandingAndCopyright() {
   return <>
