@@ -14,7 +14,7 @@ export default function MediaCard() {
   )}`;
 
   return (
-    <Card sx={{ maxWidth: 600, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)" }}>
+    <Card sx={{ maxWidth: 600, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.8)" }}>
       <div style={{ position: "relative" }}>
         <img
           src={randomImageUrl}

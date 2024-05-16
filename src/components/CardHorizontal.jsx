@@ -15,7 +15,7 @@ export default function CardHorizontal() {
     Math.random() * 1000
   )}`;
   return (
-    <Card sx={{ display: "flex" }}>
+    <Card sx={{ display: "flex", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.8)" }}>
       <CardMedia
         sx={{ width: "50%", minWidth: 140 }}
         image={randomImageUrl}
