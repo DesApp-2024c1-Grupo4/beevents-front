@@ -21,7 +21,16 @@ export default function CardHorizontal() {
         image={randomImageUrl}
         title="green iguana"
       />
-      <Box sx={{ display: "flex", flexDirection: "column", flex: "1 0 auto" }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          flex: "1 0 auto",
+          backgroundColor: "#0C1017",
+          border: "2px solid",
+          borderImage: "linear-gradient(to left, white, transparent) 1",
+        }}
+      >
         <CardContent sx={{ display: "flex", alignItems: "center" }}>
           <RoomIcon
             sx={{
