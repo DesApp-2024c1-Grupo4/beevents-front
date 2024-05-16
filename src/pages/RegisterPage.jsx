@@ -9,15 +9,15 @@ import validator from "validator";
 export function RegisterPage() {
   const { contrastGreen } = customMuiTheme.colors
 
-  {/**handle email error */}
+  {/**handle email error */ }
   const [emailValue, setEmailValue] = useState("");
-  const emailHasError = !validator.isEmpty(emailValue) && !validator.isEmail(emailValue)
-  const getEmailHelperText = emailHasError ? "Escribe un email válido" : "";
+  const isNotAnEmail = !(validator.isEmpty(emailValue) || validator.isEmail(emailValue))
+  const getEmailHelperText = isNotAnEmail ? "Escribe un email válido" : "";
   function handleEmailChange(event) {
     setEmailValue(event.target.value);
   }
 
-  {/**handle show passwords and icons */}
+  {/**handle show passwords and icons */ }
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setRepeatPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -25,22 +25,33 @@ export function RegisterPage() {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-  {/**handle password strength */}
+  {/**handle password strength */ }
   const [passValue, setPassValue] = useState("");
-  const isWeak = !validator.isEmpty(passValue) && !validator.isStrongPassword(passValue)
+  const isWeak = !(validator.isEmpty(passValue) || validator.isStrongPassword(passValue))
   const getPassHelperText = isWeak ?
     <>
-      La contraseña debe tener:
-      <br/>• Al menos 8 caracteres de largo.
-      <br/>• Al menos 1 minúscula.
-      <br/>• Al menos 1 mayúscula.
-      <br/>• Al menos 1 número.
-      <br/>• Al menos 1 símbolo.
+      <p>
+        La contraseña debe tener:
+        <br />&ensp;• Al menos 8 caracteres.
+        <br />&ensp;• Al menos 1 minúscula.
+        <br />&ensp;• Al menos 1 mayúscula.
+        <br />&ensp;• Al menos 1 número.
+        <br />&ensp;• Al menos 1 símbolo.
+      </p>
     </>
     : "";
   function handlePassChange(event) {
     setPassValue(event.target.value);
   }
+
+  {/**handle password matching */ }
+  const [repeatPassValue, setRepeatPassValue] = useState("");
+  const isNotTheSame = !(validator.isEmpty(repeatPassValue) || repeatPassValue === passValue)
+  const getRepeatPassHelperText = isNotTheSame ? "Las contraseñas no coinciden." : "";
+  function handleRepeatPassChange(event) {
+    setRepeatPassValue(event.target.value);
+  }
+
 
   return <Container
     maxWidth='xs'
@@ -75,7 +86,7 @@ export function RegisterPage() {
           value={emailValue}
           helperText={getEmailHelperText}
           onChange={handleEmailChange}
-          error={emailHasError}
+          error={isNotAnEmail}
           sx={{ width: { xs: '225px', sm: '300px' } }}
         />
         <TextField
@@ -105,6 +116,10 @@ export function RegisterPage() {
         <TextField
           id='repeatPassword'
           label='Repetir contraseña'
+          value={repeatPassValue}
+          helperText={getRepeatPassHelperText}
+          onChange={handleRepeatPassChange}
+          error={isNotTheSame}
           type={showRepeatPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
