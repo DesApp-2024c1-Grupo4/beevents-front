@@ -38,6 +38,7 @@ export function Header() {
     <AppBar
       position="static"
       sx={{
+        height: "10vh",
         backgroundColor: "var(--primary-color)",
         color: "var(--color)",
       }}
@@ -175,6 +176,8 @@ export function Header() {
             </Button>
             <Button
               onClick={handleCloseNavMenu}
+              component={Link}
+              to="/auth/login"
               sx={{
                 my: 2,
                 mx: 1,
