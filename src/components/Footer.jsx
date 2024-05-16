@@ -3,7 +3,7 @@ import XIcon from '@mui/icons-material/X';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import { customMuiTheme } from "../config/customMuiTheme";
-import logo from '../assets/abreviatura.png'
+import logo from '../assets/img/abreviatura.png'
 
 function BrandingAndCopyright() {
   return <>
@@ -76,7 +76,7 @@ export function Footer() {
     <Stack
       sx={{ backgroundColor: softGrey, padding: 4 }}
       direction={{ xs: 'column-reverse', sm: 'row' }}
-      justifyContent={{ sm: 'space-evenly' }}
+      justifyContent={{ sm: 'space-between', lg: 'space-around' }}
       spacing={ 4 }
     >
       <BrandingAndCopyright />
