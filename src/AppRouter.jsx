@@ -1,8 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import { HomePage } from "./pages/HomePage";
 import { EventsPage } from "./pages/EventsPage";
-import { LoginPage } from "./pages/LoginPage";
-import { RegisterPage } from "./pages/RegisterPage";
+import { LoginPage } from "./pages/auth/LoginPage";
+import { RegisterPage } from "./pages/auth/RegisterPage";
+import { RecoverPage } from "./pages/auth/RecoverPage";
 
 export function AppRouter() {
   return (
@@ -11,6 +12,7 @@ export function AppRouter() {
       <Route path="/events" element={<EventsPage />} />
       <Route path="/auth/login" element={<LoginPage />} />
       <Route path="/auth/register" element={<RegisterPage />} />
+      <Route path="/auth/recover" element={<RecoverPage />} />
     </Routes>
   );
 }
