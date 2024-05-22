@@ -1,9 +1,9 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, Button, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import logo from '../assets/img/abreviatura.png'
+import logo from '../../assets/img/abreviatura.png'
 import { Link } from "react-router-dom";
-import { customMuiTheme } from "../config/customMuiTheme";
+import { customMuiTheme } from "../../config/customMuiTheme";
 import validator from "validator";
 
 export function RegisterPage() {

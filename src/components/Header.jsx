@@ -11,6 +11,7 @@ import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import Logo from "../assets/img/logo.png";
+import { customMuiTheme } from "../config/customMuiTheme";
 
 const pages = ["Inicio", "Eventos", "Ingresar"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -18,6 +19,7 @@ const settings = ["Profile", "Account", "Dashboard", "Logout"];
 export function Header() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const { contrastGreen, oceanicBlue } = customMuiTheme.colors;
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -38,6 +40,7 @@ export function Header() {
     <AppBar
       position="static"
       sx={{
+        height: "10vh",
         backgroundColor: "var(--primary-color)",
         color: "var(--color)",
       }}
@@ -85,11 +88,6 @@ export function Header() {
               sx={{
                 display: { xs: "block", md: "none" },
               }}
-              PaperProps={{
-                sx: {
-                  backgroundColor: "var(--primary-color)",
-                },
-              }}
             >
               <Button
                 component={Link}
@@ -98,10 +96,17 @@ export function Header() {
                 sx={{
                   my: 2,
                   mx: 1,
-                  px: 3,
+                  px: 2,
                   color: "white",
                   display: "block",
-                  backgroundColor: "var(--primary-color)",
+                  textDecoration: "none",
+                  "&:hover": {
+                    backgroundColor: contrastGreen,
+                    border: `2px solid ${contrastGreen}`,
+                  },
+                  "&:visited": {
+                    color: "white",
+                  },
                 }}
               >
                 Inicio
@@ -113,13 +118,42 @@ export function Header() {
                 sx={{
                   my: 2,
                   mx: 1,
-                  px: 3,
+                  px: 2,
                   color: "white",
                   display: "block",
-                  backgroundColor: "var(--primary-color)",
+                  textDecoration: "none",
+                  "&:hover": {
+                    backgroundColor: contrastGreen,
+                    border: `2px solid ${contrastGreen}`,
+                  },
+                  "&:visited": {
+                    color: "white",
+                  },
                 }}
               >
                 Eventos
+              </Button>
+              <Button
+                component={Link}
+                to="/create_event"
+                onClick={handleCloseNavMenu}
+                sx={{
+                  my: 2,
+                  mx: 1,
+                  px: 2,
+                  color: "white",
+                  display: "block",
+                  border: `1px solid ${contrastGreen}`,
+                  textDecoration: "none",
+                  "&:hover": {
+                    backgroundColor: contrastGreen,
+                  },
+                  "&:visited": {
+                    color: "white",
+                  },
+                }}
+              >
+                Crear evento
               </Button>
               <Button
                 component={Link}
@@ -128,10 +162,17 @@ export function Header() {
                 sx={{
                   my: 2,
                   mx: 1,
-                  px: 3,
+                  px: 4,
                   color: "white",
                   display: "block",
-                  backgroundColor: "var(--secondary-color)",
+                  border: `1px solid ${contrastGreen}`,
+                  textDecoration: "none",
+                  "&:hover": {
+                    backgroundColor: contrastGreen,
+                  },
+                  "&:visited": {
+                    color: "white",
+                  },
                 }}
               >
                 Ingresar
@@ -152,9 +193,16 @@ export function Header() {
               sx={{
                 my: 2,
                 mx: 1,
-                px: 3,
+                px: 4,
                 color: "white",
                 display: "block",
+                textDecoration: "none",
+                "&:hover": {
+                  backgroundColor: contrastGreen,
+                },
+                "&:visited": {
+                  color: "white",
+                },
               }}
             >
               Inicio
@@ -169,19 +217,57 @@ export function Header() {
                 px: 3,
                 color: "white",
                 display: "block",
+                textDecoration: "none",
+                "&:hover": {
+                  backgroundColor: contrastGreen,
+                },
+                "&:visited": {
+                  color: "white",
+                },
               }}
             >
               Eventos
             </Button>
             <Button
+              component={Link}
+              to="/create_event"
               onClick={handleCloseNavMenu}
               sx={{
                 my: 2,
                 mx: 1,
-                px: 3,
+                px: 2,
                 color: "white",
                 display: "block",
-                backgroundColor: "var(--secondary-color)",
+                border: `1px solid ${contrastGreen}`,
+                textDecoration: "none",
+                "&:hover": {
+                  backgroundColor: contrastGreen,
+                },
+                "&:visited": {
+                  color: "white",
+                },
+              }}
+            >
+              Crear evento
+            </Button>
+            <Button
+              onClick={handleCloseNavMenu}
+              component={Link}
+              to="/auth/login"
+              sx={{
+                my: 2,
+                mx: 1,
+                px: 4,
+                color: "white",
+                display: "block",
+                border: `1px solid ${contrastGreen}`,
+                textDecoration: "none",
+                "&:hover": {
+                  backgroundColor: contrastGreen,
+                },
+                "&:visited": {
+                  color: "white",
+                },
               }}
             >
               Ingresar

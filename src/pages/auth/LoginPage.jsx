@@ -1,24 +1,9 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, Button, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import logo from '../assets/img/abreviatura.png'
-import { Link } from "react-router-dom";
-import { customMuiTheme } from "../config/customMuiTheme";
-
-function CreateAccountForm() {
-  return <>
-  </>
-}
-
-function RecoverPasswordForm() {
-  return <>
-  </>
-}
-
-function AccountCreatedSuccessfully() {
-  return <>
-  </>
-}
+import logo from '../../assets/img/abreviatura.png'
+import { Link  } from "react-router-dom";
+import { customMuiTheme } from "../../config/customMuiTheme";
 
 export function LoginPage() {
 
@@ -84,6 +69,7 @@ export function LoginPage() {
         <Link
           component="button"
           variant='body2'
+          to="/auth/recover"
         >
           <Typography
             variant="info"
