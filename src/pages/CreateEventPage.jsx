@@ -3,78 +3,25 @@ import Container from "@mui/material/Container";
 import { AutocompleteElement, TextFieldElement, useForm } from "react-hook-form-mui";
 import { Backdrop, Box, Button, Fade, IconButton, Modal, Stack, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DateTimePicker, LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const { contrastGreen, oceanicBlue, deepOceanicBlue } = customMuiTheme.colors;
+const modalStyle = {
+  position: 'absolute',
+  top: '40%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  backgroundImage: `linear-gradient(to bottom, ${oceanicBlue}, ${deepOceanicBlue})`,
+  borderRadius: 5,
+  p: { xs: 2, sm: 4 },
+  minWidth: 230
+};
+var isMobile = false
 
-function DateTimePickers({ dates, deleteDateTimePicker }) {
-  return dates.map(date => (
-    <Stack
-      key={date}
-      direction='row'
-      spacing={1}
-      justifyContent='space-between'
-    >
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DateTimePicker
-          label="Selecciona la fecha"
-          ampm={false}
-          disablePast
-          sx={{ width: '80%' }}
-        />
-      </LocalizationProvider>
-      <Button onClick={() => deleteDateTimePicker(date)}>
-        <DeleteOutlineIcon></DeleteOutlineIcon>
-      </Button>
-
-    </Stack>
-  ))
-}
-
-{/**
-function LocationForm({ cancel }) {
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      name: '',
-      artist: '',
-      image: '',
-      location_id: '',
-      event_dates: [],
-      event_state: false
-    },
-  })
-
-  return (
-    <Stack spacing={2}>
-      <TextFieldElement
-        name="name"
-        label='Nombre del lugar'
-        control={control}
-      />
-      <TextFieldElement
-        name="artist"
-        label='Dirección'
-        control={control}
-      />
-      <Button onClick={cancel}> Cancelar </Button>
-    </Stack>
-  )
-}
- */}
- 
 function AddLocationModal() {
-  const style = {
-    position: 'absolute',
-    top: '20%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundImage: `linear-gradient(to bottom, ${oceanicBlue}, ${deepOceanicBlue})`,
-    borderRadius: 5,
-    p: { xs: 2, sm: 4 },
-  };
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -93,7 +40,8 @@ function AddLocationModal() {
         variant="outlined"
         onClick={handleOpen}
         sx={{
-          px: 3,
+          width: '8rem',
+          px: 2,
           display: 'block',
           alignSelf: 'flex-end'
         }}>
@@ -115,17 +63,30 @@ function AddLocationModal() {
         }}
       >
         <Fade in={open}>
-          <Box sx={style}>
+          <Box sx={modalStyle}>
             <form onSubmit={handleSubmit} >
               <Stack spacing={2}>
-
+                <Typography
+                  variant="h2"
+                  component="h2"
+                  gutterBottom
+                  sx={{
+                    color: contrastGreen,
+                    pb: 2,
+                    fontSize: "1.5rem",
+                    alignSelf: { xs: 'center', sm: "flex-start" },
+                    textAlign: 'center'
+                  }}
+                >
+                  Agregar un lugar
+                </Typography>
                 <TextFieldElement
                   name="name"
-                  label='Nombre del lugar'
+                  label='Nombre'
                   control={control}
                 />
                 <TextFieldElement
-                  name="artist"
+                  name="address"
                   label='Dirección'
                   control={control}
                 />
@@ -146,8 +107,10 @@ function AddLocationModal() {
   );
 }
 
-export function CreateEventPage() {
-
+function AddDatesModal() {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const [dates, setDates] = useState([]);
   const addDateTimePicker = () => {
     const value = dates.length + 1
@@ -156,6 +119,128 @@ export function CreateEventPage() {
   const deleteDateTimePicker = (datePicker) => {
     setDates(current => current.filter(date => date != datePicker))
   }
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      dates: [],
+    }
+  })
+  return (
+    <Stack>
+      <Button
+        size="large"
+        variant="outlined"
+        onClick={handleOpen}
+        sx={{
+          width: '8rem',
+          px: 2,
+          display: 'block',
+          alignSelf: 'flex-end'
+        }}>
+        <Typography
+          variant="info"
+        >
+          Agregar fechas
+        </Typography>
+      </Button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={modalStyle}>
+            <form onSubmit={handleSubmit} >
+              <Stack spacing={2}>
+                <Typography
+                  variant="h2"
+                  component="h2"
+                  gutterBottom
+                  sx={{
+                    color: contrastGreen,
+                    pb: 2,
+                    fontSize: "1.5rem",
+                    alignSelf: { xs: 'center', sm: "flex-start" },
+                    textAlign: 'center'
+                  }}
+                >
+                  Agregar fechas
+                </Typography>
+                <DateTimePickers
+                  dates={dates}
+                  deleteDateTimePicker={deleteDateTimePicker}
+                />
+                <Button
+                  size="large"
+                  variant="outlined"
+                  onClick={() => addDateTimePicker()}
+                  sx={{
+                    width: '8rem',
+                    px: 2,
+                    display: 'block',
+                    alignSelf: 'center'
+                  }}>
+                  <Typography
+                    variant="info"
+                  >
+                    Agregar nueva fecha
+                  </Typography>
+                </Button>
+                <IconButton
+                  onClick={handleClose}
+                  sx={{
+                    alignSelf: 'flex-end'
+                  }}
+                >
+                  <CheckCircleIcon />
+                </IconButton>
+              </Stack>
+            </form>
+          </Box>
+        </Fade>
+      </Modal>
+    </Stack>
+  );
+}
+
+function DateTimePickers({ dates, deleteDateTimePicker }) {
+  return dates.map(date => (
+    <Stack
+      key={date}
+      direction='row'
+      spacing={{ sm: 1 }}
+      justifyContent='space-between'
+    >
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        {!isMobile &&
+          <DateTimePicker
+            label="Seleccione"
+            ampm={false}
+            disablePast
+          />
+        }
+        {isMobile &&
+          <MobileDateTimePicker
+            label="Seleccione"
+            ampm={false}
+            disablePast
+          />}
+      </LocalizationProvider>
+      <Button onClick={() => deleteDateTimePicker(date)}>
+        <DeleteOutlineIcon></DeleteOutlineIcon>
+      </Button>
+
+    </Stack>
+  ))
+}
+
+export function CreateEventPage() {
 
   const fetchedLocations = [
     {
@@ -187,13 +272,6 @@ export function CreateEventPage() {
       }
     },
   ]
-
-  {/** 
-  const [locationForm, setLocationForm] = useState(false);
-  const cancel = () => {
-    setLocationForm(false)
-  }
-  */}
   function getLocationOptions() {
     const options = []
     for (let i = 0; i < fetchedLocations.length; i++) {
@@ -268,49 +346,7 @@ export function CreateEventPage() {
               options={getLocationOptions()}
             />
             <AddLocationModal />
-            {/** 
-            {locationForm && <LocationForm cancel={cancel} />}
-            {!locationForm &&
-              <Button
-                size="large"
-                variant="outlined"
-                onClick={() => setLocationForm(true)}
-                sx={{
-                  px: 3,
-                  display: 'block',
-                  alignSelf: 'flex-end'
-                }}
-              >
-                <Typography
-                  variant="h2"
-                >
-                  Agregar lugar
-                </Typography>
-              </Button>
-            }
-            */}
-          </Stack>
-          {/*Dates*/}
-          <Stack spacing={2}>
-            <DateTimePickers
-              dates={dates}
-              deleteDateTimePicker={deleteDateTimePicker}
-            />
-            <Button
-              size="large"
-              variant="outlined"
-              onClick={() => addDateTimePicker()}
-              sx={{
-                px: 3,
-                display: 'block',
-                alignSelf: 'flex-end'
-              }}>
-              <Typography
-                variant="info"
-              >
-                Agregar fecha
-              </Typography>
-            </Button>
+            <AddDatesModal />
           </Stack>
           <Button
             size="large"
