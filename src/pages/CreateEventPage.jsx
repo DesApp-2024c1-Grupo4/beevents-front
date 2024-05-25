@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import Container from "@mui/material/Container";
 import { AutocompleteElement, TextFieldElement, useForm } from "react-hook-form-mui";
-import { Box, Button, Grid, Stack, Typography } from "@mui/material";
+import { Backdrop, Box, Button, Fade, IconButton, Modal, Stack, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
+const { contrastGreen, oceanicBlue, deepOceanicBlue } = customMuiTheme.colors;
 
 function DateTimePickers({ dates, deleteDateTimePicker }) {
   return dates.map(date => (
@@ -31,6 +34,7 @@ function DateTimePickers({ dates, deleteDateTimePicker }) {
   ))
 }
 
+{/**
 function LocationForm({ cancel }) {
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -59,10 +63,90 @@ function LocationForm({ cancel }) {
     </Stack>
   )
 }
+ */}
+ 
+function AddLocationModal() {
+  const style = {
+    position: 'absolute',
+    top: '20%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundImage: `linear-gradient(to bottom, ${oceanicBlue}, ${deepOceanicBlue})`,
+    borderRadius: 5,
+    p: { xs: 2, sm: 4 },
+  };
 
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      name: '',
+      address: ''
+    }
+  })
+  return (
+    <Stack>
+      <Button
+        size="large"
+        variant="outlined"
+        onClick={handleOpen}
+        sx={{
+          px: 3,
+          display: 'block',
+          alignSelf: 'flex-end'
+        }}>
+        <Typography
+          variant="info"
+        >
+          Agregar lugar
+        </Typography>
+      </Button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={style}>
+            <form onSubmit={handleSubmit} >
+              <Stack spacing={2}>
+
+                <TextFieldElement
+                  name="name"
+                  label='Nombre del lugar'
+                  control={control}
+                />
+                <TextFieldElement
+                  name="artist"
+                  label='Dirección'
+                  control={control}
+                />
+                <IconButton
+                  onClick={handleClose}
+                  sx={{
+                    alignSelf: 'flex-end'
+                  }}
+                >
+                  <CheckCircleIcon />
+                </IconButton>
+              </Stack>
+            </form>
+          </Box>
+        </Fade>
+      </Modal>
+    </Stack>
+  );
+}
 
 export function CreateEventPage() {
-  const { contrastGreen } = customMuiTheme.colors;
 
   const [dates, setDates] = useState([]);
   const addDateTimePicker = () => {
@@ -103,10 +187,13 @@ export function CreateEventPage() {
       }
     },
   ]
+
+  {/** 
   const [locationForm, setLocationForm] = useState(false);
   const cancel = () => {
     setLocationForm(false)
   }
+  */}
   function getLocationOptions() {
     const options = []
     for (let i = 0; i < fetchedLocations.length; i++) {
@@ -149,6 +236,7 @@ export function CreateEventPage() {
       </Typography>
       <form onSubmit={handleSubmit((data) => console.log(data))} noValidate>
         <Stack spacing={5}>
+          {/*Name, artist, image*/}
           <Stack spacing={2}>
             <TextFieldElement
               name={'name'}
@@ -171,13 +259,16 @@ export function CreateEventPage() {
               fullWidth
             />
           </Stack>
-          <Stack spacing={2}>
+          {/*Location*/}
+          <Stack spacing={2} >
             <AutocompleteElement
               name="location_id"
               label="Lugar"
               control={control}
               options={getLocationOptions()}
             />
+            <AddLocationModal />
+            {/** 
             {locationForm && <LocationForm cancel={cancel} />}
             {!locationForm &&
               <Button
@@ -197,7 +288,9 @@ export function CreateEventPage() {
                 </Typography>
               </Button>
             }
+            */}
           </Stack>
+          {/*Dates*/}
           <Stack spacing={2}>
             <DateTimePickers
               dates={dates}
@@ -213,7 +306,7 @@ export function CreateEventPage() {
                 alignSelf: 'flex-end'
               }}>
               <Typography
-                variant="h2"
+                variant="info"
               >
                 Agregar fecha
               </Typography>
@@ -221,12 +314,13 @@ export function CreateEventPage() {
           </Stack>
           <Button
             size="large"
-            variant="outlined"
-            color="success"
+            variant="contained"
             type={'submit'}
             sx={{
               px: 3,
-              display: 'block'
+              display: 'block',
+              backgroundColor: contrastGreen,
+              color: 'whitesmoke'
             }}>
             <Typography
               variant="h2"
@@ -239,15 +333,3 @@ export function CreateEventPage() {
     </Container>
   );
 }
-
-
-/**
- * <Grid
-            container
-            rowSpacing={1}
-            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-            justifyContent="center"
-            alignItems="center"
-            sx={{ p: 2 }}
-          >
- */
