@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Container from "@mui/material/Container";
 import { AutocompleteElement, SliderElement, SwitchElement, TextFieldElement, useForm } from "react-hook-form-mui";
-import { Backdrop, Button, Fade, FormControlLabel, FormGroup, Modal, Slider, Stack, Switch, TextField, Typography } from "@mui/material";
+import { Backdrop, Button, Fade, FormControlLabel, FormGroup, Input, Modal, Slider, Stack, Switch, TextField, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
 import { DateTimePicker, LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -376,22 +376,103 @@ function AddSectorsModal() {
 }
 function SectorForm({ deleteSectorForm }) {
   const [isNumbered, setIsNumbered] = useState(false)
+  const [rows, setRows] = useState(0)
+  const handleRowSliderChange = (e, newValue) => {
+    setRows(newValue)
+  }
+  const handleRowInputChange = (e) => {
+    setRows(e.target.value === '' ? 0 : Number(e.target.value))
+  }
+  const [seats, setSeats] = useState(0)
+  const handleSeatSliderChange = (e, newValue) => {
+    setSeats(newValue)
+  }
+  const handleSeatInputChange = (e) => {
+    setSeats(e.target.value === '' ? 0 : Number(e.target.value))
+  }
+  
   return (
-    <Stack spacing={2}>
+    <Stack spacing={3}>
       <TextField label='Nombre' />
+      { !isNumbered &&
+        <TextField label='Capacidad' />
+      }
       <FormGroup>
         <FormControlLabel
           control={<Switch size="small" onChange={() => setIsNumbered(!isNumbered)} />}
-          label={`${isNumbered ? 'Es numerado' : 'No es numerado'}`}
+          label={`${isNumbered ? 'Numerado' : 'No numerado'}`}
+          labelPlacement="start"
+          sx={{ alignSelf: 'end', mr: 0.01 }}
         />
       </FormGroup>
       {isNumbered &&
-        <Stack direction='row' spacing={1}>
-          <TextField label='Cant. filas' />
-          <TextField label='Cant. columnas' />
+        <Stack spacing={3}>
+          <Stack>
+            <Typography id="rows" gutterBottom>
+            Cant. de filas
+          </Typography>
+          <Stack direction='row' spacing={3}>
+            <Slider
+              value={typeof rows === 'number' ? rows : 0}
+              onChange={handleRowSliderChange}
+              aria-labelledby='rows'
+              valueLabelDisplay="auto"
+              step={20}
+              marks
+              min={0}
+              max={500}
+            />
+            <Input
+              value={rows}
+              onChange={handleRowInputChange}
+              size="small"
+              inputProps={{
+                step: 1,
+                min: 0,
+                max: 500,
+                type: 'number',
+                'aria-labelledby': 'rows',
+              }}
+              sx={{ width: '30%', alignSelf: 'flex-start' }}
+            />
+          </Stack>
+          </Stack>
+          <Stack>
+            <Typography id="seats" gutterBottom>
+            Cant. de asientos por fila
+          </Typography>
+          <Stack direction='row' spacing={3}>
+            <Slider
+              value={typeof seats === 'number' ? seats : 0}
+              onChange={handleSeatSliderChange}
+              aria-labelledby='seats'
+              valueLabelDisplay="auto"
+              step={20}
+              marks
+              min={0}
+              max={500}
+            />
+            <Input
+              value={seats}
+              onChange={handleSeatInputChange}
+              size="small"
+              inputProps={{
+                step: 1,
+                min: 0,
+                max: 500,
+                type: 'number',
+                'aria-labelledby': 'seats',
+              }}
+              sx={{ width: '30%', alignSelf: 'flex-start' }}
+            />
+          </Stack>
+          </Stack>
+          <Typography>
+            Capacidad: {rows*seats}
+          </Typography>
         </Stack>
       }
-      <Stack direction='row' justifyContent='center'>
+      <Stack direction='row' justifyContent='space-between'>
         <Button onClick={deleteSectorForm}>
           <DeleteOutlineIcon></DeleteOutlineIcon>
         </Button>
@@ -399,7 +480,6 @@ function SectorForm({ deleteSectorForm }) {
           <CheckCircleOutlineIcon></CheckCircleOutlineIcon>
         </Button>
       </Stack>
-
     </Stack>
   )
 }
