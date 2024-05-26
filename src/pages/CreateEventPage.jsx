@@ -301,10 +301,10 @@ function AddSectorsModal() {
     setSectors(sectors + 1)
     console.log(sectors)
   }
-  const deleteSectorForm = (datePicker) => {
-    setDates(sectors - 1)
+  const deleteSectorForm = () => {
+    setSectors(sectors - 1)
   }
-  const [isNumbered, setIsNumbered] = useState(false)
+  const forms = [...Array(sectors).keys()]
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -362,7 +362,9 @@ function AddSectorsModal() {
               >
                 Agregar sectores
               </Typography>
-              <SectorForms sectors={sectors} deleteSectorForm={deleteSectorForm}/>
+              {forms.map(form => (
+                <SectorForm key={form} deleteSectorForm={deleteSectorForm} />
+              ))}
               <AddButtonForModal handleClick={addSectorForm} />
               <ReadyButtonForModal handleClick={handleClose} />
             </Stack>
@@ -372,16 +374,15 @@ function AddSectorsModal() {
     </Stack>
   );
 }
-function SectorForms({ sectors, deleteSectorForm }) {
+function SectorForm({ deleteSectorForm }) {
   const [isNumbered, setIsNumbered] = useState(false)
-  const forms = [...Array(sectors).keys()]
-  return forms.map(form => (
+  return (
     <Stack spacing={2}>
       <TextField label='Nombre' />
       <FormGroup>
         <FormControlLabel
           control={<Switch size="small" onChange={() => setIsNumbered(!isNumbered)} />}
-          label={`${isNumbered? 'Es numerado':'No es numerado'}`}
+          label={`${isNumbered ? 'Es numerado' : 'No es numerado'}`}
         />
       </FormGroup>
       {isNumbered &&
@@ -390,8 +391,17 @@ function SectorForms({ sectors, deleteSectorForm }) {
           <TextField label='Cant. columnas' />
         </Stack>
       }
+      <Stack direction='row' justifyContent='center'>
+        <Button onClick={deleteSectorForm}>
+          <DeleteOutlineIcon></DeleteOutlineIcon>
+        </Button>
+        <Button onClick={deleteSectorForm}>
+          <CheckCircleOutlineIcon></CheckCircleOutlineIcon>
+        </Button>
+      </Stack>
+
     </Stack>
-  ))
+  )
 }
 
 function ReadyButtonForModal({ handleClick }) {
