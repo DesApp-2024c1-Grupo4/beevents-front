@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import Container from "@mui/material/Container";
 import { AutocompleteElement, TextFieldElement, useForm } from "react-hook-form-mui";
-import { Backdrop, Box, Button, Fade, IconButton, Modal, Stack, Typography } from "@mui/material";
+import { Backdrop, Button, Fade, Modal, Stack, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
 import { DateTimePicker, LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 const { contrastGreen, oceanicBlue, deepOceanicBlue } = customMuiTheme.colors;
 const modalStyle = {
@@ -19,230 +20,15 @@ const modalStyle = {
   p: { xs: 2, sm: 4 },
   minWidth: 230
 };
-var isMobile = false
+
+let vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+let isMobile = vw <= 600
 
 function AddLocationModal() {
-
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      name: '',
-      address: ''
-    }
-  })
-  return (
-    <Stack>
-      <Button
-        size="large"
-        variant="outlined"
-        onClick={handleOpen}
-        sx={{
-          width: '8rem',
-          px: 2,
-          display: 'block',
-          alignSelf: 'flex-end'
-        }}>
-        <Typography
-          variant="info"
-        >
-          Agregar lugar
-        </Typography>
-      </Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <Fade in={open}>
-          <Box sx={modalStyle}>
-            <form onSubmit={handleSubmit} >
-              <Stack spacing={2}>
-                <Typography
-                  variant="h2"
-                  component="h2"
-                  gutterBottom
-                  sx={{
-                    color: contrastGreen,
-                    pb: 2,
-                    fontSize: "1.5rem",
-                    alignSelf: { xs: 'center', sm: "flex-start" },
-                    textAlign: 'center'
-                  }}
-                >
-                  Agregar un lugar
-                </Typography>
-                <TextFieldElement
-                  name="name"
-                  label='Nombre'
-                  control={control}
-                />
-                <TextFieldElement
-                  name="address"
-                  label='Dirección'
-                  control={control}
-                />
-                <IconButton
-                  onClick={handleClose}
-                  sx={{
-                    alignSelf: 'flex-end'
-                  }}
-                >
-                  <CheckCircleIcon />
-                </IconButton>
-              </Stack>
-            </form>
-          </Box>
-        </Fade>
-      </Modal>
-    </Stack>
-  );
-}
-
-function AddDatesModal() {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [dates, setDates] = useState([]);
-  const addDateTimePicker = () => {
-    const value = dates.length + 1
-    setDates(current => [...current, value])
-  }
-  const deleteDateTimePicker = (datePicker) => {
-    setDates(current => current.filter(date => date != datePicker))
-  }
-
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      dates: [],
-    }
-  })
-  return (
-    <Stack>
-      <Button
-        size="large"
-        variant="outlined"
-        onClick={handleOpen}
-        sx={{
-          width: '8rem',
-          px: 2,
-          display: 'block',
-          alignSelf: 'flex-end'
-        }}>
-        <Typography
-          variant="info"
-        >
-          Agregar fechas
-        </Typography>
-      </Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <Fade in={open}>
-          <Box sx={modalStyle}>
-            <form onSubmit={handleSubmit} >
-              <Stack spacing={2}>
-                <Typography
-                  variant="h2"
-                  component="h2"
-                  gutterBottom
-                  sx={{
-                    color: contrastGreen,
-                    pb: 2,
-                    fontSize: "1.5rem",
-                    alignSelf: { xs: 'center', sm: "flex-start" },
-                    textAlign: 'center'
-                  }}
-                >
-                  Agregar fechas
-                </Typography>
-                <DateTimePickers
-                  dates={dates}
-                  deleteDateTimePicker={deleteDateTimePicker}
-                />
-                <Button
-                  size="large"
-                  variant="outlined"
-                  onClick={() => addDateTimePicker()}
-                  sx={{
-                    width: '8rem',
-                    px: 2,
-                    display: 'block',
-                    alignSelf: 'center'
-                  }}>
-                  <Typography
-                    variant="info"
-                  >
-                    Agregar nueva fecha
-                  </Typography>
-                </Button>
-                <IconButton
-                  onClick={handleClose}
-                  sx={{
-                    alignSelf: 'flex-end'
-                  }}
-                >
-                  <CheckCircleIcon />
-                </IconButton>
-              </Stack>
-            </form>
-          </Box>
-        </Fade>
-      </Modal>
-    </Stack>
-  );
-}
-
-function DateTimePickers({ dates, deleteDateTimePicker }) {
-  return dates.map(date => (
-    <Stack
-      key={date}
-      direction='row'
-      spacing={{ sm: 1 }}
-      justifyContent='space-between'
-    >
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        {!isMobile &&
-          <DateTimePicker
-            label="Seleccione"
-            ampm={false}
-            disablePast
-          />
-        }
-        {isMobile &&
-          <MobileDateTimePicker
-            label="Seleccione"
-            ampm={false}
-            disablePast
-          />}
-      </LocalizationProvider>
-      <Button onClick={() => deleteDateTimePicker(date)}>
-        <DeleteOutlineIcon></DeleteOutlineIcon>
-      </Button>
-
-    </Stack>
-  ))
-}
-
-export function CreateEventPage() {
-
-  const fetchedLocations = [
+  const fakeFetchedLocations = [
     {
       _id: 1,
       name: 'River Plate',
@@ -274,21 +60,292 @@ export function CreateEventPage() {
   ]
   function getLocationOptions() {
     const options = []
-    for (let i = 0; i < fetchedLocations.length; i++) {
-      const location = fetchedLocations[i]
+    for (let i = 0; i < fakeFetchedLocations.length; i++) {
+      const location = fakeFetchedLocations[i]
       options.push(
         { id: location._id, label: location.name }
       )
     }
     return options
   }
+  const [locationExists, setLocationExists] = useState(true)
 
+  const { control, handleLocationSubmit } = useForm({
+    defaultValues: {
+      name: '',
+      address: {
+        street: '',
+        number: 0,
+        city: '',
+        country: ''
+      },
+      gps: {
+        lat: 0,
+        long: 0
+      }
+    }
+  })
+  return (
+    <Stack>
+      <Button
+        size="large"
+        variant="outlined"
+        onClick={handleOpen}
+        sx={{
+          px: 2,
+          display: 'block',
+          alignSelf: 'flex-end'
+        }}>
+        <Typography variant="info" >Seleccionar predio</Typography>
+      </Button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <form onSubmit={handleLocationSubmit} >
+            <Stack sx={modalStyle} spacing={3}>
+              <Typography
+                variant="h1"
+                gutterBottom
+                sx={{
+                  color: contrastGreen,
+                  alignSelf: { xs: 'center', sm: "flex-start" },
+                  textAlign: 'center'
+                }}
+              >
+                Seleccionar predio
+              </Typography>
+              <AutocompleteElement
+                name="name"
+                label="Seleccionar"
+                control={control}
+                options={getLocationOptions()}
+              />
+              <Typography
+                variant="h2"
+                gutterBottom
+                sx={{
+                  alignSelf: 'center',
+                  textAlign: 'center'
+                }}
+              >
+                o...
+              </Typography>
+              {locationExists &&
+                <AddButtonForModal handleClick={() => setLocationExists(false)} />}
+              {!locationExists &&
+                <Stack spacing={2}>
+                  <TextFieldElement
+                    name="name"
+                    label='Nombre'
+                    control={control}
+                  />
+                  <TextFieldElement
+                    name="address.street"
+                    label='Calle'
+                    control={control}
+                  />
+                  <TextFieldElement
+                    name="address.number"
+                    label='Número'
+                    control={control}
+                  />
+                  <Button
+                    size="medium"
+                    variant="outlined"
+                    onClick={() => setLocationExists(true)}
+                    sx={{
+                      px: 2,
+                      display: 'block',
+                      alignSelf: 'center'
+                    }}>
+                    <Stack
+                      spacing={1}
+                      direction='row'
+                      justifyContent='center'
+                    >
+                      <Typography variant="info">Cancelar</Typography>
+                    </Stack>
+                  </Button>
+                </Stack>
+              }
+              <ReadyButtonForModal handleClick={handleClose} />
+            </Stack>
+          </form>
+        </Fade>
+      </Modal>
+    </Stack>
+  );
+}
+
+function AddDatesModal() {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [dates, setDates] = useState([1]);
+  const addDateTimePicker = () => {
+    const value = dates.length + 1
+    setDates(current => [...current, value])
+  }
+  const deleteDateTimePicker = (datePicker) => {
+    setDates(current => current.filter(date => date != datePicker))
+  }
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      dates: [],
+    }
+  })
+  return (
+    <Stack>
+      <Button
+        size="large"
+        variant="outlined"
+        onClick={handleOpen}
+        sx={{
+          px: 2,
+          display: 'block',
+          alignSelf: 'flex-end'
+        }}>
+        <Typography
+          variant="info"
+        >
+          Agregar fechas
+        </Typography>
+      </Button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <form onSubmit={handleSubmit} >
+            <Stack sx={modalStyle} spacing={3}>
+              <Typography
+                variant="h1"
+                gutterBottom
+                sx={{
+                  color: contrastGreen,
+                  alignSelf: { xs: 'center', sm: "flex-start" },
+                  textAlign: 'center'
+                }}
+              >
+                Agregar fechas
+              </Typography>
+              <Stack spacing={2}>
+                <DateTimePickers
+                  dates={dates}
+                  deleteDateTimePicker={deleteDateTimePicker}
+                />
+                <AddButtonForModal handleClick={addDateTimePicker} />
+              </Stack>
+              <ReadyButtonForModal handleClick={handleClose} />
+            </Stack>
+          </form>
+        </Fade>
+      </Modal>
+    </Stack>
+  );
+}
+function DateTimePickers({ dates, deleteDateTimePicker }) {
+  return dates.map(date => (
+    <Stack
+      key={date}
+      direction='row'
+      spacing={{ sm: 1 }}
+      justifyContent='space-between'
+    >
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        {!isMobile &&
+          <DateTimePicker
+            label="Seleccione fecha y hora"
+            ampm={false}
+            disablePast
+          />
+        }
+        {isMobile &&
+          <MobileDateTimePicker
+            label='Seleccione fecha y hora'
+            ampm={false}
+            disablePast
+          />}
+      </LocalizationProvider>
+      <Button onClick={() => deleteDateTimePicker(date)}>
+        <DeleteOutlineIcon></DeleteOutlineIcon>
+      </Button>
+
+    </Stack>
+  ))
+}
+
+function ReadyButtonForModal({ handleClick }) {
+  return (
+    <Button
+      size="medium"
+      variant="contained"
+      onClick={handleClick}
+      sx={{
+        px: 2,
+        display: 'block',
+        alignSelf: 'flex-end',
+        backgroundColor: contrastGreen,
+        color: 'whitesmoke'
+      }}>
+      <Stack
+        spacing={1}
+        direction='row'
+        justifyContent='center'
+      >
+        <Typography variant="info">Listo</Typography>
+        <CheckCircleOutlineIcon />
+      </Stack>
+    </Button>
+  )
+}
+function AddButtonForModal({ handleClick }) {
+  return (
+    <Button
+      size="medium"
+      variant="outlined"
+      onClick={handleClick}
+      sx={{
+        px: 2,
+        display: 'block',
+        alignSelf: 'center'
+      }}>
+      <Stack
+        spacing={1}
+        direction='row'
+        justifyContent='center'
+      >
+        <Typography variant="info">Agregar</Typography>
+        <AddCircleOutlineIcon />
+      </Stack>
+    </Button>
+  )
+}
+
+export function CreateEventPage() {
   const { control, handleSubmit } = useForm({
     defaultValues: {
       name: '',
       artist: '',
       image: '',
-      location_id: '',
+      location_name: '',
       event_dates: [],
       event_state: false
     },
@@ -321,7 +378,6 @@ export function CreateEventPage() {
               label={'Nombre del evento'}
               control={control}
               required
-              fullWidth
             />
             <TextFieldElement
               name={'artist'}
@@ -334,17 +390,10 @@ export function CreateEventPage() {
               label={'Imagen'}
               control={control}
               required
-              fullWidth
             />
           </Stack>
-          {/*Location*/}
+          {/*Others*/}
           <Stack spacing={2} >
-            <AutocompleteElement
-              name="location_id"
-              label="Lugar"
-              control={control}
-              options={getLocationOptions()}
-            />
             <AddLocationModal />
             <AddDatesModal />
           </Stack>
