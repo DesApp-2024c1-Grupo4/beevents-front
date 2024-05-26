@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Container from "@mui/material/Container";
-import { AutocompleteElement, TextFieldElement, useForm } from "react-hook-form-mui";
-import { Backdrop, Button, Fade, Modal, Stack, Typography } from "@mui/material";
+import { AutocompleteElement, SliderElement, SwitchElement, TextFieldElement, useForm } from "react-hook-form-mui";
+import { Backdrop, Button, Fade, FormControlLabel, FormGroup, Modal, Slider, Stack, Switch, TextField, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
 import { DateTimePicker, LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -292,6 +292,108 @@ function DateTimePickers({ dates, deleteDateTimePicker }) {
   ))
 }
 
+function AddSectorsModal() {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [sectors, setSectors] = useState(1);
+  const addSectorForm = () => {
+    setSectors(sectors + 1)
+    console.log(sectors)
+  }
+  const deleteSectorForm = (datePicker) => {
+    setDates(sectors - 1)
+  }
+  const [isNumbered, setIsNumbered] = useState(false)
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      name: '',
+      numbered: false,
+      seats: [
+        {
+          row: '',
+          seat: 0,
+          available: true
+        }
+      ],
+      capacity: 0
+    }
+  })
+  return (
+    <Stack>
+      <Button
+        size="large"
+        variant="outlined"
+        onClick={handleOpen}
+        sx={{
+          px: 2,
+          display: 'block',
+          alignSelf: 'flex-end'
+        }}>
+        <Typography
+          variant="info"
+        >
+          Agregar sectores
+        </Typography>
+      </Button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <form onSubmit={handleSubmit} >
+            <Stack sx={modalStyle} spacing={3}>
+              <Typography
+                variant="h1"
+                gutterBottom
+                sx={{
+                  color: contrastGreen,
+                  alignSelf: { xs: 'center', sm: "flex-start" },
+                  textAlign: 'center'
+                }}
+              >
+                Agregar sectores
+              </Typography>
+              <SectorForms sectors={sectors} deleteSectorForm={deleteSectorForm}/>
+              <AddButtonForModal handleClick={addSectorForm} />
+              <ReadyButtonForModal handleClick={handleClose} />
+            </Stack>
+          </form>
+        </Fade>
+      </Modal>
+    </Stack>
+  );
+}
+function SectorForms({ sectors, deleteSectorForm }) {
+  const [isNumbered, setIsNumbered] = useState(false)
+  const forms = [...Array(sectors).keys()]
+  return forms.map(form => (
+    <Stack spacing={2}>
+      <TextField label='Nombre' />
+      <FormGroup>
+        <FormControlLabel
+          control={<Switch size="small" onChange={() => setIsNumbered(!isNumbered)} />}
+          label={`${isNumbered? 'Es numerado':'No es numerado'}`}
+        />
+      </FormGroup>
+      {isNumbered &&
+        <Stack direction='row' spacing={1}>
+          <TextField label='Cant. filas' />
+          <TextField label='Cant. columnas' />
+        </Stack>
+      }
+    </Stack>
+  ))
+}
+
 function ReadyButtonForModal({ handleClick }) {
   return (
     <Button
@@ -396,6 +498,7 @@ export function CreateEventPage() {
           <Stack spacing={2} >
             <AddLocationModal />
             <AddDatesModal />
+            <AddSectorsModal />
           </Stack>
           <Button
             size="large"
