@@ -297,21 +297,6 @@ function AddSectorsModal({ sectors, setSectors }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [sectorForms, setSectorForms] = useState(1);
-  const deleteSectorForm = () => {
-    setSectorForms(sectorForms - 1)
-  }
-  const forms = [...Array(sectorForms).keys()]
-  const sectorsDisplay = () => {
-    return (
-      <Stack>
-        <Typography>Sectores:</Typography>
-        {sectors.map(sector => (
-          <Typography key={sector.name}>{sector.name}</Typography>
-        ))}
-      </Stack>
-    )
-  }
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -369,13 +354,8 @@ function AddSectorsModal({ sectors, setSectors }) {
               >
                 Agregar sectores
               </Typography>
-              {JSON.stringify(sectors)}
-              {sectorsDisplay()}
-              <SectorForm
-                deleteSectorForm={deleteSectorForm}
-                sectors={sectors}
-                setSectors={setSectors}
-              />
+              <SectorsDisplay sectors={sectors} setSectors={setSectors} />
+              <SectorForm sectors={sectors} setSectors={setSectors} />
               <ReadyButtonForModal handleClick={handleClose} />
             </Stack>
           </form>
@@ -384,7 +364,26 @@ function AddSectorsModal({ sectors, setSectors }) {
     </Stack>
   );
 }
-function SectorForm({ deleteSectorForm, sectors, setSectors }) {
+function SectorsDisplay({ sectors, setSectors }) {
+  const deleteSector = (sector) => {
+    setSectors(current => current.filter(storedSector => storedSector !== sector))
+  }
+  return (
+    <Stack>
+      <Typography>Sectores: {sectors.length > 0 ? "" : "Ninguno"}</Typography>
+      {sectors.map(sector => (
+        <Stack key={sector.name} direction='row' justifyContent='space-between' spacing={1}>
+          <Typography sx={{ alignSelf: 'center' }}>
+            {`${sector.name}, capacidad: ${sector.capacity}`}
+          </Typography>
+          <Button onClick={() => deleteSector(sector)}><DeleteOutlineIcon /></Button>
+        </Stack>
+
+      ))}
+    </Stack>
+  )
+}
+function SectorForm({ sectors, setSectors }) {
   const [isNumbered, setIsNumbered] = useState(false)
   const [rows, setRows] = useState(1)
   const handleRowSliderChange = (e, newValue) => {
@@ -455,12 +454,7 @@ function SectorForm({ deleteSectorForm, sectors, setSectors }) {
     isValidSector(newSector) ? setSectors([...sectors, newSector])
       : alert("Ya existe un sector con ese nombre") //Convertir en notificación
   }
-  {/** 
-  const deleteSector = ( sector ) => {
-    setSectors(current => current.filter(storedSector => storedSector !== sector))
-    deleteSectorForm
-  }
-  */}
+
   return (
     <Stack spacing={3}>
       <TextField
@@ -588,24 +582,7 @@ function SectorForm({ deleteSectorForm, sectors, setSectors }) {
           </Typography>
         </Stack>
       }
-      <Button
-        size="medium"
-        variant="outlined"
-        onClick={() => addSector(sector)}
-        sx={{
-          px: 2,
-          display: 'block',
-          alignSelf: 'center'
-        }}>
-        <Stack
-          spacing={1}
-          direction='row'
-          justifyContent='center'
-        >
-          <Typography variant="info">Agregar</Typography>
-          <CheckCircleOutlineIcon />
-        </Stack>
-      </Button>
+      <AddButtonForModal handleClick={() => addSector(sector)} />
     </Stack>
   )
 }
@@ -651,9 +628,10 @@ function AddButtonForModal({ handleClick }) {
         justifyContent='center'
       >
         <Typography variant="info">Agregar</Typography>
-        <AddCircleOutlineIcon />
+        <CheckCircleOutlineIcon />
       </Stack>
     </Button>
+
   )
 }
 
