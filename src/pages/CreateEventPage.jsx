@@ -302,6 +302,16 @@ function AddSectorsModal({ sectors, setSectors }) {
     setSectorForms(sectorForms - 1)
   }
   const forms = [...Array(sectorForms).keys()]
+  const sectorsDisplay = () => {
+    return (
+      <Stack>
+        <Typography>Sectores:</Typography>
+        {sectors.map(sector => (
+          <Typography key={sector.name}>{sector.name}</Typography>
+        ))}
+      </Stack>
+    )
+  }
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -359,16 +369,13 @@ function AddSectorsModal({ sectors, setSectors }) {
               >
                 Agregar sectores
               </Typography>
-              {/*{JSON.stringify(sectors)}*/}
-              {forms.map(form => (
-                <SectorForm
-                  key={form}
-                  deleteSectorForm={deleteSectorForm}
-                  sectors={sectors}
-                  setSectors={setSectors}
-                />
-              ))}
-              <AddButtonForModal handleClick={() => setSectorForms(sectorForms + 1)} />
+              {JSON.stringify(sectors)}
+              {sectorsDisplay()}
+              <SectorForm
+                deleteSectorForm={deleteSectorForm}
+                sectors={sectors}
+                setSectors={setSectors}
+              />
               <ReadyButtonForModal handleClick={handleClose} />
             </Stack>
           </form>
@@ -379,14 +386,14 @@ function AddSectorsModal({ sectors, setSectors }) {
 }
 function SectorForm({ deleteSectorForm, sectors, setSectors }) {
   const [isNumbered, setIsNumbered] = useState(false)
-  const [rows, setRows] = useState(0)
+  const [rows, setRows] = useState(1)
   const handleRowSliderChange = (e, newValue) => {
     setRows(newValue)
   }
   const handleRowInputChange = (e) => {
     setRows(e.target.value === '' ? 0 : Number(e.target.value))
   }
-  const [seats, setSeats] = useState(0)
+  const [seats, setSeats] = useState(1)
   const handleSeatSliderChange = (e, newValue) => {
     setSeats(newValue)
   }
@@ -394,19 +401,22 @@ function SectorForm({ deleteSectorForm, sectors, setSectors }) {
     setSeats(e.target.value === '' ? 0 : Number(e.target.value))
   }
 
-  const [capacity, setCapacity] = useState(0)
+  const [capacity, setCapacity] = useState("1")
+  {/** 
   const handleCapacitySliderChange = (e, newValue) => {
     setCapacity(newValue)
   }
   const handleCapacityInputChange = (e) => {
     setCapacity(e.target.value === '' ? 0 : Number(e.target.value))
   }
-  //const handleCapacityChange = (e) => { setCapacity(e.target.value) }
-  //const capacityError = !validator.isEmpty(capacity) && (!validator.isNumeric(capacity, { no_symbols: true }) || capacity < 1)
-  //const getCapacityHelperText = capacityError ? 'La capacidad debe ser un número mayor a 0' : ''
+  */}
+  const handleCapacityChange = (e) => { setCapacity(e.target.value) }
+  const capacityError = validator.isEmpty(capacity) || !validator.isNumeric(capacity, { no_symbols: true }) || capacity < 1
+  const getCapacityHelperText = capacityError ? 'La capacidad debe ser un número mayor a 0' : ''
 
-  const [name, setName] = useState("")
+  const [name, setName] = useState("Nuevo sector")
   const handleNameChange = (e) => { setName(e.target.value) }
+  const nameError = validator.isEmpty(name)
 
   {/** 
   const getSeats = () => {
@@ -429,16 +439,21 @@ function SectorForm({ deleteSectorForm, sectors, setSectors }) {
   }
   */}
 
+  //Agregar type: { numbered: false, regular: true }
+  //'regular' sería todas las filas con misma cantidad de asientos
   const sector = {
     name: name,
     numbered: isNumbered,
-    //seats: isNumbered? [] : getSeats,
     rows: rows,
     seats: seats,
-    capacity: capacity
+    capacity: isNumbered ? rows * seats : Number(capacity)
   }
-  const addSector = () => {
-    setSectors([...sectors, sector])
+  const isValidSector = (sector) => {
+    return !sectors.some(storedSector => storedSector.name === sector.name)
+  }
+  const addSector = (newSector) => {
+    isValidSector(newSector) ? setSectors([...sectors, newSector])
+      : alert("Ya existe un sector con ese nombre") //Convertir en notificación
   }
   {/** 
   const deleteSector = ( sector ) => {
@@ -452,50 +467,50 @@ function SectorForm({ deleteSectorForm, sectors, setSectors }) {
         label='Nombre'
         value={name}
         onChange={handleNameChange}
+        error={nameError}
         required />
       {!isNumbered &&
-        <Stack>
-          <Typography id="capacity" gutterBottom>
-            Capacidad
-          </Typography>
-          <Stack direction='row' spacing={3} justifyContent='center'>
-            <Slider
-              value={typeof capacity === 'number' ? capacity : 0}
-              onChange={handleCapacitySliderChange}
-              aria-labelledby='capacity'
-              valueLabelDisplay="auto"
-              step={1000}
-              marks
-              min={0}
-              max={100000}
-              sx={{ width: '45%' }}
-            />
-            <Input
-              value={capacity}
-              onChange={handleCapacityInputChange}
-              size="small"
-              inputProps={{
-                step: 1,
-                min: 0,
-                max: 100000,
-                type: 'number',
-                'aria-labelledby': 'capacity',
-              }}
-              sx={{ width: '35%', alignSelf: 'flex-start' }}
-            />
-            {/**
-          <TextField
-            label='Capacidad'
-            value={capacity}
-            onChange={handleCapacityChange}
-            helperText={getCapacityHelperText}
-            error={capacityError}
-            required
-          />
-           */}
-          </Stack>
-        </Stack>
+        <TextField
+          label='Capacidad'
+          value={capacity}
+          onChange={handleCapacityChange}
+          helperText={getCapacityHelperText}
+          error={capacityError}
+          required
+        />
       }
+      {/** 
+      <Stack>
+        <Typography id="capacity" gutterBottom>
+          Capacidad
+        </Typography>
+        <Stack direction='row' spacing={3} justifyContent='center'>
+          <Slider
+            value={typeof capacity === 'number' ? capacity : 1}
+            onChange={handleCapacitySliderChange}
+            aria-labelledby='capacity'
+            step={1000}
+            marks
+            min={5}
+            max={100000}
+            sx={{ width: '45%' }}
+          />
+          <Input
+            value={capacity}
+            onChange={handleCapacityInputChange}
+            size="small"
+            inputProps={{
+              step: 1,
+              min: 1,
+              max: 100000,
+              type: 'number',
+              'aria-labelledby': 'capacity',
+            }}
+            sx={{ width: '35%', alignSelf: 'flex-start' }}
+          />
+        </Stack>
+      </Stack>
+      */}
       <FormGroup>
         <FormControlLabel
           control={<Switch size="small" onChange={() => setIsNumbered(!isNumbered)} />}
@@ -512,7 +527,7 @@ function SectorForm({ deleteSectorForm, sectors, setSectors }) {
             </Typography>
             <Stack direction='row' spacing={3} justifyContent='center'>
               <Slider
-                value={typeof rows === 'number' ? rows : 0}
+                value={typeof rows === 'number' ? rows : 1}
                 onChange={handleRowSliderChange}
                 aria-labelledby='rows'
                 valueLabelDisplay="auto"
@@ -543,7 +558,7 @@ function SectorForm({ deleteSectorForm, sectors, setSectors }) {
             </Typography>
             <Stack direction='row' spacing={3} justifyContent='center'>
               <Slider
-                value={typeof seats === 'number' ? seats : 0}
+                value={typeof seats === 'number' ? seats : 1}
                 onChange={handleSeatSliderChange}
                 aria-labelledby='seats'
                 valueLabelDisplay="auto"
@@ -573,14 +588,24 @@ function SectorForm({ deleteSectorForm, sectors, setSectors }) {
           </Typography>
         </Stack>
       }
-      <Stack direction='row' justifyContent='space-between'>
-        <Button onClick={deleteSectorForm}>
-          <DeleteOutlineIcon></DeleteOutlineIcon>
-        </Button>
-        <Button onClick={addSector}>
-          <CheckCircleOutlineIcon></CheckCircleOutlineIcon>
-        </Button>
-      </Stack>
+      <Button
+        size="medium"
+        variant="outlined"
+        onClick={() => addSector(sector)}
+        sx={{
+          px: 2,
+          display: 'block',
+          alignSelf: 'center'
+        }}>
+        <Stack
+          spacing={1}
+          direction='row'
+          justifyContent='center'
+        >
+          <Typography variant="info">Agregar</Typography>
+          <CheckCircleOutlineIcon />
+        </Stack>
+      </Button>
     </Stack>
   )
 }
