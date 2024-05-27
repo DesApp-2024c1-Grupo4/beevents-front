@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Container from "@mui/material/Container";
-import { AutocompleteElement, SliderElement, SwitchElement, TextFieldElement, useForm } from "react-hook-form-mui";
+import { AutocompleteElement, TextFieldElement, useForm } from "react-hook-form-mui";
 import { Backdrop, Button, Fade, FormControlLabel, FormGroup, Input, Modal, Slider, Stack, Switch, TextField, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
 import { DateTimePicker, LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
@@ -8,6 +8,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import validator from "validator";
 
 const { contrastGreen, oceanicBlue, deepOceanicBlue } = customMuiTheme.colors;
 const modalStyle = {
@@ -292,19 +293,15 @@ function DateTimePickers({ dates, deleteDateTimePicker }) {
   ))
 }
 
-function AddSectorsModal() {
+function AddSectorsModal({ sectors, setSectors }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [sectors, setSectors] = useState(1);
-  const addSectorForm = () => {
-    setSectors(sectors + 1)
-    console.log(sectors)
-  }
+  const [sectorForms, setSectorForms] = useState(1);
   const deleteSectorForm = () => {
-    setSectors(sectors - 1)
+    setSectorForms(sectorForms - 1)
   }
-  const forms = [...Array(sectors).keys()]
+  const forms = [...Array(sectorForms).keys()]
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -362,10 +359,16 @@ function AddSectorsModal() {
               >
                 Agregar sectores
               </Typography>
+              {/*{JSON.stringify(sectors)}*/}
               {forms.map(form => (
-                <SectorForm key={form} deleteSectorForm={deleteSectorForm} />
+                <SectorForm
+                  key={form}
+                  deleteSectorForm={deleteSectorForm}
+                  sectors={sectors}
+                  setSectors={setSectors}
+                />
               ))}
-              <AddButtonForModal handleClick={addSectorForm} />
+              <AddButtonForModal handleClick={() => setSectorForms(sectorForms + 1)} />
               <ReadyButtonForModal handleClick={handleClose} />
             </Stack>
           </form>
@@ -374,7 +377,7 @@ function AddSectorsModal() {
     </Stack>
   );
 }
-function SectorForm({ deleteSectorForm }) {
+function SectorForm({ deleteSectorForm, sectors, setSectors }) {
   const [isNumbered, setIsNumbered] = useState(false)
   const [rows, setRows] = useState(0)
   const handleRowSliderChange = (e, newValue) => {
@@ -390,12 +393,108 @@ function SectorForm({ deleteSectorForm }) {
   const handleSeatInputChange = (e) => {
     setSeats(e.target.value === '' ? 0 : Number(e.target.value))
   }
-  
+
+  const [capacity, setCapacity] = useState(0)
+  const handleCapacitySliderChange = (e, newValue) => {
+    setCapacity(newValue)
+  }
+  const handleCapacityInputChange = (e) => {
+    setCapacity(e.target.value === '' ? 0 : Number(e.target.value))
+  }
+  //const handleCapacityChange = (e) => { setCapacity(e.target.value) }
+  //const capacityError = !validator.isEmpty(capacity) && (!validator.isNumeric(capacity, { no_symbols: true }) || capacity < 1)
+  //const getCapacityHelperText = capacityError ? 'La capacidad debe ser un número mayor a 0' : ''
+
+  const [name, setName] = useState("")
+  const handleNameChange = (e) => { setName(e.target.value) }
+
+  {/** 
+  const getSeats = () => {
+    const ubications = []
+    for (var i = 0; i < rows; i++) {
+      for (var j = 0; j < seats; j++) {
+        ubications.push({
+          row: i,
+          seat: j,
+          available: true
+        })
+      }
+    }
+    
+    const seat = {
+      row: 0,
+      seat: 0,
+      available: true
+    }
+  }
+  */}
+
+  const sector = {
+    name: name,
+    numbered: isNumbered,
+    //seats: isNumbered? [] : getSeats,
+    rows: rows,
+    seats: seats,
+    capacity: capacity
+  }
+  const addSector = () => {
+    setSectors([...sectors, sector])
+  }
+  {/** 
+  const deleteSector = ( sector ) => {
+    setSectors(current => current.filter(storedSector => storedSector !== sector))
+    deleteSectorForm
+  }
+  */}
   return (
     <Stack spacing={3}>
-      <TextField label='Nombre' />
-      { !isNumbered &&
-        <TextField label='Capacidad' />
+      <TextField
+        label='Nombre'
+        value={name}
+        onChange={handleNameChange}
+        required />
+      {!isNumbered &&
+        <Stack>
+          <Typography id="capacity" gutterBottom>
+            Capacidad
+          </Typography>
+          <Stack direction='row' spacing={3} justifyContent='center'>
+            <Slider
+              value={typeof capacity === 'number' ? capacity : 0}
+              onChange={handleCapacitySliderChange}
+              aria-labelledby='capacity'
+              valueLabelDisplay="auto"
+              step={1000}
+              marks
+              min={0}
+              max={100000}
+              sx={{ width: '45%' }}
+            />
+            <Input
+              value={capacity}
+              onChange={handleCapacityInputChange}
+              size="small"
+              inputProps={{
+                step: 1,
+                min: 0,
+                max: 100000,
+                type: 'number',
+                'aria-labelledby': 'capacity',
+              }}
+              sx={{ width: '35%', alignSelf: 'flex-start' }}
+            />
+            {/**
+          <TextField
+            label='Capacidad'
+            value={capacity}
+            onChange={handleCapacityChange}
+            helperText={getCapacityHelperText}
+            error={capacityError}
+            required
+          />
+           */}
+          </Stack>
+        </Stack>
       }
       <FormGroup>
         <FormControlLabel
@@ -409,66 +508,68 @@ function SectorForm({ deleteSectorForm }) {
         <Stack spacing={3}>
           <Stack>
             <Typography id="rows" gutterBottom>
-            Cant. de filas
-          </Typography>
-          <Stack direction='row' spacing={3}>
-            <Slider
-              value={typeof rows === 'number' ? rows : 0}
-              onChange={handleRowSliderChange}
-              aria-labelledby='rows'
-              valueLabelDisplay="auto"
-              step={20}
-              marks
-              min={0}
-              max={500}
-            />
-            <Input
-              value={rows}
-              onChange={handleRowInputChange}
-              size="small"
-              inputProps={{
-                step: 1,
-                min: 0,
-                max: 500,
-                type: 'number',
-                'aria-labelledby': 'rows',
-              }}
-              sx={{ width: '30%', alignSelf: 'flex-start' }}
-            />
-          </Stack>
+              Cant. de filas
+            </Typography>
+            <Stack direction='row' spacing={3} justifyContent='center'>
+              <Slider
+                value={typeof rows === 'number' ? rows : 0}
+                onChange={handleRowSliderChange}
+                aria-labelledby='rows'
+                valueLabelDisplay="auto"
+                step={20}
+                marks
+                min={0}
+                max={500}
+                sx={{ width: '55%' }}
+              />
+              <Input
+                value={rows}
+                onChange={handleRowInputChange}
+                size="small"
+                inputProps={{
+                  step: 1,
+                  min: 0,
+                  max: 500,
+                  type: 'number',
+                  'aria-labelledby': 'rows',
+                }}
+                sx={{ width: '25%', alignSelf: 'flex-start' }}
+              />
+            </Stack>
           </Stack>
           <Stack>
             <Typography id="seats" gutterBottom>
-            Cant. de asientos por fila
-          </Typography>
-          <Stack direction='row' spacing={3}>
-            <Slider
-              value={typeof seats === 'number' ? seats : 0}
-              onChange={handleSeatSliderChange}
-              aria-labelledby='seats'
-              valueLabelDisplay="auto"
-              step={20}
-              marks
-              min={0}
-              max={500}
-            />
-            <Input
-              value={seats}
-              onChange={handleSeatInputChange}
-              size="small"
-              inputProps={{
-                step: 1,
-                min: 0,
-                max: 500,
-                type: 'number',
-                'aria-labelledby': 'seats',
-              }}
-              sx={{ width: '30%', alignSelf: 'flex-start' }}
-            />
-          </Stack>
+              Cant. de asientos por fila
+            </Typography>
+            <Stack direction='row' spacing={3} justifyContent='center'>
+              <Slider
+                value={typeof seats === 'number' ? seats : 0}
+                onChange={handleSeatSliderChange}
+                aria-labelledby='seats'
+                valueLabelDisplay="auto"
+                step={20}
+                marks
+                min={0}
+                max={500}
+                sx={{ width: '55%' }}
+              />
+              <Input
+                value={seats}
+                onChange={handleSeatInputChange}
+                size="small"
+                inputProps={{
+                  step: 1,
+                  min: 0,
+                  max: 500,
+                  type: 'number',
+                  'aria-labelledby': 'seats',
+                }}
+                sx={{ width: '25%', alignSelf: 'flex-start' }}
+              />
+            </Stack>
           </Stack>
           <Typography>
-            Capacidad: {rows*seats}
+            Capacidad: {rows * seats}
           </Typography>
         </Stack>
       }
@@ -476,7 +577,7 @@ function SectorForm({ deleteSectorForm }) {
         <Button onClick={deleteSectorForm}>
           <DeleteOutlineIcon></DeleteOutlineIcon>
         </Button>
-        <Button onClick={deleteSectorForm}>
+        <Button onClick={addSector}>
           <CheckCircleOutlineIcon></CheckCircleOutlineIcon>
         </Button>
       </Stack>
@@ -532,15 +633,19 @@ function AddButtonForModal({ handleClick }) {
 }
 
 export function CreateEventPage() {
+  const [sectors, setSectors] = useState([])
+  const [dates, setDates] = useState([])
+  const [locationId, setLocationId] = useState(0)
   const { control, handleSubmit } = useForm({
     defaultValues: {
       name: '',
       artist: '',
       image: '',
-      location_name: '',
-      event_dates: [],
-      event_state: false
-    },
+      location: locationId,
+      event_dates: dates,
+      sectors: sectors,
+      event_state: false,
+    }
   })
 
   return (
@@ -561,8 +666,8 @@ export function CreateEventPage() {
       >
         Crear un evento nuevo
       </Typography>
-      <form onSubmit={handleSubmit((data) => console.log(data))} noValidate>
-        <Stack spacing={5}>
+      <Stack spacing={5}>
+        <form onSubmit={handleSubmit((data) => console.log(data))} noValidate>
           {/*Name, artist, image*/}
           <Stack spacing={2}>
             <TextFieldElement
@@ -584,30 +689,31 @@ export function CreateEventPage() {
               required
             />
           </Stack>
-          {/*Others*/}
-          <Stack spacing={2} >
-            <AddLocationModal />
-            <AddDatesModal />
-            <AddSectorsModal />
-          </Stack>
-          <Button
-            size="large"
-            variant="contained"
-            type={'submit'}
-            sx={{
-              px: 3,
-              display: 'block',
-              backgroundColor: contrastGreen,
-              color: 'whitesmoke'
-            }}>
-            <Typography
-              variant="h2"
-            >
-              Crear
-            </Typography>
-          </Button>
+        </form>
+        {/*Others*/}
+        <Stack spacing={2} >
+          <AddLocationModal />
+          <AddDatesModal />
+          <AddSectorsModal sectors={sectors} setSectors={setSectors} />
         </Stack>
-      </form>
-    </Container>
+        <Button
+          size="large"
+          variant="contained"
+          type={'submit'}
+          sx={{
+            px: 3,
+            display: 'block',
+            backgroundColor: contrastGreen,
+            color: 'whitesmoke'
+          }}>
+          <Typography
+            variant="h2"
+          >
+            Crear
+          </Typography>
+        </Button>
+      </Stack>
+
+    </Container >
   );
 }
