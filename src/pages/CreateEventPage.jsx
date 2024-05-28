@@ -1,28 +1,54 @@
 import React, { useState } from "react";
 import Container from "@mui/material/Container";
-import { AutocompleteElement, TextFieldElement, useForm } from "react-hook-form-mui";
-import { Backdrop, Button, Fade, FormControlLabel, FormGroup, Input, Modal, Slider, Stack, Switch, TextField, Typography } from "@mui/material";
+import { useEffect } from "react";
+import {
+  AutocompleteElement,
+  TextFieldElement,
+  useForm,
+} from "react-hook-form-mui";
+import {
+  Backdrop,
+  Button,
+  Fade,
+  FormControlLabel,
+  FormGroup,
+  Input,
+  Modal,
+  Slider,
+  Stack,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
-import { DateTimePicker, LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import {
+  DateTimePicker,
+  LocalizationProvider,
+  MobileDateTimePicker,
+} from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import validator from "validator";
 
 const { contrastGreen, oceanicBlue, deepOceanicBlue } = customMuiTheme.colors;
 const modalStyle = {
-  position: 'absolute',
-  top: '40%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "40%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   backgroundImage: `linear-gradient(to bottom, ${oceanicBlue}, ${deepOceanicBlue})`,
   borderRadius: 5,
   p: { xs: 2, sm: 4 },
-  minWidth: 230
+  minWidth: 230,
 };
 
-let vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
-let isMobile = vw <= 600
+let vw = Math.max(
+  document.documentElement.clientWidth || 0,
+  window.innerWidth || 0
+);
+let isMobile = vw <= 600;
 
 function AddLocationModal() {
   const [open, setOpen] = useState(false);
@@ -31,60 +57,58 @@ function AddLocationModal() {
   const fakeFetchedLocations = [
     {
       _id: 1,
-      name: 'River Plate',
+      name: "River Plate",
       address: {
-        street: 'Av. Pres. Figueroa Alcorta',
+        street: "Av. Pres. Figueroa Alcorta",
         number: 7597,
-        city: 'Buenos Aires',
-        country: 'Argentina'
+        city: "Buenos Aires",
+        country: "Argentina",
       },
       gps: {
         lat: -34.546388,
-        long: -58.449993
-      }
+        long: -58.449993,
+      },
     },
     {
       _id: 2,
-      name: 'Movistar Arena',
+      name: "Movistar Arena",
       address: {
-        street: 'Humboldt',
+        street: "Humboldt",
         number: 450,
-        city: 'CABA',
-        country: 'Argentina'
+        city: "CABA",
+        country: "Argentina",
       },
       gps: {
         lat: -34.594632,
-        long: -58.447707
-      }
+        long: -58.447707,
+      },
     },
-  ]
+  ];
   function getLocationOptions() {
-    const options = []
+    const options = [];
     for (let i = 0; i < fakeFetchedLocations.length; i++) {
-      const location = fakeFetchedLocations[i]
-      options.push(
-        { id: location._id, label: location.name }
-      )
+      const location = fakeFetchedLocations[i];
+      options.push({ id: location._id, label: location.name });
     }
-    return options
+    return options;
   }
-  const [locationExists, setLocationExists] = useState(true)
+  const [locationExists, setLocationExists] = useState(true);
 
   const { control, handleLocationSubmit } = useForm({
     defaultValues: {
-      name: '',
+      name: "",
       address: {
-        street: '',
+        street: "",
         number: 0,
-        city: '',
-        country: ''
+        city: "",
+        country: "",
       },
       gps: {
         lat: 0,
-        long: 0
-      }
-    }
-  })
+        long: 0,
+      },
+    },
+  });
   return (
     <Stack>
       <Button
@@ -93,10 +117,11 @@ function AddLocationModal() {
         onClick={handleOpen}
         sx={{
           px: 2,
-          display: 'block',
-          alignSelf: 'flex-end'
-        }}>
-        <Typography variant="info" >Seleccionar predio</Typography>
+          display: "block",
+          alignSelf: "flex-end",
+        }}
+      >
+        <Typography variant="info">Seleccionar predio</Typography>
       </Button>
       <Modal
         open={open}
@@ -110,15 +135,15 @@ function AddLocationModal() {
         }}
       >
         <Fade in={open}>
-          <form onSubmit={handleLocationSubmit} >
+          <form onSubmit={handleLocationSubmit}>
             <Stack sx={modalStyle} spacing={3}>
               <Typography
                 variant="h1"
                 gutterBottom
                 sx={{
                   color: contrastGreen,
-                  alignSelf: { xs: 'center', sm: "flex-start" },
-                  textAlign: 'center'
+                  alignSelf: { xs: "center", sm: "flex-start" },
+                  textAlign: "center",
                 }}
               >
                 Seleccionar predio
@@ -133,29 +158,32 @@ function AddLocationModal() {
                 variant="h2"
                 gutterBottom
                 sx={{
-                  alignSelf: 'center',
-                  textAlign: 'center'
+                  alignSelf: "center",
+                  textAlign: "center",
                 }}
               >
                 o...
               </Typography>
-              {locationExists &&
-                <AddButtonForModal handleClick={() => setLocationExists(false)} />}
-              {!locationExists &&
+              {locationExists && (
+                <AddButtonForModal
+                  handleClick={() => setLocationExists(false)}
+                />
+              )}
+              {!locationExists && (
                 <Stack spacing={2}>
                   <TextFieldElement
                     name="name"
-                    label='Nombre'
+                    label="Nombre"
                     control={control}
                   />
                   <TextFieldElement
                     name="address.street"
-                    label='Calle'
+                    label="Calle"
                     control={control}
                   />
                   <TextFieldElement
                     name="address.number"
-                    label='Número'
+                    label="Número"
                     control={control}
                   />
                   <Button
@@ -164,19 +192,16 @@ function AddLocationModal() {
                     onClick={() => setLocationExists(true)}
                     sx={{
                       px: 2,
-                      display: 'block',
-                      alignSelf: 'center'
-                    }}>
-                    <Stack
-                      spacing={1}
-                      direction='row'
-                      justifyContent='center'
-                    >
+                      display: "block",
+                      alignSelf: "center",
+                    }}
+                  >
+                    <Stack spacing={1} direction="row" justifyContent="center">
                       <Typography variant="info">Cancelar</Typography>
                     </Stack>
                   </Button>
                 </Stack>
-              }
+              )}
               <ReadyButtonForModal handleClick={handleClose} />
             </Stack>
           </form>
@@ -192,18 +217,18 @@ function AddDatesModal() {
   const handleClose = () => setOpen(false);
   const [dates, setDates] = useState([1]);
   const addDateTimePicker = () => {
-    const value = dates.length + 1
-    setDates(current => [...current, value])
-  }
+    const value = dates.length + 1;
+    setDates((current) => [...current, value]);
+  };
   const deleteDateTimePicker = (datePicker) => {
-    setDates(current => current.filter(date => date != datePicker))
-  }
+    setDates((current) => current.filter((date) => date != datePicker));
+  };
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
       dates: [],
-    }
-  })
+    },
+  });
   return (
     <Stack>
       <Button
@@ -212,14 +237,11 @@ function AddDatesModal() {
         onClick={handleOpen}
         sx={{
           px: 2,
-          display: 'block',
-          alignSelf: 'flex-end'
-        }}>
-        <Typography
-          variant="info"
-        >
-          Agregar fechas
-        </Typography>
+          display: "block",
+          alignSelf: "flex-end",
+        }}
+      >
+        <Typography variant="info">Agregar fechas</Typography>
       </Button>
       <Modal
         open={open}
@@ -233,15 +255,15 @@ function AddDatesModal() {
         }}
       >
         <Fade in={open}>
-          <form onSubmit={handleSubmit} >
+          <form onSubmit={handleSubmit}>
             <Stack sx={modalStyle} spacing={3}>
               <Typography
                 variant="h1"
                 gutterBottom
                 sx={{
                   color: contrastGreen,
-                  alignSelf: { xs: 'center', sm: "flex-start" },
-                  textAlign: 'center'
+                  alignSelf: { xs: "center", sm: "flex-start" },
+                  textAlign: "center",
                 }}
               >
                 Agregar fechas
@@ -262,34 +284,34 @@ function AddDatesModal() {
   );
 }
 function DateTimePickers({ dates, deleteDateTimePicker }) {
-  return dates.map(date => (
+  return dates.map((date) => (
     <Stack
       key={date}
-      direction='row'
+      direction="row"
       spacing={{ sm: 1 }}
-      justifyContent='space-between'
+      justifyContent="space-between"
     >
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        {!isMobile &&
+        {!isMobile && (
           <DateTimePicker
             label="Seleccione fecha y hora"
             ampm={false}
             disablePast
           />
-        }
-        {isMobile &&
+        )}
+        {isMobile && (
           <MobileDateTimePicker
-            label='Seleccione fecha y hora'
+            label="Seleccione fecha y hora"
             ampm={false}
             disablePast
-          />}
+          />
+        )}
       </LocalizationProvider>
       <Button onClick={() => deleteDateTimePicker(date)}>
         <DeleteOutlineIcon></DeleteOutlineIcon>
       </Button>
-
     </Stack>
-  ))
+  ));
 }
 
 function AddSectorsModal({ sectors, setSectors }) {
@@ -299,18 +321,18 @@ function AddSectorsModal({ sectors, setSectors }) {
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
-      name: '',
+      name: "",
       numbered: false,
       seats: [
         {
-          row: '',
+          row: "",
           seat: 0,
-          available: true
-        }
+          available: true,
+        },
       ],
-      capacity: 0
-    }
-  })
+      capacity: 0,
+    },
+  });
   return (
     <Stack>
       <Button
@@ -319,14 +341,11 @@ function AddSectorsModal({ sectors, setSectors }) {
         onClick={handleOpen}
         sx={{
           px: 2,
-          display: 'block',
-          alignSelf: 'flex-end'
-        }}>
-        <Typography
-          variant="info"
-        >
-          Agregar sectores
-        </Typography>
+          display: "block",
+          alignSelf: "flex-end",
+        }}
+      >
+        <Typography variant="info">Agregar sectores</Typography>
       </Button>
       <Modal
         open={open}
@@ -340,15 +359,15 @@ function AddSectorsModal({ sectors, setSectors }) {
         }}
       >
         <Fade in={open}>
-          <form onSubmit={handleSubmit} >
+          <form onSubmit={handleSubmit}>
             <Stack sx={modalStyle} spacing={3}>
               <Typography
                 variant="h1"
                 gutterBottom
                 sx={{
                   color: contrastGreen,
-                  alignSelf: { xs: 'center', sm: "flex-start" },
-                  textAlign: 'center'
+                  alignSelf: { xs: "center", sm: "flex-start" },
+                  textAlign: "center",
                 }}
               >
                 Agregar sectores
@@ -365,58 +384,78 @@ function AddSectorsModal({ sectors, setSectors }) {
 }
 function SectorsDisplay({ sectors, setSectors }) {
   const deleteSector = (sector) => {
-    setSectors(current => current.filter(storedSector => storedSector !== sector))
-  }
+    setSectors((current) =>
+      current.filter((storedSector) => storedSector !== sector)
+    );
+  };
   return (
     <Stack>
       <Typography>Sectores: {sectors.length > 0 ? "" : "Ninguno"}</Typography>
-      {sectors.map(sector => (
-        <Stack key={sector.name} direction='row' justifyContent='space-between' spacing={1}>
-          <Typography sx={{ alignSelf: 'center' }}>
+      {sectors.map((sector) => (
+        <Stack
+          key={sector.name}
+          direction="row"
+          justifyContent="space-between"
+          spacing={1}
+        >
+          <Typography sx={{ alignSelf: "center" }}>
             {`${sector.name}, capacidad: ${sector.capacity}`}
           </Typography>
-          <Button onClick={() => deleteSector(sector)}><DeleteOutlineIcon /></Button>
+          <Button onClick={() => deleteSector(sector)}>
+            <DeleteOutlineIcon />
+          </Button>
         </Stack>
-
       ))}
     </Stack>
-  )
+  );
 }
 function SectorForm({ sectors, setSectors }) {
-  const [isNumbered, setIsNumbered] = useState(false)
-  const [rows, setRows] = useState(1)
+  const [isNumbered, setIsNumbered] = useState(false);
+  const [rows, setRows] = useState(1);
   const handleRowSliderChange = (e, newValue) => {
-    setRows(newValue)
-  }
+    setRows(newValue);
+  };
   const handleRowInputChange = (e) => {
-    setRows(e.target.value === '' ? 0 : Number(e.target.value))
-  }
-  const [seats, setSeats] = useState(1)
+    setRows(e.target.value === "" ? 0 : Number(e.target.value));
+  };
+  const [seats, setSeats] = useState(1);
   const handleSeatSliderChange = (e, newValue) => {
-    setSeats(newValue)
-  }
+    setSeats(newValue);
+  };
   const handleSeatInputChange = (e) => {
-    setSeats(e.target.value === '' ? 0 : Number(e.target.value))
-  }
+    setSeats(e.target.value === "" ? 0 : Number(e.target.value));
+  };
 
-  const [capacity, setCapacity] = useState("1")
-  {/** 
+  const [capacity, setCapacity] = useState("1");
+  {
+    /** 
   const handleCapacitySliderChange = (e, newValue) => {
     setCapacity(newValue)
   }
   const handleCapacityInputChange = (e) => {
     setCapacity(e.target.value === '' ? 0 : Number(e.target.value))
   }
-  */}
-  const handleCapacityChange = (e) => { setCapacity(e.target.value) }
-  const capacityError = validator.isEmpty(capacity) || !validator.isNumeric(capacity, { no_symbols: true }) || capacity < 1
-  const getCapacityHelperText = capacityError ? 'La capacidad debe ser un número mayor a 0' : ''
+  */
+  }
+  const handleCapacityChange = (e) => {
+    setCapacity(e.target.value);
+  };
+  const capacityError =
+    validator.isEmpty(capacity) ||
+    !validator.isNumeric(capacity, { no_symbols: true }) ||
+    capacity < 1;
+  const getCapacityHelperText = capacityError
+    ? "La capacidad debe ser un número mayor a 0"
+    : "";
 
-  const [name, setName] = useState("Nuevo sector")
-  const handleNameChange = (e) => { setName(e.target.value) }
-  const nameError = validator.isEmpty(name)
+  const [name, setName] = useState("Nuevo sector");
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+  };
+  const nameError = validator.isEmpty(name);
 
-  {/** 
+  {
+    /** 
   const getSeats = () => {
     const ubications = []
     for (var i = 0; i < rows; i++) {
@@ -435,7 +474,8 @@ function SectorForm({ sectors, setSectors }) {
       available: true
     }
   }
-  */}
+  */
+  }
 
   //Agregar type: { numbered: false, regular: true }
   //'regular' sería todas las filas con misma cantidad de asientos
@@ -444,34 +484,36 @@ function SectorForm({ sectors, setSectors }) {
     numbered: isNumbered,
     rows: rows,
     seats: seats,
-    capacity: isNumbered ? rows * seats : Number(capacity)
-  }
+    capacity: isNumbered ? rows * seats : Number(capacity),
+  };
   const isValidSector = (sector) => {
-    return !sectors.some(storedSector => storedSector.name === sector.name)
-  }
+    return !sectors.some((storedSector) => storedSector.name === sector.name);
+  };
   const addSector = (newSector) => {
-    isValidSector(newSector) ? setSectors([...sectors, newSector])
-      : alert("Ya existe un sector con ese nombre") //Convertir en notificación
-  }
+    isValidSector(newSector)
+      ? setSectors([...sectors, newSector])
+      : alert("Ya existe un sector con ese nombre"); //Convertir en notificación
+  };
 
   return (
     <Stack spacing={3}>
       <TextField
-        label='Nombre'
+        label="Nombre"
         value={name}
         onChange={handleNameChange}
         error={nameError}
-        required />
-      {!isNumbered &&
+        required
+      />
+      {!isNumbered && (
         <TextField
-          label='Capacidad'
+          label="Capacidad"
           value={capacity}
           onChange={handleCapacityChange}
           helperText={getCapacityHelperText}
           error={capacityError}
           required
         />
-      }
+      )}
       {/** 
       <Stack>
         <Typography id="capacity" gutterBottom>
@@ -506,29 +548,31 @@ function SectorForm({ sectors, setSectors }) {
       */}
       <FormGroup>
         <FormControlLabel
-          control={<Switch size="small" onChange={() => setIsNumbered(!isNumbered)} />}
-          label={`${isNumbered ? 'Numerado' : 'No numerado'}`}
+          control={
+            <Switch size="small" onChange={() => setIsNumbered(!isNumbered)} />
+          }
+          label={`${isNumbered ? "Numerado" : "No numerado"}`}
           labelPlacement="start"
-          sx={{ alignSelf: 'end', mr: 0.01 }}
+          sx={{ alignSelf: "end", mr: 0.01 }}
         />
       </FormGroup>
-      {isNumbered &&
+      {isNumbered && (
         <Stack spacing={3}>
           <Stack>
             <Typography id="rows" gutterBottom>
               Cant. de filas
             </Typography>
-            <Stack direction='row' spacing={3} justifyContent='center'>
+            <Stack direction="row" spacing={3} justifyContent="center">
               <Slider
-                value={typeof rows === 'number' ? rows : 1}
+                value={typeof rows === "number" ? rows : 1}
                 onChange={handleRowSliderChange}
-                aria-labelledby='rows'
+                aria-labelledby="rows"
                 valueLabelDisplay="auto"
                 step={20}
                 marks
                 min={0}
                 max={500}
-                sx={{ width: '55%' }}
+                sx={{ width: "55%" }}
               />
               <Input
                 value={rows}
@@ -538,10 +582,10 @@ function SectorForm({ sectors, setSectors }) {
                   step: 1,
                   min: 0,
                   max: 500,
-                  type: 'number',
-                  'aria-labelledby': 'rows',
+                  type: "number",
+                  "aria-labelledby": "rows",
                 }}
-                sx={{ width: '25%', alignSelf: 'flex-start' }}
+                sx={{ width: "25%", alignSelf: "flex-start" }}
               />
             </Stack>
           </Stack>
@@ -549,17 +593,17 @@ function SectorForm({ sectors, setSectors }) {
             <Typography id="seats" gutterBottom>
               Cant. de asientos por fila
             </Typography>
-            <Stack direction='row' spacing={3} justifyContent='center'>
+            <Stack direction="row" spacing={3} justifyContent="center">
               <Slider
-                value={typeof seats === 'number' ? seats : 1}
+                value={typeof seats === "number" ? seats : 1}
                 onChange={handleSeatSliderChange}
-                aria-labelledby='seats'
+                aria-labelledby="seats"
                 valueLabelDisplay="auto"
                 step={20}
                 marks
                 min={0}
                 max={500}
-                sx={{ width: '55%' }}
+                sx={{ width: "55%" }}
               />
               <Input
                 value={seats}
@@ -569,21 +613,19 @@ function SectorForm({ sectors, setSectors }) {
                   step: 1,
                   min: 0,
                   max: 500,
-                  type: 'number',
-                  'aria-labelledby': 'seats',
+                  type: "number",
+                  "aria-labelledby": "seats",
                 }}
-                sx={{ width: '25%', alignSelf: 'flex-start' }}
+                sx={{ width: "25%", alignSelf: "flex-start" }}
               />
             </Stack>
           </Stack>
-          <Typography>
-            Capacidad: {rows * seats}
-          </Typography>
+          <Typography>Capacidad: {rows * seats}</Typography>
         </Stack>
-      }
+      )}
       <AddButtonForModal handleClick={() => addSector(sector)} />
     </Stack>
-  )
+  );
 }
 
 function ReadyButtonForModal({ handleClick }) {
@@ -594,21 +636,18 @@ function ReadyButtonForModal({ handleClick }) {
       onClick={handleClick}
       sx={{
         px: 2,
-        display: 'block',
-        alignSelf: 'flex-end',
+        display: "block",
+        alignSelf: "flex-end",
         backgroundColor: contrastGreen,
-        color: 'whitesmoke'
-      }}>
-      <Stack
-        spacing={1}
-        direction='row'
-        justifyContent='center'
-      >
+        color: "whitesmoke",
+      }}
+    >
+      <Stack spacing={1} direction="row" justifyContent="center">
         <Typography variant="info">Listo</Typography>
         <CheckCircleOutlineIcon />
       </Stack>
     </Button>
-  )
+  );
 }
 function AddButtonForModal({ handleClick }) {
   return (
@@ -618,37 +657,41 @@ function AddButtonForModal({ handleClick }) {
       onClick={handleClick}
       sx={{
         px: 2,
-        display: 'block',
-        alignSelf: 'center'
-      }}>
-      <Stack
-        spacing={1}
-        direction='row'
-        justifyContent='center'
-      >
+        display: "block",
+        alignSelf: "center",
+      }}
+    >
+      <Stack spacing={1} direction="row" justifyContent="center">
         <Typography variant="info">Agregar</Typography>
         <CheckCircleOutlineIcon />
       </Stack>
     </Button>
-
-  )
+  );
 }
 
 export function CreateEventPage() {
-  const [sectors, setSectors] = useState([])
-  const [dates, setDates] = useState([])
-  const [locationId, setLocationId] = useState(0)
-  const { control, handleSubmit } = useForm({
+  const [sectors, setSectors] = useState([]);
+  const [dates, setDates] = useState([]);
+  const [locationId, setLocationId] = useState(0);
+  const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
-      name: '',
-      artist: '',
-      image: '',
+      name: "",
+      artist: "",
+      image: "",
       location: locationId,
       event_dates: dates,
       sectors: sectors,
       event_state: false,
-    }
-  })
+    },
+  });
+
+  useEffect(() => {
+    setValue("sectors", sectors);
+  }, [sectors, setValue]);
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
 
   return (
     <Container maxWidth="md">
@@ -668,31 +711,36 @@ export function CreateEventPage() {
       >
         Crear un evento nuevo
       </Typography>
-      <form onSubmit={handleSubmit((data) => console.log(data))} noValidate>
-        <Stack spacing={5}>
-          {/*Name, artist, image*/}
+      <Stack spacing={5}>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          {/* Name, artist, image */}
           <Stack spacing={2}>
             <TextFieldElement
-              name={'name'}
-              label={'Nombre del evento'}
+              name={"name"}
+              label={"Nombre del evento"}
               control={control}
               required
             />
             <TextFieldElement
-              name={'artist'}
-              label={'Artista'}
+              name={"artist"}
+              label={"Artista"}
               control={control}
               required
             />
             <TextFieldElement
-              name={'image'}
-              label={'Imagen'}
+              name={"image"}
+              label={"Imagen"}
               control={control}
               required
             />
           </Stack>
-          {/*Others*/}
-          <Stack spacing={2} >
+          {/* Others */}
+          <Stack
+            spacing={2}
+            sx={{
+              marginTop: 2,
+            }}
+          >
             <AddLocationModal />
             <AddDatesModal />
             <AddSectorsModal sectors={sectors} setSectors={setSectors} />
@@ -700,21 +748,20 @@ export function CreateEventPage() {
           <Button
             size="large"
             variant="contained"
-            type={'submit'}
+            type={"submit"}
             sx={{
               px: 3,
-              display: 'block',
+              my: 2,
+              display: "block",
               backgroundColor: contrastGreen,
-              color: 'whitesmoke'
-            }}>
-            <Typography
-              variant="h2"
-            >
-              Crear
-            </Typography>
+              color: "whitesmoke",
+              ml: "auto",
+            }}
+          >
+            <Typography variant="h2">Crear</Typography>
           </Button>
-        </Stack>
-      </form>
-    </Container >
+        </form>
+      </Stack>
+    </Container>
   );
 }
