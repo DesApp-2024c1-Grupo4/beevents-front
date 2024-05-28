@@ -6,7 +6,6 @@ import { customMuiTheme } from "../config/customMuiTheme";
 import { DateTimePicker, LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import validator from "validator";
 
@@ -669,8 +668,8 @@ export function CreateEventPage() {
       >
         Crear un evento nuevo
       </Typography>
-      <Stack spacing={5}>
-        <form onSubmit={handleSubmit((data) => console.log(data))} noValidate>
+      <form onSubmit={handleSubmit((data) => console.log(data))} noValidate>
+        <Stack spacing={5}>
           {/*Name, artist, image*/}
           <Stack spacing={2}>
             <TextFieldElement
@@ -692,31 +691,30 @@ export function CreateEventPage() {
               required
             />
           </Stack>
-        </form>
-        {/*Others*/}
-        <Stack spacing={2} >
-          <AddLocationModal />
-          <AddDatesModal />
-          <AddSectorsModal sectors={sectors} setSectors={setSectors} />
+          {/*Others*/}
+          <Stack spacing={2} >
+            <AddLocationModal />
+            <AddDatesModal />
+            <AddSectorsModal sectors={sectors} setSectors={setSectors} />
+          </Stack>
+          <Button
+            size="large"
+            variant="contained"
+            type={'submit'}
+            sx={{
+              px: 3,
+              display: 'block',
+              backgroundColor: contrastGreen,
+              color: 'whitesmoke'
+            }}>
+            <Typography
+              variant="h2"
+            >
+              Crear
+            </Typography>
+          </Button>
         </Stack>
-        <Button
-          size="large"
-          variant="contained"
-          type={'submit'}
-          sx={{
-            px: 3,
-            display: 'block',
-            backgroundColor: contrastGreen,
-            color: 'whitesmoke'
-          }}>
-          <Typography
-            variant="h2"
-          >
-            Crear
-          </Typography>
-        </Button>
-      </Stack>
-
+      </form>
     </Container >
   );
 }
