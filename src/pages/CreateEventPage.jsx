@@ -690,6 +690,8 @@ export function CreateEventPage() {
   // por que agregaste o eliminaste sectores, se ejecuta la función setValue("sectors", sectors).
   // Esta función, setValue, es una función del hook useForm que se utiliza para actualizar el
   // valor de un campo en el formulario. Podría ser setValue("dates", dates) si estuviéras actualizando la lista de fechas.
+  // Lo que te pasaba antes es que no cambiaba de estado el 'sectors' del useForm. Tomaba el valor inicial [] y
+  // no se reasignaba cada vez que cambiaba de estado sectors.
 
   useEffect(() => {
     setValue("sectors", sectors); // Función que se ejecutará
