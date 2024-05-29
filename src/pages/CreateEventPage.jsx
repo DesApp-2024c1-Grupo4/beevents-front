@@ -32,6 +32,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import validator from "validator";
+import { HighlightOff } from "@mui/icons-material";
 
 const { contrastGreen, oceanicBlue, deepOceanicBlue } = customMuiTheme.colors;
 const modalStyle = {
@@ -51,167 +52,6 @@ let vw = Math.max(
 );
 let isMobile = vw <= 600;
 
-function AddLocationModal() {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const fakeFetchedLocations = [
-    {
-      _id: 1,
-      name: "River Plate",
-      address: {
-        street: "Av. Pres. Figueroa Alcorta",
-        number: 7597,
-        city: "Buenos Aires",
-        country: "Argentina",
-      },
-      gps: {
-        lat: -34.546388,
-        long: -58.449993,
-      },
-    },
-    {
-      _id: 2,
-      name: "Movistar Arena",
-      address: {
-        street: "Humboldt",
-        number: 450,
-        city: "CABA",
-        country: "Argentina",
-      },
-      gps: {
-        lat: -34.594632,
-        long: -58.447707,
-      },
-    },
-  ];
-  function getLocationOptions() {
-    const options = [];
-    for (let i = 0; i < fakeFetchedLocations.length; i++) {
-      const location = fakeFetchedLocations[i];
-      options.push({ id: location._id, label: location.name });
-    }
-    return options;
-  }
-  const [locationExists, setLocationExists] = useState(true);
-
-  const { control, handleLocationSubmit } = useForm({
-    defaultValues: {
-      name: "",
-      address: {
-        street: "",
-        number: 0,
-        city: "",
-        country: "",
-      },
-      gps: {
-        lat: 0,
-        long: 0,
-      },
-    },
-  });
-  return (
-    <Stack>
-      <Button
-        size="large"
-        variant="outlined"
-        onClick={handleOpen}
-        sx={{
-          px: 2,
-          display: "block",
-          alignSelf: "flex-end",
-        }}
-      >
-        <Typography variant="info">Seleccionar predio</Typography>
-      </Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <Fade in={open}>
-          <form onSubmit={handleLocationSubmit}>
-            <Stack sx={modalStyle} spacing={3}>
-              <Typography
-                variant="h1"
-                gutterBottom
-                sx={{
-                  color: contrastGreen,
-                  alignSelf: { xs: "center", sm: "flex-start" },
-                  textAlign: "center",
-                }}
-              >
-                Seleccionar predio
-              </Typography>
-              <AutocompleteElement
-                name="name"
-                label="Seleccionar"
-                control={control}
-                options={getLocationOptions()}
-              />
-              <Typography
-                variant="h2"
-                gutterBottom
-                sx={{
-                  alignSelf: "center",
-                  textAlign: "center",
-                }}
-              >
-                o...
-              </Typography>
-              {locationExists && (
-                <AddButton
-                  handleClick={() => setLocationExists(false)}
-                />
-              )}
-              {!locationExists && (
-                <Stack spacing={2}>
-                  <TextFieldElement
-                    name="name"
-                    label="Nombre"
-                    control={control}
-                  />
-                  <TextFieldElement
-                    name="address.street"
-                    label="Calle"
-                    control={control}
-                  />
-                  <TextFieldElement
-                    name="address.number"
-                    label="Número"
-                    control={control}
-                  />
-                  <Button
-                    size="medium"
-                    variant="outlined"
-                    onClick={() => setLocationExists(true)}
-                    sx={{
-                      px: 2,
-                      display: "block",
-                      alignSelf: "center",
-                    }}
-                  >
-                    <Stack spacing={1} direction="row" justifyContent="center">
-                      <Typography variant="info">Cancelar</Typography>
-                    </Stack>
-                  </Button>
-                </Stack>
-              )}
-              <ReadyButton handleClick={handleClose} />
-            </Stack>
-          </form>
-        </Fade>
-      </Modal>
-    </Stack>
-  );
-}
-
 function LocationSection({ location, setLocation }) {
   const [showForm, setShowForm] = useState(false)
   const fakeFetchedLocations = [
@@ -220,31 +60,19 @@ function LocationSection({ location, setLocation }) {
       name: "River Plate",
       address: {
         street: "Av. Pres. Figueroa Alcorta",
-        number: 7597,
-        city: "Buenos Aires",
-        country: "Argentina",
-      },
-      gps: {
-        lat: -34.546388,
-        long: -58.449993,
-      },
+        number: 7597
+      }
     },
     {
       _id: 2,
       name: "Movistar Arena",
       address: {
         street: "Humboldt",
-        number: 450,
-        city: "CABA",
-        country: "Argentina",
-      },
-      gps: {
-        lat: -34.594632,
-        long: -58.447707,
-      },
+        number: 450
+      }
     },
   ];
-  function getLocationOptions() {
+  const getLocationOptions = () => {
     const options = [];
     for (let i = 0; i < fakeFetchedLocations.length; i++) {
       const location = fakeFetchedLocations[i];
@@ -252,6 +80,27 @@ function LocationSection({ location, setLocation }) {
     }
     return options;
   }
+  const getLocationById = (id) => {
+    return fakeFetchedLocations.filter(location => location._id === id)[0]
+  }
+  const handleLocationChange = (e, value) => {
+    if (value !== null) {
+      const locationSelected = getLocationById(value.id)
+      setLocation({
+        name: locationSelected.name,
+        address: {
+          street: locationSelected.address.street,
+          number: locationSelected.address.number,
+        },
+        already_exists: true
+      })
+    } else {
+      setLocation({})
+    }
+
+  }
+  const [displayChangeButton, setDisplayChangeButton] = useState(location.name && true)
+
   return (
     <Stack spacing={3} sx={{ px: 3 }}>
       <Typography
@@ -261,37 +110,75 @@ function LocationSection({ location, setLocation }) {
       >
         Predio
       </Typography>
-      <Autocomplete
-        disablePortal
-        id="combo-box-demo"
-        options={getLocationOptions()}
-        renderInput={(params) => <TextField {...params} label="Seleccionar" />}
-      />
-      {!showForm && (
+      <Typography>Predio: {location.name ? location.name : "Ninguno"}</Typography>
+      {displayChangeButton && (
         <Button
           size="medium"
           variant="outlined"
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => setDisplayChangeButton(false)}
           sx={{
-            px: 2,
+            width: 115,
             display: "block",
             alignSelf: "center"
           }}
         >
-          <Stack spacing={1} direction="row" justifyContent="center">
-            <Typography variant="info">Agregar nuevo</Typography>
-            <AddCircleOutlineIcon />
+          <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
+            <Typography variant="info">Cambiar</Typography>
           </Stack>
         </Button>
       )}
-      {showForm && (
-        <LocationForm fakeFetchedLocations={fakeFetchedLocations} setLocation={setLocation} showForm={showForm} setShowForm={setShowForm} />
+      {!showForm && !displayChangeButton && (
+        <Stack spacing={3}>
+          <Autocomplete
+            disablePortal
+            id="combo-box-demo"
+            options={getLocationOptions()}
+            onChange={handleLocationChange}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            renderInput={(params) => <TextField {...params} label="Seleccionar" />}
+          />
+          <Typography variant="info" sx={{ textAlign: "center" }}>¿No encontrás el lugar?</Typography>
+          <Button
+            size="medium"
+            variant="outlined"
+            onClick={() => setShowForm(!showForm)}
+            sx={{
+              px: 2,
+              display: "block",
+              alignSelf: "center"
+            }}
+          >
+            <Stack spacing={1} direction="row" justifyContent="center">
+              <Typography variant="info">Agregar nuevo</Typography>
+              <AddCircleOutlineIcon />
+            </Stack>
+          </Button>
+        </Stack>
+      )}
+      {showForm && !displayChangeButton && (
+        <Stack spacing={2}>
+          <LocationForm
+            fakeFetchedLocations={fakeFetchedLocations}
+            location={location}
+            setLocation={setLocation}
+            showForm={showForm}
+            setShowForm={setShowForm}
+            setDisplayChangeButton={setDisplayChangeButton}
+          />
+        </Stack>
+
       )}
     </Stack>
   );
 }
-
-function LocationForm({ fakeFetchedLocations, setLocation, showForm, setShowForm }) {
+function LocationForm({
+  fakeFetchedLocations,
+  location,
+  setLocation,
+  showForm,
+  setShowForm,
+  setDisplayChangeButton
+  }) {
   const [name, setName] = useState("Nuevo predio");
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -317,27 +204,25 @@ function LocationForm({ fakeFetchedLocations, setLocation, showForm, setShowForm
     address: {
       street: street,
       number: Number(number),
-    }
+    },
+    already_exists: false
   }
 
-  const isValidLocation = (location) => {
-    return !fakeFetchedLocations.some((fetchedLocation) => fetchedLocation.name === location.name);
+  const isValidLocation = (newLocation) => {
+    const isFetched = fakeFetchedLocations.some((fetchedLocation) => fetchedLocation.name === newLocation.name);
+    const isSelected = location.name === newLocation.name
+    return !(isFetched || isSelected)
   };
   const addLocation = (newLocation) => {
-    isValidLocation(newLocation)
-      ? setLocation(newLocation)
-      : alert("Ya existe ese predio"); //Convertir en notificación
-  };
-  {/** 
-      city: "",
-      country: "",
-    },
-    gps: {
-      lat: 0,
-      long: 0,
+    if (isValidLocation(newLocation)) {
+      setLocation(newLocation);      //Notificar
+      setShowForm(false)
+      setDisplayChangeButton(true);
+    } else {
+      alert("Ya existe ese predio"); //Convertir en notificación
     }
-  }
-    */}
+  };
+
   return (
     <Stack spacing={3}>
       <TextField
@@ -361,37 +246,37 @@ function LocationForm({ fakeFetchedLocations, setLocation, showForm, setShowForm
         value={number}
         onChange={handleNumberChange}
         error={numberError}
-        helperText={numberError? "El número de calle debe ser mayor a 0" : ""}
+        helperText={numberError ? "El número de calle debe ser mayor a 0" : ""}
         required
       />
-      <Stack spacing={2} justifyContent="flex-end" alignItems="flex-end">
+      <Stack direction="row" spacing={2}>
+        <Button
+          size="medium"
+          variant="outlined"
+          onClick={() => setShowForm(!showForm)}
+          sx={{
+            width: 115,
+            display: "block"
+          }}
+        >
+          <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
+            <HighlightOff />
+            <Typography variant="info">Cancelar</Typography>
+          </Stack>
+        </Button>
         <Button
           size="medium"
           variant="outlined"
           onClick={() => addLocation(locationObject)}
           sx={{
             width: 115,
-            display: "block"
-          }}
-        >
-          <Stack spacing={1} direction="row" justifyContent="center">
-            <Typography variant="info">Agregar</Typography>
-            <CheckCircleOutlineIcon />
-          </Stack>
-        </Button>
-        <Button
-          size="medium"
-          variant="contained"
-          onClick={() => setShowForm(!showForm)}
-          sx={{
-            width: 115,
             display: "block",
-            backgroundColor: contrastGreen,
-            color: "whitesmoke",
+            color: contrastGreen,
+            borderColor: contrastGreen
           }}
         >
-          <Stack spacing={1} direction="row" justifyContent="center">
-            <Typography variant="info">Listo</Typography>
+          <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
+            <Typography variant="info" color={contrastGreen}>Crear</Typography>
             <CheckCircleOutlineIcon />
           </Stack>
         </Button>
@@ -865,7 +750,6 @@ export function CreateEventPage() {
           </Stack>
           {/* Others */}
           <LocationSection location={location} setLocation={setLocation} />
-          <AddDatesModal />
           <SectorsSection sectors={sectors} setSectors={setSectors} />
           <Button
             size="large"
