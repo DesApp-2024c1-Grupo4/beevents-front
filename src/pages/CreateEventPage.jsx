@@ -165,7 +165,7 @@ function AddLocationModal() {
                 o...
               </Typography>
               {locationExists && (
-                <AddButtonForModal
+                <AddButton
                   handleClick={() => setLocationExists(false)}
                 />
               )}
@@ -202,7 +202,7 @@ function AddLocationModal() {
                   </Button>
                 </Stack>
               )}
-              <ReadyButtonForModal handleClick={handleClose} />
+              <ReadyButton handleClick={handleClose} />
             </Stack>
           </form>
         </Fade>
@@ -273,9 +273,9 @@ function AddDatesModal() {
                   dates={dates}
                   deleteDateTimePicker={deleteDateTimePicker}
                 />
-                <AddButtonForModal handleClick={addDateTimePicker} />
+                <AddButton handleClick={addDateTimePicker} />
               </Stack>
-              <ReadyButtonForModal handleClick={handleClose} />
+              <ReadyButton handleClick={handleClose} />
             </Stack>
           </form>
         </Fade>
@@ -314,71 +314,39 @@ function DateTimePickers({ dates, deleteDateTimePicker }) {
   ));
 }
 
-function AddSectorsModal({ sectors, setSectors }) {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+function SectorsSection({ sectors, setSectors }) {
+  const [showForm, setShowForm] = useState(false)
 
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      name: "",
-      numbered: false,
-      seats: [
-        {
-          row: "",
-          seat: 0,
-          available: true,
-        },
-      ],
-      capacity: 0,
-    },
-  });
   return (
-    <Stack>
-      <Button
-        size="large"
-        variant="outlined"
-        onClick={handleOpen}
-        sx={{
-          px: 2,
-          display: "block",
-          alignSelf: "flex-end",
-        }}
+    <Stack spacing={3} sx={{ px: 3 }}>
+      <Typography
+        variant="h1"
+        gutterBottom
+        sx={{ alignSelf: { xs: 'center', sm: 'flex-start' } }}
       >
-        <Typography variant="info">Agregar sectores</Typography>
-      </Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <Fade in={open}>
-          <form onSubmit={handleSubmit}>
-            <Stack sx={modalStyle} spacing={3}>
-              <Typography
-                variant="h1"
-                gutterBottom
-                sx={{
-                  color: contrastGreen,
-                  alignSelf: { xs: "center", sm: "flex-start" },
-                  textAlign: "center",
-                }}
-              >
-                Agregar sectores
-              </Typography>
-              <SectorsDisplay sectors={sectors} setSectors={setSectors} />
-              <SectorForm sectors={sectors} setSectors={setSectors} />
-              <ReadyButtonForModal handleClick={handleClose} />
-            </Stack>
-          </form>
-        </Fade>
-      </Modal>
+        Sectores
+      </Typography>
+      <SectorsDisplay sectors={sectors} setSectors={setSectors} />
+      {!showForm && (
+        <Button
+          size="medium"
+          variant="outlined"
+          onClick={() => setShowForm(!showForm)}
+          sx={{
+            px: 2,
+            display: "block",
+            alignSelf: "center"
+          }}
+        >
+          <Stack spacing={1} direction="row" justifyContent="center">
+            <Typography variant="info">Agregar nuevo</Typography>
+            <AddCircleOutlineIcon />
+          </Stack>
+        </Button>
+      )}
+      {showForm && (
+        <SectorForm sectors={sectors} setSectors={setSectors} showForm={showForm} setShowForm={setShowForm} />
+      )}
     </Stack>
   );
 }
@@ -399,7 +367,7 @@ function SectorsDisplay({ sectors, setSectors }) {
           spacing={1}
         >
           <Typography sx={{ alignSelf: "center" }}>
-            {`${sector.name}, capacidad: ${sector.capacity}`}
+            {`${sector.name}, capacidad: ${sector.rows * sector.seats}`}
           </Typography>
           <Button onClick={() => deleteSector(sector)}>
             <DeleteOutlineIcon />
@@ -409,7 +377,7 @@ function SectorsDisplay({ sectors, setSectors }) {
     </Stack>
   );
 }
-function SectorForm({ sectors, setSectors }) {
+function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
   const [isNumbered, setIsNumbered] = useState(false);
   const [rows, setRows] = useState(1);
   const handleRowSliderChange = (e, newValue) => {
@@ -427,16 +395,7 @@ function SectorForm({ sectors, setSectors }) {
   };
 
   const [capacity, setCapacity] = useState("1");
-  {
-    /** 
-  const handleCapacitySliderChange = (e, newValue) => {
-    setCapacity(newValue)
-  }
-  const handleCapacityInputChange = (e) => {
-    setCapacity(e.target.value === '' ? 0 : Number(e.target.value))
-  }
-  */
-  }
+
   const handleCapacityChange = (e) => {
     setCapacity(e.target.value);
   };
@@ -454,37 +413,11 @@ function SectorForm({ sectors, setSectors }) {
   };
   const nameError = validator.isEmpty(name);
 
-  {
-    /** 
-  const getSeats = () => {
-    const ubications = []
-    for (var i = 0; i < rows; i++) {
-      for (var j = 0; j < seats; j++) {
-        ubications.push({
-          row: i,
-          seat: j,
-          available: true
-        })
-      }
-    }
-    
-    const seat = {
-      row: 0,
-      seat: 0,
-      available: true
-    }
-  }
-  */
-  }
-
-  //Agregar type: { numbered: false, regular: true }
-  //'regular' sería todas las filas con misma cantidad de asientos
   const sector = {
     name: name,
     numbered: isNumbered,
     rows: rows,
-    seats: seats,
-    capacity: isNumbered ? rows * seats : Number(capacity),
+    seats: isNumbered ? seats : Number(capacity)
   };
   const isValidSector = (sector) => {
     return !sectors.some((storedSector) => storedSector.name === sector.name);
@@ -514,38 +447,6 @@ function SectorForm({ sectors, setSectors }) {
           required
         />
       )}
-      {/** 
-      <Stack>
-        <Typography id="capacity" gutterBottom>
-          Capacidad
-        </Typography>
-        <Stack direction='row' spacing={3} justifyContent='center'>
-          <Slider
-            value={typeof capacity === 'number' ? capacity : 1}
-            onChange={handleCapacitySliderChange}
-            aria-labelledby='capacity'
-            step={1000}
-            marks
-            min={5}
-            max={100000}
-            sx={{ width: '45%' }}
-          />
-          <Input
-            value={capacity}
-            onChange={handleCapacityInputChange}
-            size="small"
-            inputProps={{
-              step: 1,
-              min: 1,
-              max: 100000,
-              type: 'number',
-              'aria-labelledby': 'capacity',
-            }}
-            sx={{ width: '35%', alignSelf: 'flex-start' }}
-          />
-        </Stack>
-      </Stack>
-      */}
       <FormGroup>
         <FormControlLabel
           control={
@@ -623,21 +524,51 @@ function SectorForm({ sectors, setSectors }) {
           <Typography>Capacidad: {rows * seats}</Typography>
         </Stack>
       )}
-      <AddButtonForModal handleClick={() => addSector(sector)} />
+      <Stack spacing={2} justifyContent="flex-end" alignItems="flex-end">
+        <Button
+          size="medium"
+          variant="outlined"
+          onClick={() => addSector(sector)}
+          sx={{
+            width: 115,
+            display: "block"
+          }}
+        >
+          <Stack spacing={1} direction="row" justifyContent="center">
+            <Typography variant="info">Agregar</Typography>
+            <CheckCircleOutlineIcon />
+          </Stack>
+        </Button>
+        <Button
+          size="medium"
+          variant="contained"
+          onClick={() => setShowForm(!showForm)}
+          sx={{
+            width: 115,
+            display: "block",
+            backgroundColor: contrastGreen,
+            color: "whitesmoke",
+          }}
+        >
+          <Stack spacing={1} direction="row" justifyContent="center">
+            <Typography variant="info">Listo</Typography>
+            <CheckCircleOutlineIcon />
+          </Stack>
+        </Button>
+      </Stack>
     </Stack>
   );
 }
 
-function ReadyButtonForModal({ handleClick }) {
+function ReadyButton({ handleClick }) {
   return (
     <Button
       size="medium"
       variant="contained"
       onClick={handleClick}
       sx={{
-        px: 2,
+        width: 115,
         display: "block",
-        alignSelf: "flex-end",
         backgroundColor: contrastGreen,
         color: "whitesmoke",
       }}
@@ -649,21 +580,20 @@ function ReadyButtonForModal({ handleClick }) {
     </Button>
   );
 }
-function AddButtonForModal({ handleClick }) {
+function AddButton({ text, handleClick, icon }) {
   return (
     <Button
       size="medium"
       variant="outlined"
       onClick={handleClick}
       sx={{
-        px: 2,
-        display: "block",
-        alignSelf: "center",
+        width: 115,
+        display: "block"
       }}
     >
       <Stack spacing={1} direction="row" justifyContent="center">
-        <Typography variant="info">Agregar</Typography>
-        <CheckCircleOutlineIcon />
+        <Typography variant="info">{text}</Typography>
+        {icon}
       </Stack>
     </Button>
   );
@@ -711,10 +641,17 @@ export function CreateEventPage() {
       >
         Crear un evento nuevo
       </Typography>
-      <Stack spacing={5}>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Stack spacing={5}>
           {/* Name, artist, image */}
           <Stack spacing={2}>
+            <Typography
+              variant="h1"
+              gutterBottom
+              sx={{ alignSelf: { xs: 'center', sm: 'flex-start' } }}
+            >
+              Datos principales
+            </Typography>
             <TextFieldElement
               name={"name"}
               label={"Nombre del evento"}
@@ -735,33 +672,24 @@ export function CreateEventPage() {
             />
           </Stack>
           {/* Others */}
-          <Stack
-            spacing={2}
-            sx={{
-              marginTop: 2,
-            }}
-          >
-            <AddLocationModal />
-            <AddDatesModal />
-            <AddSectorsModal sectors={sectors} setSectors={setSectors} />
-          </Stack>
+          <AddLocationModal />
+          <AddDatesModal />
+          <SectorsSection sectors={sectors} setSectors={setSectors} />
           <Button
             size="large"
             variant="contained"
             type={"submit"}
             sx={{
-              px: 3,
-              my: 2,
               display: "block",
               backgroundColor: contrastGreen,
               color: "whitesmoke",
-              ml: "auto",
+              alignSelf: { xs: "center", sm: "flex-end" }
             }}
           >
             <Typography variant="h2">Crear</Typography>
           </Button>
-        </form>
-      </Stack>
+        </Stack>
+      </form>
     </Container>
   );
 }
