@@ -7,6 +7,7 @@ import {
   useForm,
 } from "react-hook-form-mui";
 import {
+  Autocomplete,
   Backdrop,
   Button,
   Fade,
@@ -209,6 +210,194 @@ function AddLocationModal() {
       </Modal>
     </Stack>
   );
+}
+
+function LocationSection({ location, setLocation }) {
+  const [showForm, setShowForm] = useState(false)
+  const fakeFetchedLocations = [
+    {
+      _id: 1,
+      name: "River Plate",
+      address: {
+        street: "Av. Pres. Figueroa Alcorta",
+        number: 7597,
+        city: "Buenos Aires",
+        country: "Argentina",
+      },
+      gps: {
+        lat: -34.546388,
+        long: -58.449993,
+      },
+    },
+    {
+      _id: 2,
+      name: "Movistar Arena",
+      address: {
+        street: "Humboldt",
+        number: 450,
+        city: "CABA",
+        country: "Argentina",
+      },
+      gps: {
+        lat: -34.594632,
+        long: -58.447707,
+      },
+    },
+  ];
+  function getLocationOptions() {
+    const options = [];
+    for (let i = 0; i < fakeFetchedLocations.length; i++) {
+      const location = fakeFetchedLocations[i];
+      options.push({ id: location._id, label: location.name });
+    }
+    return options;
+  }
+  return (
+    <Stack spacing={3} sx={{ px: 3 }}>
+      <Typography
+        variant="h1"
+        gutterBottom
+        sx={{ alignSelf: { xs: 'center', sm: 'flex-start' } }}
+      >
+        Predio
+      </Typography>
+      <Autocomplete
+        disablePortal
+        id="combo-box-demo"
+        options={getLocationOptions()}
+        renderInput={(params) => <TextField {...params} label="Seleccionar" />}
+      />
+      {!showForm && (
+        <Button
+          size="medium"
+          variant="outlined"
+          onClick={() => setShowForm(!showForm)}
+          sx={{
+            px: 2,
+            display: "block",
+            alignSelf: "center"
+          }}
+        >
+          <Stack spacing={1} direction="row" justifyContent="center">
+            <Typography variant="info">Agregar nuevo</Typography>
+            <AddCircleOutlineIcon />
+          </Stack>
+        </Button>
+      )}
+      {showForm && (
+        <LocationForm fakeFetchedLocations={fakeFetchedLocations} setLocation={setLocation} showForm={showForm} setShowForm={setShowForm} />
+      )}
+    </Stack>
+  );
+}
+
+function LocationForm({ fakeFetchedLocations, setLocation, showForm, setShowForm }) {
+  const [name, setName] = useState("Nuevo predio");
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+  };
+  const nameError = validator.isEmpty(name);
+
+  const [street, setStreet] = useState("Calle del predio");
+  const handleStreetChange = (e) => {
+    setStreet(e.target.value);
+  };
+  const streetError = validator.isEmpty(street);
+
+  const [number, setNumber] = useState("1234");
+  const handleNumberChange = (e) => {
+    setNumber(e.target.value);
+  };
+  const numberError = validator.isEmpty(number)
+    || !validator.isNumeric(number)
+    || number < 1
+
+  const locationObject = {
+    name: name,
+    address: {
+      street: street,
+      number: Number(number),
+    }
+  }
+
+  const isValidLocation = (location) => {
+    return !fakeFetchedLocations.some((fetchedLocation) => fetchedLocation.name === location.name);
+  };
+  const addLocation = (newLocation) => {
+    isValidLocation(newLocation)
+      ? setLocation(newLocation)
+      : alert("Ya existe ese predio"); //Convertir en notificación
+  };
+  {/** 
+      city: "",
+      country: "",
+    },
+    gps: {
+      lat: 0,
+      long: 0,
+    }
+  }
+    */}
+  return (
+    <Stack spacing={3}>
+      <TextField
+        label="Nombre"
+        value={name}
+        onChange={handleNameChange}
+        error={nameError}
+        helperText={nameError ? "Ingrese el nombre del predio" : ""}
+        required
+      />
+      <TextField
+        label="Dirección: Calle"
+        value={street}
+        onChange={handleStreetChange}
+        error={streetError}
+        helperText={streetError ? "Ingrese la calle" : ""}
+        required
+      />
+      <TextField
+        label="Dirección: Número"
+        value={number}
+        onChange={handleNumberChange}
+        error={numberError}
+        helperText={numberError? "El número de calle debe ser mayor a 0" : ""}
+        required
+      />
+      <Stack spacing={2} justifyContent="flex-end" alignItems="flex-end">
+        <Button
+          size="medium"
+          variant="outlined"
+          onClick={() => addLocation(locationObject)}
+          sx={{
+            width: 115,
+            display: "block"
+          }}
+        >
+          <Stack spacing={1} direction="row" justifyContent="center">
+            <Typography variant="info">Agregar</Typography>
+            <CheckCircleOutlineIcon />
+          </Stack>
+        </Button>
+        <Button
+          size="medium"
+          variant="contained"
+          onClick={() => setShowForm(!showForm)}
+          sx={{
+            width: 115,
+            display: "block",
+            backgroundColor: contrastGreen,
+            color: "whitesmoke",
+          }}
+        >
+          <Stack spacing={1} direction="row" justifyContent="center">
+            <Typography variant="info">Listo</Typography>
+            <CheckCircleOutlineIcon />
+          </Stack>
+        </Button>
+      </Stack>
+    </Stack>
+  )
 }
 
 function AddDatesModal() {
@@ -602,13 +791,13 @@ function AddButton({ text, handleClick, icon }) {
 export function CreateEventPage() {
   const [sectors, setSectors] = useState([]);
   const [dates, setDates] = useState([]);
-  const [locationId, setLocationId] = useState(0);
+  const [location, setLocation] = useState({});
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
       name: "",
       artist: "",
       image: "",
-      location: locationId,
+      location: location,
       event_dates: dates,
       sectors: sectors,
       event_state: false,
@@ -618,13 +807,16 @@ export function CreateEventPage() {
   useEffect(() => {
     setValue("sectors", sectors);
   }, [sectors, setValue]);
+  useEffect(() => {
+    setValue("location", location);
+  }, [location, setValue]);
 
   const onSubmit = (data) => {
     console.log(data);
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" sx={{ mb: 5 }}>
       <Typography
         variant="h2"
         component="h2"
@@ -643,7 +835,7 @@ export function CreateEventPage() {
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Stack spacing={5}>
-          {/* Name, artist, image */}
+          {/* Main data */}
           <Stack spacing={2}>
             <Typography
               variant="h1"
@@ -672,7 +864,7 @@ export function CreateEventPage() {
             />
           </Stack>
           {/* Others */}
-          <AddLocationModal />
+          <LocationSection location={location} setLocation={setLocation} />
           <AddDatesModal />
           <SectorsSection sectors={sectors} setSectors={setSectors} />
           <Button
