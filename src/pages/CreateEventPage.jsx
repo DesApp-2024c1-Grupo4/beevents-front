@@ -1,56 +1,41 @@
-import React, { useState } from "react";
-import Container from "@mui/material/Container";
-import { useEffect } from "react";
 import {
-  AutocompleteElement,
-  TextFieldElement,
-  useForm,
-} from "react-hook-form-mui";
+  React,
+  useState,
+  useEffect
+} from "react";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import validator from "validator";
+import { customMuiTheme } from "../config/customMuiTheme";
 import {
   Autocomplete,
-  Backdrop,
   Button,
-  Fade,
+  Container,
   FormControlLabel,
   FormGroup,
   Input,
-  Modal,
   Slider,
   Stack,
   Switch,
   TextField,
   Typography,
 } from "@mui/material";
-import { customMuiTheme } from "../config/customMuiTheme";
+import { 
+  AddCircleOutlineOutlined,
+  ArrowBackOutlined,
+  CheckCircleOutlineOutlined,
+  DeleteOutlineOutlined
+} from "@mui/icons-material";
 import {
   DateTimePicker,
   LocalizationProvider,
   MobileDateTimePicker,
 } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import validator from "validator";
-import { HighlightOff } from "@mui/icons-material";
+import {
+  TextFieldElement,
+  useForm,
+} from "react-hook-form-mui";
 
-const { contrastGreen, oceanicBlue, deepOceanicBlue } = customMuiTheme.colors;
-const modalStyle = {
-  position: "absolute",
-  top: "40%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  backgroundImage: `linear-gradient(to bottom, ${oceanicBlue}, ${deepOceanicBlue})`,
-  borderRadius: 5,
-  p: { xs: 2, sm: 4 },
-  minWidth: 230,
-};
-
-let vw = Math.max(
-  document.documentElement.clientWidth || 0,
-  window.innerWidth || 0
-);
-let isMobile = vw <= 600;
+const { contrastGreen } = customMuiTheme.colors;
 
 function LocationSection({ location, setLocation }) {
   const [showForm, setShowForm] = useState(false)
@@ -150,7 +135,7 @@ function LocationSection({ location, setLocation }) {
           >
             <Stack spacing={1} direction="row" justifyContent="center">
               <Typography variant="info">Agregar nuevo</Typography>
-              <AddCircleOutlineIcon />
+              <AddCircleOutlineOutlined />
             </Stack>
           </Button>
         </Stack>
@@ -178,7 +163,7 @@ function LocationForm({
   showForm,
   setShowForm,
   setDisplayChangeButton
-  }) {
+}) {
   const [name, setName] = useState("Nuevo predio");
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -260,7 +245,7 @@ function LocationForm({
           }}
         >
           <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
-            <HighlightOff />
+            <ArrowBackOutlined />
             <Typography variant="info">Cancelar</Typography>
           </Stack>
         </Button>
@@ -277,7 +262,7 @@ function LocationForm({
         >
           <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
             <Typography variant="info" color={contrastGreen}>Crear</Typography>
-            <CheckCircleOutlineIcon />
+            <CheckCircleOutlineOutlined />
           </Stack>
         </Button>
       </Stack>
@@ -285,90 +270,107 @@ function LocationForm({
   )
 }
 
-function AddDatesModal() {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [dates, setDates] = useState([1]);
-  const addDateTimePicker = () => {
-    const value = dates.length + 1;
-    setDates((current) => [...current, value]);
-  };
-  const deleteDateTimePicker = (datePicker) => {
-    setDates((current) => current.filter((date) => date != datePicker));
-  };
+function DatesSection({ dates, setDates }) {
+  const [showPicker, setShowPicker] = useState(false);
 
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      dates: [],
-    },
-  });
   return (
-    <Stack>
-      <Button
-        size="large"
-        variant="outlined"
-        onClick={handleOpen}
-        sx={{
-          px: 2,
-          display: "block",
-          alignSelf: "flex-end",
-        }}
+    <Stack spacing={3} sx={{ px: 3 }}>
+      <Typography
+        variant="h1"
+        gutterBottom
+        sx={{ alignSelf: { xs: 'center', sm: 'flex-start' } }}
       >
-        <Typography variant="info">Agregar fechas</Typography>
-      </Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <Fade in={open}>
-          <form onSubmit={handleSubmit}>
-            <Stack sx={modalStyle} spacing={3}>
-              <Typography
-                variant="h1"
-                gutterBottom
-                sx={{
-                  color: contrastGreen,
-                  alignSelf: { xs: "center", sm: "flex-start" },
-                  textAlign: "center",
-                }}
-              >
-                Agregar fechas
-              </Typography>
-              <Stack spacing={2}>
-                <DateTimePickers
-                  dates={dates}
-                  deleteDateTimePicker={deleteDateTimePicker}
-                />
-                <AddButton handleClick={addDateTimePicker} />
-              </Stack>
-              <ReadyButton handleClick={handleClose} />
-            </Stack>
-          </form>
-        </Fade>
-      </Modal>
+        Fechas
+      </Typography>
+      <DatesDisplay dates={dates} setDates={setDates} />
+      {!showPicker && (
+        <Button
+          size="medium"
+          variant="outlined"
+          onClick={() => setShowPicker(!showPicker)}
+          sx={{
+            px: 2,
+            display: "block",
+            alignSelf: "center"
+          }}
+        >
+          <Stack spacing={1} direction="row" justifyContent="center">
+            <Typography variant="info">Agregar nueva</Typography>
+            <AddCircleOutlineOutlined />
+          </Stack>
+        </Button>
+      )}
+      {showPicker && (
+        <ResponsiveDateTimePicker dates={dates} setDates={setDates} showPicker={showPicker} setShowPicker={setShowPicker} />
+      )}
+    </Stack>
+  )
+}
+function DatesDisplay({ dates, setDates }) {
+  const deleteDate = (date) => {
+    setDates((current) =>
+      current.filter((storedDate) => storedDate !== date)
+    );
+  };
+  return (
+    <Stack spacing={1}>
+      <Typography>Fechas: {dates.length > 0 ? "" : "Ninguna"}</Typography>
+      {dates.map((date) => (
+        <Stack
+          key={date}
+          direction="row"
+          justifyContent="space-between"
+          spacing={1}
+        >
+          <Stack>
+            <Typography>
+              {`Fecha ${dates.indexOf(date) + 1}:`}
+            </Typography>
+            <Typography sx={{ textAlign: "center" }}>
+              {`${date}`}
+            </Typography>
+          </Stack>
+          <Button onClick={() => deleteDate(date)}>
+            <DeleteOutlineOutlined />
+          </Button>
+        </Stack>
+      ))}
     </Stack>
   );
 }
-function DateTimePickers({ dates, deleteDateTimePicker }) {
-  return dates.map((date) => (
+function ResponsiveDateTimePicker({ dates, setDates, showPicker, setShowPicker }) {
+  const [date, setDate] = useState("")
+  const handleDateChange = (value) => {
+    const date = new Date(value).toLocaleString();
+    setDate(date);
+  }
+  const isValidDate = (aDate) => {
+    const isEmpty = validator.isEmpty(aDate)
+    const alreadyExists = dates.includes(aDate)
+    return !(isEmpty || alreadyExists)
+  }
+  const addDate = (stringDate) => {
+    if (isValidDate(stringDate)) {
+      setDates([...dates, stringDate]);
+    } else {
+      alert("Introduce una fecha válida");
+    }
+  }
+  let vw = Math.max(
+    document.documentElement.clientWidth || 0,
+    window.innerWidth || 0
+  );
+  let isMobile = vw <= 600;
+  return (
     <Stack
-      key={date}
-      direction="row"
-      spacing={{ sm: 1 }}
+      spacing={2}
       justifyContent="space-between"
     >
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         {!isMobile && (
           <DateTimePicker
             label="Seleccione fecha y hora"
+            onChange={handleDateChange}
             ampm={false}
             disablePast
           />
@@ -376,16 +378,46 @@ function DateTimePickers({ dates, deleteDateTimePicker }) {
         {isMobile && (
           <MobileDateTimePicker
             label="Seleccione fecha y hora"
+            onChange={handleDateChange}
             ampm={false}
             disablePast
           />
         )}
       </LocalizationProvider>
-      <Button onClick={() => deleteDateTimePicker(date)}>
-        <DeleteOutlineIcon></DeleteOutlineIcon>
-      </Button>
+      <Stack spacing={2} justifyContent="flex-end" alignItems="flex-end">
+        <Button
+          size="medium"
+          variant="outlined"
+          onClick={() => addDate(date)}
+          sx={{
+            width: 115,
+            display: "block"
+          }}
+        >
+          <Stack spacing={1} direction="row" justifyContent="center">
+            <Typography variant="info">Agregar</Typography>
+            <CheckCircleOutlineOutlined />
+          </Stack>
+        </Button>
+        <Button
+          size="medium"
+          variant="contained"
+          onClick={() => setShowPicker(!showPicker)}
+          sx={{
+            width: 115,
+            display: "block",
+            backgroundColor: contrastGreen,
+            color: "whitesmoke",
+          }}
+        >
+          <Stack spacing={1} direction="row" justifyContent="center">
+            <Typography variant="info">Listo</Typography>
+            <CheckCircleOutlineOutlined />
+          </Stack>
+        </Button>
+      </Stack>
     </Stack>
-  ));
+  );
 }
 
 function SectorsSection({ sectors, setSectors }) {
@@ -414,7 +446,7 @@ function SectorsSection({ sectors, setSectors }) {
         >
           <Stack spacing={1} direction="row" justifyContent="center">
             <Typography variant="info">Agregar nuevo</Typography>
-            <AddCircleOutlineIcon />
+            <AddCircleOutlineOutlined />
           </Stack>
         </Button>
       )}
@@ -444,7 +476,7 @@ function SectorsDisplay({ sectors, setSectors }) {
             {`${sector.name}, capacidad: ${sector.rows * sector.seats}`}
           </Typography>
           <Button onClick={() => deleteSector(sector)}>
-            <DeleteOutlineIcon />
+            <DeleteOutlineOutlined />
           </Button>
         </Stack>
       ))}
@@ -610,7 +642,7 @@ function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
         >
           <Stack spacing={1} direction="row" justifyContent="center">
             <Typography variant="info">Agregar</Typography>
-            <CheckCircleOutlineIcon />
+            <CheckCircleOutlineOutlined />
           </Stack>
         </Button>
         <Button
@@ -626,50 +658,11 @@ function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
         >
           <Stack spacing={1} direction="row" justifyContent="center">
             <Typography variant="info">Listo</Typography>
-            <CheckCircleOutlineIcon />
+            <CheckCircleOutlineOutlined />
           </Stack>
         </Button>
       </Stack>
     </Stack>
-  );
-}
-
-function ReadyButton({ handleClick }) {
-  return (
-    <Button
-      size="medium"
-      variant="contained"
-      onClick={handleClick}
-      sx={{
-        width: 115,
-        display: "block",
-        backgroundColor: contrastGreen,
-        color: "whitesmoke",
-      }}
-    >
-      <Stack spacing={1} direction="row" justifyContent="center">
-        <Typography variant="info">Listo</Typography>
-        <CheckCircleOutlineIcon />
-      </Stack>
-    </Button>
-  );
-}
-function AddButton({ text, handleClick, icon }) {
-  return (
-    <Button
-      size="medium"
-      variant="outlined"
-      onClick={handleClick}
-      sx={{
-        width: 115,
-        display: "block"
-      }}
-    >
-      <Stack spacing={1} direction="row" justifyContent="center">
-        <Typography variant="info">{text}</Typography>
-        {icon}
-      </Stack>
-    </Button>
   );
 }
 
@@ -683,19 +676,21 @@ export function CreateEventPage() {
       artist: "",
       image: "",
       location: location,
-      event_dates: dates,
-      sectors: sectors,
-      event_state: false,
+      dates: dates,
+      sectors: sectors
     },
   });
 
   useEffect(() => {
-    setValue("sectors", sectors);
-  }, [sectors, setValue]);
-  useEffect(() => {
     setValue("location", location);
   }, [location, setValue]);
-
+  useEffect(() => {
+    setValue("dates", dates);
+  }, [dates, setValue]);
+  useEffect(() => {
+    setValue("sectors", sectors);
+  }, [sectors, setValue]);
+  
   const onSubmit = (data) => {
     console.log(data);
   };
@@ -721,7 +716,7 @@ export function CreateEventPage() {
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Stack spacing={5}>
           {/* Main data */}
-          <Stack spacing={2}>
+          <Stack spacing={3} px={3}>
             <Typography
               variant="h1"
               gutterBottom
@@ -750,6 +745,7 @@ export function CreateEventPage() {
           </Stack>
           {/* Others */}
           <LocationSection location={location} setLocation={setLocation} />
+          <DatesSection dates={dates} setDates={setDates} />
           <SectorsSection sectors={sectors} setSectors={setSectors} />
           <Button
             size="large"
