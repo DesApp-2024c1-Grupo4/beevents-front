@@ -31,7 +31,7 @@ export default function MediaCard({ title, artist, imageUrl }) {
         >
           <Typography
             gutterBottom
-            variant="h5"
+            variant="h6"
             component="div"
             sx={{ color: iconGrey }}
           >
