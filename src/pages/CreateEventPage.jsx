@@ -87,7 +87,7 @@ function LocationSection({ location, setLocation }) {
   const [displayChangeButton, setDisplayChangeButton] = useState(location.name && true)
 
   return (
-    <Stack spacing={3} sx={{ px: 3 }}>
+    <Stack spacing={3} px={3}>
       <Typography
         variant="h1"
         gutterBottom
@@ -95,7 +95,7 @@ function LocationSection({ location, setLocation }) {
       >
         Predio
       </Typography>
-      <Typography>Predio: {location.name ? location.name : "Ninguno"}</Typography>
+      <Typography>{location.name ? location.name : "Ninguno"}</Typography>
       {displayChangeButton && (
         <Button
           size="medium"
@@ -234,7 +234,7 @@ function LocationForm({
         helperText={numberError ? "El número de calle debe ser mayor a 0" : ""}
         required
       />
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" spacing={2} justifyContent="flex-end">
         <Button
           size="medium"
           variant="outlined"
@@ -261,7 +261,7 @@ function LocationForm({
           }}
         >
           <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
-            <Typography variant="info" color={contrastGreen}>Crear</Typography>
+            <Typography variant="info" color={contrastGreen}>Agregar</Typography>
             <CheckCircleOutlineOutlined />
           </Stack>
         </Button>
@@ -274,7 +274,7 @@ function DatesSection({ dates, setDates }) {
   const [showPicker, setShowPicker] = useState(false);
 
   return (
-    <Stack spacing={3} sx={{ px: 3 }}>
+    <Stack spacing={3} px={3}>
       <Typography
         variant="h1"
         gutterBottom
@@ -314,7 +314,7 @@ function DatesDisplay({ dates, setDates }) {
   };
   return (
     <Stack spacing={1}>
-      <Typography>Fechas: {dates.length > 0 ? "" : "Ninguna"}</Typography>
+      <Typography>{dates.length > 0 ? "" : "Ninguna"}</Typography>
       {dates.map((date) => (
         <Stack
           key={date}
@@ -424,7 +424,7 @@ function SectorsSection({ sectors, setSectors }) {
   const [showForm, setShowForm] = useState(false)
 
   return (
-    <Stack spacing={3} sx={{ px: 3 }}>
+    <Stack spacing={3} px={3}>
       <Typography
         variant="h1"
         gutterBottom
@@ -464,7 +464,7 @@ function SectorsDisplay({ sectors, setSectors }) {
   };
   return (
     <Stack>
-      <Typography>Sectores: {sectors.length > 0 ? "" : "Ninguno"}</Typography>
+      <Typography>{sectors.length > 0 ? "" : "Ninguno"}</Typography>
       {sectors.map((sector) => (
         <Stack
           key={sector.name}
@@ -569,7 +569,7 @@ function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
             <Typography id="rows" gutterBottom>
               Cant. de filas
             </Typography>
-            <Stack direction="row" spacing={3} justifyContent="center">
+            <Stack direction="row" spacing={3} justifyContent="space-around">
               <Slider
                 value={typeof rows === "number" ? rows : 1}
                 onChange={handleRowSliderChange}
@@ -579,7 +579,7 @@ function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
                 marks
                 min={0}
                 max={500}
-                sx={{ width: "55%" }}
+                sx={{ width: "75%" }}
               />
               <Input
                 value={rows}
@@ -592,7 +592,7 @@ function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
                   type: "number",
                   "aria-labelledby": "rows",
                 }}
-                sx={{ width: "25%", alignSelf: "flex-start" }}
+                sx={{ width: "55px", alignSelf: "flex-start" }}
               />
             </Stack>
           </Stack>
@@ -600,7 +600,7 @@ function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
             <Typography id="seats" gutterBottom>
               Cant. de asientos por fila
             </Typography>
-            <Stack direction="row" spacing={3} justifyContent="center">
+            <Stack direction="row" spacing={3} justifyContent="space-around">
               <Slider
                 value={typeof seats === "number" ? seats : 1}
                 onChange={handleSeatSliderChange}
@@ -610,7 +610,7 @@ function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
                 marks
                 min={0}
                 max={500}
-                sx={{ width: "55%" }}
+                sx={{ width: "75%" }}
               />
               <Input
                 value={seats}
@@ -623,7 +623,7 @@ function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
                   type: "number",
                   "aria-labelledby": "seats",
                 }}
-                sx={{ width: "25%", alignSelf: "flex-start" }}
+                sx={{ width: "55px", alignSelf: "flex-start" }}
               />
             </Stack>
           </Stack>
