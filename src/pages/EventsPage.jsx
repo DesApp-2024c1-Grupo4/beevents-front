@@ -4,7 +4,7 @@ import LocalDataBaseService from "../services/LocalDataBaseService";
 import MediaCard from "../components/Card";
 import Typography from "@mui/material/Typography";
 import { customMuiTheme } from "../config/customMuiTheme";
-import InputSearch from "../components/InputSearch"; // Asegúrate de importar el componente correcto
+import InputSearch from "../components/InputSearch";
 
 export function EventsPage() {
   const { contrastGreen } = customMuiTheme.colors;
@@ -69,6 +69,7 @@ export function EventsPage() {
           {filteredEvents.map((event) => (
             <Grid item xs={12} md={6} lg={4} key={event.id}>
               <MediaCard
+                id={event.id}
                 title={event.name}
                 artist={event.artist}
                 imageUrl={event.image}

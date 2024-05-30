@@ -29,8 +29,10 @@ export default class LocalDataBaseService {
 
   async getEventById(eventId) {
     try {
+      const parsedId = parseInt(eventId, 10);
       const db = await this.dbPromise;
-      return await db.get(STORE_NAME, eventId);
+      const event = await db.get(STORE_NAME, parsedId);
+      return event;
     } catch (error) {
       console.error("Error getting event by ID:", error);
       return null;

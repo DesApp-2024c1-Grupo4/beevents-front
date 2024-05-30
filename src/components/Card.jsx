@@ -4,10 +4,11 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import { customMuiTheme } from "../config/customMuiTheme";
 
-export default function MediaCard({ title, artist, imageUrl }) {
+export default function MediaCard({ id, title, artist, imageUrl }) {
   const { contrastGreen, iconGrey } = customMuiTheme.colors;
 
   return (
@@ -46,6 +47,8 @@ export default function MediaCard({ title, artist, imageUrl }) {
           </Typography>
           <CardActions sx={{ justifyContent: "flex-end" }}>
             <Button
+              component={Link}
+              to={`/event/${id}`}
               size="medium"
               sx={{ color: contrastGreen, fontWeight: "bold" }}
             >
