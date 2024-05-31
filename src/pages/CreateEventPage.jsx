@@ -1,8 +1,4 @@
-import {
-  React,
-  useState,
-  useEffect
-} from "react";
+import { React, useState, useEffect } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import validator from "validator";
 import { customMuiTheme } from "../config/customMuiTheme";
@@ -19,42 +15,40 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { 
+import {
   AddCircleOutlineOutlined,
   ArrowBackOutlined,
   CheckCircleOutlineOutlined,
-  DeleteOutlineOutlined
+  DeleteOutlineOutlined,
 } from "@mui/icons-material";
 import {
   DateTimePicker,
   LocalizationProvider,
   MobileDateTimePicker,
 } from "@mui/x-date-pickers";
-import {
-  TextFieldElement,
-  useForm,
-} from "react-hook-form-mui";
+import { TextFieldElement, useForm } from "react-hook-form-mui";
+import LocalDataBaseService from "../services/LocalDataBaseService";
 
 const { contrastGreen } = customMuiTheme.colors;
 
 function LocationSection({ location, setLocation }) {
-  const [showForm, setShowForm] = useState(false)
+  const [showForm, setShowForm] = useState(false);
   const fakeFetchedLocations = [
     {
       _id: 1,
       name: "River Plate",
       address: {
         street: "Av. Pres. Figueroa Alcorta",
-        number: 7597
-      }
+        number: 7597,
+      },
     },
     {
       _id: 2,
       name: "Movistar Arena",
       address: {
         street: "Humboldt",
-        number: 450
-      }
+        number: 450,
+      },
     },
   ];
   const getLocationOptions = () => {
@@ -64,34 +58,35 @@ function LocationSection({ location, setLocation }) {
       options.push({ id: location._id, label: location.name });
     }
     return options;
-  }
+  };
   const getLocationById = (id) => {
-    return fakeFetchedLocations.filter(location => location._id === id)[0]
-  }
+    return fakeFetchedLocations.filter((location) => location._id === id)[0];
+  };
   const handleLocationChange = (e, value) => {
     if (value !== null) {
-      const locationSelected = getLocationById(value.id)
+      const locationSelected = getLocationById(value.id);
       setLocation({
         name: locationSelected.name,
         address: {
           street: locationSelected.address.street,
           number: locationSelected.address.number,
         },
-        already_exists: true
-      })
+        already_exists: true,
+      });
     } else {
-      setLocation({})
+      setLocation({});
     }
-
-  }
-  const [displayChangeButton, setDisplayChangeButton] = useState(location.name && true)
+  };
+  const [displayChangeButton, setDisplayChangeButton] = useState(
+    location.name && true
+  );
 
   return (
     <Stack spacing={3} px={3}>
       <Typography
         variant="h1"
         gutterBottom
-        sx={{ alignSelf: { xs: 'center', sm: 'flex-start' } }}
+        sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
       >
         Predio
       </Typography>
@@ -104,10 +99,15 @@ function LocationSection({ location, setLocation }) {
           sx={{
             width: 115,
             display: "block",
-            alignSelf: "center"
+            alignSelf: "center",
           }}
         >
-          <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
+          <Stack
+            spacing={1}
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+          >
             <Typography variant="info">Cambiar</Typography>
           </Stack>
         </Button>
@@ -120,9 +120,13 @@ function LocationSection({ location, setLocation }) {
             options={getLocationOptions()}
             onChange={handleLocationChange}
             isOptionEqualToValue={(option, value) => option.id === value.id}
-            renderInput={(params) => <TextField {...params} label="Seleccionar" />}
+            renderInput={(params) => (
+              <TextField {...params} label="Seleccionar" />
+            )}
           />
-          <Typography variant="info" sx={{ textAlign: "center" }}>¿No encontrás el lugar?</Typography>
+          <Typography variant="info" sx={{ textAlign: "center" }}>
+            ¿No encontrás el lugar?
+          </Typography>
           <Button
             size="medium"
             variant="outlined"
@@ -130,7 +134,7 @@ function LocationSection({ location, setLocation }) {
             sx={{
               px: 2,
               display: "block",
-              alignSelf: "center"
+              alignSelf: "center",
             }}
           >
             <Stack spacing={1} direction="row" justifyContent="center">
@@ -151,7 +155,6 @@ function LocationSection({ location, setLocation }) {
             setDisplayChangeButton={setDisplayChangeButton}
           />
         </Stack>
-
       )}
     </Stack>
   );
@@ -162,7 +165,7 @@ function LocationForm({
   setLocation,
   showForm,
   setShowForm,
-  setDisplayChangeButton
+  setDisplayChangeButton,
 }) {
   const [name, setName] = useState("Nuevo predio");
   const handleNameChange = (e) => {
@@ -180,9 +183,8 @@ function LocationForm({
   const handleNumberChange = (e) => {
     setNumber(e.target.value);
   };
-  const numberError = validator.isEmpty(number)
-    || !validator.isNumeric(number)
-    || number < 1
+  const numberError =
+    validator.isEmpty(number) || !validator.isNumeric(number) || number < 1;
 
   const locationObject = {
     name: name,
@@ -190,18 +192,20 @@ function LocationForm({
       street: street,
       number: Number(number),
     },
-    already_exists: false
-  }
+    already_exists: false,
+  };
 
   const isValidLocation = (newLocation) => {
-    const isFetched = fakeFetchedLocations.some((fetchedLocation) => fetchedLocation.name === newLocation.name);
-    const isSelected = location.name === newLocation.name
-    return !(isFetched || isSelected)
+    const isFetched = fakeFetchedLocations.some(
+      (fetchedLocation) => fetchedLocation.name === newLocation.name
+    );
+    const isSelected = location.name === newLocation.name;
+    return !(isFetched || isSelected);
   };
   const addLocation = (newLocation) => {
     if (isValidLocation(newLocation)) {
-      setLocation(newLocation);      //Notificar
-      setShowForm(false)
+      setLocation(newLocation); //Notificar
+      setShowForm(false);
       setDisplayChangeButton(true);
     } else {
       alert("Ya existe ese predio"); //Convertir en notificación
@@ -241,10 +245,15 @@ function LocationForm({
           onClick={() => setShowForm(!showForm)}
           sx={{
             width: 115,
-            display: "block"
+            display: "block",
           }}
         >
-          <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
+          <Stack
+            spacing={1}
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+          >
             <ArrowBackOutlined />
             <Typography variant="info">Cancelar</Typography>
           </Stack>
@@ -257,7 +266,7 @@ function LocationForm({
             width: 115,
             display: "block",
             color: contrastGreen,
-            borderColor: contrastGreen
+            borderColor: contrastGreen,
           }}
         >
           <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
@@ -267,7 +276,7 @@ function LocationForm({
         </Button>
       </Stack>
     </Stack>
-  )
+  );
 }
 
 function DatesSection({ dates, setDates }) {
@@ -278,7 +287,7 @@ function DatesSection({ dates, setDates }) {
       <Typography
         variant="h1"
         gutterBottom
-        sx={{ alignSelf: { xs: 'center', sm: 'flex-start' } }}
+        sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
       >
         Fechas
       </Typography>
@@ -291,7 +300,7 @@ function DatesSection({ dates, setDates }) {
           sx={{
             px: 2,
             display: "block",
-            alignSelf: "center"
+            alignSelf: "center",
           }}
         >
           <Stack spacing={1} direction="row" justifyContent="center">
@@ -301,16 +310,19 @@ function DatesSection({ dates, setDates }) {
         </Button>
       )}
       {showPicker && (
-        <ResponsiveDateTimePicker dates={dates} setDates={setDates} showPicker={showPicker} setShowPicker={setShowPicker} />
+        <ResponsiveDateTimePicker
+          dates={dates}
+          setDates={setDates}
+          showPicker={showPicker}
+          setShowPicker={setShowPicker}
+        />
       )}
     </Stack>
-  )
+  );
 }
 function DatesDisplay({ dates, setDates }) {
   const deleteDate = (date) => {
-    setDates((current) =>
-      current.filter((storedDate) => storedDate !== date)
-    );
+    setDates((current) => current.filter((storedDate) => storedDate !== date));
   };
   return (
     <Stack spacing={1}>
@@ -323,12 +335,8 @@ function DatesDisplay({ dates, setDates }) {
           spacing={1}
         >
           <Stack>
-            <Typography>
-              {`Fecha ${dates.indexOf(date) + 1}:`}
-            </Typography>
-            <Typography sx={{ textAlign: "center" }}>
-              {`${date}`}
-            </Typography>
+            <Typography>{`Fecha ${dates.indexOf(date) + 1}:`}</Typography>
+            <Typography sx={{ textAlign: "center" }}>{`${date}`}</Typography>
           </Stack>
           <Button onClick={() => deleteDate(date)}>
             <DeleteOutlineOutlined />
@@ -338,34 +346,36 @@ function DatesDisplay({ dates, setDates }) {
     </Stack>
   );
 }
-function ResponsiveDateTimePicker({ dates, setDates, showPicker, setShowPicker }) {
-  const [date, setDate] = useState("")
+function ResponsiveDateTimePicker({
+  dates,
+  setDates,
+  showPicker,
+  setShowPicker,
+}) {
+  const [date, setDate] = useState("");
   const handleDateChange = (value) => {
     const date = new Date(value).toLocaleString();
     setDate(date);
-  }
+  };
   const isValidDate = (aDate) => {
-    const isEmpty = validator.isEmpty(aDate)
-    const alreadyExists = dates.includes(aDate)
-    return !(isEmpty || alreadyExists)
-  }
+    const isEmpty = validator.isEmpty(aDate);
+    const alreadyExists = dates.includes(aDate);
+    return !(isEmpty || alreadyExists);
+  };
   const addDate = (stringDate) => {
     if (isValidDate(stringDate)) {
       setDates([...dates, stringDate]);
     } else {
       alert("Introduce una fecha válida");
     }
-  }
+  };
   let vw = Math.max(
     document.documentElement.clientWidth || 0,
     window.innerWidth || 0
   );
   let isMobile = vw <= 600;
   return (
-    <Stack
-      spacing={2}
-      justifyContent="space-between"
-    >
+    <Stack spacing={2} justifyContent="space-between">
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         {!isMobile && (
           <DateTimePicker
@@ -391,7 +401,7 @@ function ResponsiveDateTimePicker({ dates, setDates, showPicker, setShowPicker }
           onClick={() => addDate(date)}
           sx={{
             width: 115,
-            display: "block"
+            display: "block",
           }}
         >
           <Stack spacing={1} direction="row" justifyContent="center">
@@ -421,14 +431,14 @@ function ResponsiveDateTimePicker({ dates, setDates, showPicker, setShowPicker }
 }
 
 function SectorsSection({ sectors, setSectors }) {
-  const [showForm, setShowForm] = useState(false)
+  const [showForm, setShowForm] = useState(false);
 
   return (
     <Stack spacing={3} px={3}>
       <Typography
         variant="h1"
         gutterBottom
-        sx={{ alignSelf: { xs: 'center', sm: 'flex-start' } }}
+        sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
       >
         Sectores
       </Typography>
@@ -441,7 +451,7 @@ function SectorsSection({ sectors, setSectors }) {
           sx={{
             px: 2,
             display: "block",
-            alignSelf: "center"
+            alignSelf: "center",
           }}
         >
           <Stack spacing={1} direction="row" justifyContent="center">
@@ -451,7 +461,12 @@ function SectorsSection({ sectors, setSectors }) {
         </Button>
       )}
       {showForm && (
-        <SectorForm sectors={sectors} setSectors={setSectors} showForm={showForm} setShowForm={setShowForm} />
+        <SectorForm
+          sectors={sectors}
+          setSectors={setSectors}
+          showForm={showForm}
+          setShowForm={setShowForm}
+        />
       )}
     </Stack>
   );
@@ -523,7 +538,7 @@ function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
     name: name,
     numbered: isNumbered,
     rows: rows,
-    seats: isNumbered ? seats : Number(capacity)
+    seats: isNumbered ? seats : Number(capacity),
   };
   const isValidSector = (sector) => {
     return !sectors.some((storedSector) => storedSector.name === sector.name);
@@ -637,7 +652,7 @@ function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
           onClick={() => addSector(sector)}
           sx={{
             width: 115,
-            display: "block"
+            display: "block",
           }}
         >
           <Stack spacing={1} direction="row" justifyContent="center">
@@ -677,9 +692,10 @@ export function CreateEventPage() {
       image: "",
       location: location,
       dates: dates,
-      sectors: sectors
+      sectors: sectors,
     },
   });
+  const localDBService = new LocalDataBaseService();
 
   useEffect(() => {
     setValue("location", location);
@@ -690,9 +706,15 @@ export function CreateEventPage() {
   useEffect(() => {
     setValue("sectors", sectors);
   }, [sectors, setValue]);
-  
-  const onSubmit = (data) => {
-    console.log(data);
+
+  const onSubmit = async (formData) => {
+    console.log(formData);
+    try {
+      const eventId = await localDBService.createEvent(formData);
+      window.alert("Evento creado");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -720,7 +742,7 @@ export function CreateEventPage() {
             <Typography
               variant="h1"
               gutterBottom
-              sx={{ alignSelf: { xs: 'center', sm: 'flex-start' } }}
+              sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
             >
               Datos principales
             </Typography>
@@ -755,7 +777,7 @@ export function CreateEventPage() {
               display: "block",
               backgroundColor: contrastGreen,
               color: "whitesmoke",
-              alignSelf: { xs: "center", sm: "flex-end" }
+              alignSelf: { xs: "center", sm: "flex-end" },
             }}
           >
             <Typography variant="h2">Crear</Typography>
