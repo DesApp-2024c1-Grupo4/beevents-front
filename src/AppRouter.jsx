@@ -6,6 +6,7 @@ import { CreateEventPage } from "./pages/CreateEventPage";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { RegisterPage } from "./pages/auth/RegisterPage";
 import { RecoverPage } from "./pages/auth/RecoverPage";
+import { MyAccountPage } from "./pages/MyAccountPage";
 
 export function AppRouter() {
   return (
@@ -17,6 +18,7 @@ export function AppRouter() {
       <Route path="/auth/login" element={<LoginPage />} />
       <Route path="/auth/register" element={<RegisterPage />} />
       <Route path="/auth/recover" element={<RecoverPage />} />
+      <Route path="/account" element={<MyAccountPage />} />
     </Routes>
   );
 }
