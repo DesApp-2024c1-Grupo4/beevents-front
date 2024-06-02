@@ -12,7 +12,7 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
       className="border-grad-right"
       sx={{
         background: "transparent",
-        display: "flex",
+        display: { sm: "flex" },
         p: 2,
         columnGap: 3,
         minHeight: "200px"
@@ -20,39 +20,69 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
     >
       <CardMedia
         component="img"
-        sx={{ width: "500px", maxHeight: "196px", objectFit: "fill" }}
+        sx={{
+          width: { sm: "500px" },
+          maxHeight: { sm: "196px" },
+          objectFit: "fill",
+          borderRadius: "5px"
+        }}
         image={imageUrl}
         alt="Event image"
       />
-      <Box sx={{
-        display: "flex",
-        width: "100%",
-        alignItems: "start",
-        justifyContent: "space-between"
-      }}>
+      <Stack
+        direction={{ sm: "row" }}
+        spacing={{ xs: 2 }}
+        mt={{ xs: 3, sm: 0 }}
+        textAlign={{ xs: "center", sm: "left" }}
+        sx={{
+          width: "100%",
+          alignItems: { xs: "center", sm: "start" },
+          justifyContent: "space-between"
+        }}>
         <Stack spacing={2} >
-          <Typography variant="h2">
+          <Typography
+            variant="h2"
+            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
+          >
             {artist}
           </Typography>
-          <Typography>
+          <Typography
+            variant="h2"
+            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
+          >
             {title}
           </Typography>
-          <Typography variant="h2">
+          <Typography
+            variant="h2"
+            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
+          >
             {location}
           </Typography>
           <Box>
             {dates.map(date => (
-              <Typography key={date}>
+              <Typography 
+              variant="info"
+              sx={{ fontSize: { md: "1.2rem" } }}
+              key={date}>
                 {date}
               </Typography>
             ))}
           </Box>
         </Stack>
         <Stack spacing={2} >
-          <Typography variant="h2">Sectores</Typography>
+          <Typography
+            variant="h2"
+            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
+          >
+            Sectores
+          </Typography>
           <Box>
             {sectors.map(sector => (
-              <Typography key={sector.name}>
+              <Typography 
+              key={sector.name}
+              variant="info"
+              sx={{ fontSize: { md: "1.2rem" } }}
+              >
                 {sector.name}
               </Typography>
             ))}
@@ -63,7 +93,7 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
           sx={{ alignSelf: "end", bgcolor: contrastGreen }}>
           <Edit />
         </IconButton>
-      </Box>
+      </Stack>
     </Card>
   )
 }
@@ -85,7 +115,7 @@ export function MyAccountPage() {
 
   return (
     <Container maxWidth="md">
-      <Stack spacing={4} mt={4}>
+      <Stack spacing={4} my={4}>
         <Stack>
           <Typography
             variant="h2"
@@ -107,14 +137,14 @@ export function MyAccountPage() {
         <Stack
           direction="row"
           justifyContent="space-between"
-          alignItems="center">
+          alignItems="baseline">
           <Typography
             variant="h2"
-            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
+            sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
           >
             Eventos que creaste
           </Typography>
-          <StadiumOutlined sx={{ fontSize: { xs: "1.5rem", md: "2rem" } }} />
+          <StadiumOutlined sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
         </Stack>
         <Stack spacing={2} px={1}>
           {firstTwoEvents.map((event) => (
