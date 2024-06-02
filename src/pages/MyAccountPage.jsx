@@ -1,29 +1,68 @@
 import { Box, Card, CardContent, CardMedia, Container, Grid, Stack, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
 import { StadiumOutlined } from "@mui/icons-material";
-import MediaCard from "../components/Card";
 import { useEffect, useState } from "react";
 import LocalDataBaseService from "../services/LocalDataBaseService";
 
-export default function CardHorizontalWBorder({ imageUrl, artist, title, dates, sectors }) {
+export default function CardHorizontalWBorder({ imageUrl, artist, title, location, dates, sectors }) {
 
   return (
-    <Card className="border-grad-right" sx={{ display: 'flex' }}>
+    <Card
+      className="border-grad-right"
+      sx={{
+        background: "transparent",
+        display: "flex",
+        p: 2,
+        columnGap: 3
+      }}
+    >
       <CardMedia
         component="img"
-        sx={{ width: "30%", height: "200px" }}
+        sx={{ width: "30%", objectFit: "contain" }}
         image={imageUrl}
-        alt="Live from space album cover"
+        alt="Event image"
       />
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <CardContent sx={{ flex: '1 0 auto' }}>
-          <Typography component="div" variant="h5">
-            Live From Space
+      <Box sx={{
+        display: "flex",
+        width: "100%",
+        alignItems: "start",
+        justifyContent: "space-between"
+      }}>
+        <Stack
+          spacing={2}
+          sx={{
+            backgroundColor: "green",
+          }}>
+          <Box>
+            <Typography component="div" variant="h2">
+              {artist}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" component="div">
+              {title}
+            </Typography>
+          </Box>
+          <Typography variant="h2">
+            {location}
           </Typography>
-          <Typography variant="subtitle1" color="text.secondary" component="div">
-            Mac Miller
-          </Typography>
-        </CardContent>
+          <Box>
+            {dates.map(date => (
+              <Typography key={date}>
+                {date}
+              </Typography>
+            ))}
+          </Box>
+        </Stack>
+        <Stack spacing={2} sx={{ backgroundColor: "green" }}>
+          <Typography variant="h2">Sectores</Typography>
+          <Box>
+            {sectors.map(sector => (
+              <Typography key={sector.name}>
+                {sector.name}
+              </Typography>
+            ))}
+          </Box>
+        </Stack>
+        <Stack sx={{ backgroundColor: "green" }}>editar</Stack>
       </Box>
     </Card>
   )
@@ -33,14 +72,14 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, dates, 
 export function MyAccountPage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [events, setEvents] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [firstTwoEvents, setFirstTwoEvents] = useState([]);
   const localDBService = new LocalDataBaseService();
 
   useEffect(() => {
     const fetchEvents = async () => {
       const allEvents = await localDBService.getAllEvents();
       setEvents(allEvents);
-      setFilteredEvents(allEvents);
+      setFirstTwoEvents([allEvents[3], allEvents[4]]);
     };
     fetchEvents();
   }, []);
@@ -78,13 +117,14 @@ export function MyAccountPage() {
           </Typography>
           <StadiumOutlined sx={{ fontSize: { xs: "1.5rem", md: "2rem" } }} />
         </Stack>
-        <Stack spacing={2}>
-          {filteredEvents.map((event) => (
+        <Stack spacing={2} px={1}>
+          {firstTwoEvents.map((event) => (
             <CardHorizontalWBorder
               key={event.id}
               imageUrl={event.image}
               artist={event.artist}
               title={event.name}
+              location={event.location.name}
               dates={event.dates}
               sectors={event.sectors}
             />
