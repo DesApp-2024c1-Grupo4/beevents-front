@@ -1,10 +1,11 @@
-import { Box, Card, CardContent, CardMedia, Container, Grid, Stack, Typography } from "@mui/material";
+import { Box, Card, CardMedia, Container, IconButton, Stack, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
-import { StadiumOutlined } from "@mui/icons-material";
+import { Edit, StadiumOutlined } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import LocalDataBaseService from "../services/LocalDataBaseService";
 
 export default function CardHorizontalWBorder({ imageUrl, artist, title, location, dates, sectors }) {
+  const { contrastGreen } = customMuiTheme.colors;
 
   return (
     <Card
@@ -13,12 +14,13 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
         background: "transparent",
         display: "flex",
         p: 2,
-        columnGap: 3
+        columnGap: 3,
+        minHeight: "200px"
       }}
     >
       <CardMedia
         component="img"
-        sx={{ width: "30%", objectFit: "contain" }}
+        sx={{ width: "500px", maxHeight: "196px", objectFit: "fill" }}
         image={imageUrl}
         alt="Event image"
       />
@@ -28,19 +30,13 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
         alignItems: "start",
         justifyContent: "space-between"
       }}>
-        <Stack
-          spacing={2}
-          sx={{
-            backgroundColor: "green",
-          }}>
-          <Box>
-            <Typography component="div" variant="h2">
-              {artist}
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary" component="div">
-              {title}
-            </Typography>
-          </Box>
+        <Stack spacing={2} >
+          <Typography variant="h2">
+            {artist}
+          </Typography>
+          <Typography>
+            {title}
+          </Typography>
           <Typography variant="h2">
             {location}
           </Typography>
@@ -52,7 +48,7 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
             ))}
           </Box>
         </Stack>
-        <Stack spacing={2} sx={{ backgroundColor: "green" }}>
+        <Stack spacing={2} >
           <Typography variant="h2">Sectores</Typography>
           <Box>
             {sectors.map(sector => (
@@ -62,7 +58,11 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
             ))}
           </Box>
         </Stack>
-        <Stack sx={{ backgroundColor: "green" }}>editar</Stack>
+        <IconButton
+          title="Editar"
+          sx={{ alignSelf: "end", bgcolor: contrastGreen }}>
+          <Edit />
+        </IconButton>
       </Box>
     </Card>
   )
@@ -70,7 +70,6 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
 
 
 export function MyAccountPage() {
-  const { contrastGreen } = customMuiTheme.colors;
   const [events, setEvents] = useState([]);
   const [firstTwoEvents, setFirstTwoEvents] = useState([]);
   const localDBService = new LocalDataBaseService();
@@ -79,7 +78,7 @@ export function MyAccountPage() {
     const fetchEvents = async () => {
       const allEvents = await localDBService.getAllEvents();
       setEvents(allEvents);
-      setFirstTwoEvents([allEvents[3], allEvents[4]]);
+      setFirstTwoEvents([allEvents[0], allEvents[1]]);
     };
     fetchEvents();
   }, []);
