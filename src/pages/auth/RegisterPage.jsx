@@ -53,9 +53,8 @@ export function RegisterPage() {
   }
 
 
-  return <Container
-    maxWidth='xs'
-  >
+  return (
+  <Container maxWidth='xs'>
     <Stack
       alignItems='center'
       spacing={3}
@@ -165,4 +164,5 @@ export function RegisterPage() {
       </Stack>
     </Stack>
   </Container>
+  )
 }
