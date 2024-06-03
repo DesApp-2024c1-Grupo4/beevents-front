@@ -11,7 +11,7 @@ export default function InputSearch({ options, onSearch }) {
   };
 
   return (
-    <Stack spacing={2} sx={{ width: 300 }}>
+    <Stack spacing={2} sx={{ width: "100%", maxWidth: 300 }}>
       <Autocomplete
         id="free-solo-demo"
         freeSolo
