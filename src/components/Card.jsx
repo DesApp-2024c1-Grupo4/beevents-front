@@ -4,20 +4,18 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import { customMuiTheme } from "../config/customMuiTheme";
 
-export default function MediaCard() {
+export default function MediaCard({ id, title, artist, imageUrl }) {
   const { contrastGreen, iconGrey } = customMuiTheme.colors;
-  const randomImageUrl = `https://picsum.photos/600/140?random=${Math.floor(
-    Math.random() * 1000
-  )}`;
 
   return (
     <Card sx={{ maxWidth: 600, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.8)" }}>
       <div style={{ position: "relative" }}>
         <img
-          src={randomImageUrl}
+          src={imageUrl}
           alt="Event"
           style={{ width: "100%", height: 350, objectFit: "cover" }}
         />
@@ -34,22 +32,23 @@ export default function MediaCard() {
         >
           <Typography
             gutterBottom
-            variant="h5"
+            variant="h6"
             component="div"
             sx={{ color: iconGrey }}
           >
-            Titulo Evento
+            {title}
           </Typography>
           <Typography
             variant="body2"
             color="text.secondary"
             sx={{ color: iconGrey, fontWeight: "light" }}
           >
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            {artist}
           </Typography>
           <CardActions sx={{ justifyContent: "flex-end" }}>
             <Button
+              component={Link}
+              to={`/event/${id}`}
               size="medium"
               sx={{ color: contrastGreen, fontWeight: "bold" }}
             >

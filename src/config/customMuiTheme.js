@@ -6,13 +6,14 @@ export const customMuiTheme = createTheme({
     mode: "dark",
   },
   typography: {
+    fontFamily: 'Raleway',
     h1: {
       fontSize: "1.4rem",
       fontWeight: "bold",
     },
     h2: {
       fontSize: "1.2rem",
-      fontWeight: "bold",
+      fontWeight: "bold"
     },
     info: {
       fontSize: "0.8rem",
@@ -66,7 +67,8 @@ export const customMuiTheme = createTheme({
   colors: {
     softGrey: "#414F60",
     contrastGreen: "#01BB89",
-    oceanicBlue: "#122940",
+    oceanicBlue: "#122A42",
+    deepOceanicBlue: "#191D28",
     iconGrey: grey[300],
   },
 });
