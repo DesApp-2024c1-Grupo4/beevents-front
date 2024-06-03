@@ -31,14 +31,17 @@ export function EventsPage() {
 
   return (
     <Container maxWidth="md">
-      <div>
+      <Box
+        sx={{
+          mb: 4,
+        }}
+      >
         <Box
           sx={{
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 4,
           }}
         >
           <Typography
@@ -77,7 +80,7 @@ export function EventsPage() {
             </Grid>
           ))}
         </Grid>
-      </div>
+      </Box>
     </Container>
   );
 }
