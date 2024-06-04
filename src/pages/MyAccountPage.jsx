@@ -163,7 +163,7 @@ export function MyAccountPage() {
 
   return (
     <Container maxWidth="md">
-      <Stack spacing={5} my={4}>
+      <Stack spacing={10} my={4}>
         {/* Title and subtitle */}
         <Stack>
           <Typography
@@ -184,7 +184,7 @@ export function MyAccountPage() {
           </Typography>
         </Stack>
         {/* Event cards */}
-        <Stack spacing={3}>
+        <Stack spacing={5}>
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -212,7 +212,7 @@ export function MyAccountPage() {
           </Stack>
         </Stack>
         {/* Personal data */}
-        <Stack spacing={3}>
+        <Stack spacing={5}>
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -221,62 +221,59 @@ export function MyAccountPage() {
               variant="h2"
               sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
             >
-              Mis datos
+              Datos personales
             </Typography>
             <ManageAccounts sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
           </Stack>
           {/* Data form */}
-          <Stack spacing={3}>
-            {/* Data form */}
-            <Stack 
-              direction={{xs: "column", sm: "row"}} 
-              justifyContent="space-between" 
-              px={3}
-              spacing={{xs: 3, sm: 0}}
-              >
-              <Stack spacing={3} >
-                <TextField
-                  label="Email"
-                  variant="outlined"
-                  value={emailValue}
-                  helperText={getEmailHelperText}
-                  onChange={handleEmailChange}
-                  error={isNotAnEmail}
-                  sx={{width: {sm: "270px"}}}
-                />
-                <TextField
-                  label="Nombre"
-                  variant="outlined"
-                  value={nameValue}
-                  helperText={validator.isEmpty(nameValue) ? "Introduce tu nombre" : ""}
-                  onChange={handleNameChange}
-                  error={validator.isEmpty(nameValue)}
-                />
-                <TextField
-                  label="Teléfono"
-                  variant="outlined"
-                  value={phoneValue}
-                  helperText={getPhoneHelperText}
-                  onChange={handlePhoneChange}
-                  error={isNotAPhone}
-                />
-              </Stack>
-              <Button
-                size="large"
-                sx={{ color: "white", bgcolor: contrastGreen, alignSelf: "end" }}
-              >
-                <Typography
-                  variant="h2"
-                  sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
-                >
-                  Actualizar datos
-                </Typography>
-              </Button>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            justifyContent="space-between"
+            px={1}
+            spacing={{ xs: 3, sm: 0 }}
+          >
+            <Stack spacing={3} sx={{ width: { sm: "275px" } }}>
+              <TextField
+                label="Email"
+                variant="outlined"
+                value={emailValue}
+                helperText={getEmailHelperText}
+                onChange={handleEmailChange}
+                error={isNotAnEmail}
+
+              />
+              <TextField
+                label="Nombre"
+                variant="outlined"
+                value={nameValue}
+                helperText={validator.isEmpty(nameValue) ? "Introduce tu nombre" : ""}
+                onChange={handleNameChange}
+                error={validator.isEmpty(nameValue)}
+              />
+              <TextField
+                label="Teléfono"
+                variant="outlined"
+                value={phoneValue}
+                helperText={getPhoneHelperText}
+                onChange={handlePhoneChange}
+                error={isNotAPhone}
+              />
             </Stack>
+            <Button
+              size="large"
+              sx={{ color: "white", bgcolor: contrastGreen, alignSelf: "end" }}
+            >
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
+              >
+                Actualizar
+              </Typography>
+            </Button>
           </Stack>
         </Stack>
         {/* Password change */}
-        <Stack spacing={3}>
+        <Stack spacing={5}>
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -290,12 +287,12 @@ export function MyAccountPage() {
             <Key sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
           </Stack>
           {/* Passes form */}
-          <Stack 
-              direction={{xs: "column", sm: "row"}} 
-              justifyContent="space-between" 
-              px={3}
-              spacing={{xs: 3, sm: 0}}
-              >
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            justifyContent="space-between"
+            px={1}
+            spacing={{ xs: 3, sm: 0 }}
+          >
             <Stack spacing={3} >
               <TextField
                 label='Contraseña actual'
@@ -350,7 +347,7 @@ export function MyAccountPage() {
                 variant="h2"
                 sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
               >
-                Actualizar datos
+                Actualizar
               </Typography>
             </Button>
           </Stack>

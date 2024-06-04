@@ -1,10 +1,15 @@
 import { Autocomplete, Button, Stack, TextField, Typography } from "@mui/material";
 import LocationForm from "./LocationForm"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddCircleOutlineOutlined } from "@mui/icons-material";
+import { getAllLocations } from "../../services/LocationService"
+import validator from "validator";
 
-export default function LocationSection({ location, setLocation }) {
+export default function LocationSection({ locationId, setLocationId }) {
   const [showForm, setShowForm] = useState(false);
+  const [ fetchedLocations, setFetchedLocations ] = useState([])
+  const [ selectedLocationName, setSetlectedLocationName ] = useState("")
+  {/** 
   const fakeFetchedLocations = [
     {
       _id: 1,
@@ -23,34 +28,37 @@ export default function LocationSection({ location, setLocation }) {
       },
     },
   ];
+  */}
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      setFetchedLocations(await getAllLocations());
+    }
+    fetchLocations()
+  }, [])
+
   const getLocationOptions = () => {
     const options = [];
-    for (let i = 0; i < fakeFetchedLocations.length; i++) {
-      const location = fakeFetchedLocations[i];
-      options.push({ id: location._id, label: location.name });
+    for (let i = 0; i < fetchedLocations.length; i++) {
+      const location = fetchedLocations[i];
+      options.push({ id: location._id , label: location.name });
     }
     return options;
   };
+   {/** 
   const getLocationById = (id) => {
     return fakeFetchedLocations.filter((location) => location._id === id)[0];
   };
+  */}
   const handleLocationChange = (e, value) => {
     if (value !== null) {
-      const locationSelected = getLocationById(value.id);
-      setLocation({
-        name: locationSelected.name,
-        address: {
-          street: locationSelected.address.street,
-          number: locationSelected.address.number,
-        },
-        already_exists: true,
-      });
-    } else {
-      setLocation({});
+      //const locationSelected = getLocationById(value.id);
+      setLocationId(value.id);
+      setSetlectedLocationName(value.label)
     }
   };
   const [displayChangeButton, setDisplayChangeButton] = useState(
-    location.name && true
+    !validator.isEmpty(locationId) && true
   );
 
   return (
@@ -62,7 +70,7 @@ export default function LocationSection({ location, setLocation }) {
       >
         Predio
       </Typography>
-      <Typography>{location.name ? location.name : "Ninguno"}</Typography>
+      <Typography>{selectedLocationName ? selectedLocationName : "Ninguno"}</Typography>
       {displayChangeButton && (
         <Button
           size="medium"
@@ -88,7 +96,6 @@ export default function LocationSection({ location, setLocation }) {
         <Stack spacing={3}>
           <Autocomplete
             disablePortal
-            id="combo-box-demo"
             options={getLocationOptions()}
             onChange={handleLocationChange}
             isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -119,9 +126,9 @@ export default function LocationSection({ location, setLocation }) {
       {showForm && !displayChangeButton && (
         <Stack spacing={2}>
           <LocationForm
-            fakeFetchedLocations={fakeFetchedLocations}
+            fetchedLocations={fetchedLocations}
             location={location}
-            setLocation={setLocation}
+            setLocationId={setLocationId}
             showForm={showForm}
             setShowForm={setShowForm}
             setDisplayChangeButton={setDisplayChangeButton}
