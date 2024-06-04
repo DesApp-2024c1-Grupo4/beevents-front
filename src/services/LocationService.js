@@ -21,7 +21,7 @@ export async function getLocationById(id) {
 
 export async function createLocation(location) {
   try {
-    const response = await axios.post(`https://jsonplaceholder.typicode.com/posts`, location);
+    const response = await axios.post(`https://beevents-back-dev.onrender.com/location/`, location);
     console.log(response.data)
     return response.data;
   } catch (error) {

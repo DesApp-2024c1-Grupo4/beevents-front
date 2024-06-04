@@ -8,7 +8,7 @@ import validator from "validator";
 export default function LocationSection({ locationId, setLocationId }) {
   const [showForm, setShowForm] = useState(false);
   const [ fetchedLocations, setFetchedLocations ] = useState([])
-  const [ selectedLocationName, setSetlectedLocationName ] = useState("")
+  const [ selectedLocationName, setSelectedLocationName ] = useState("")
   {/** 
   const fakeFetchedLocations = [
     {
@@ -54,7 +54,7 @@ export default function LocationSection({ locationId, setLocationId }) {
     if (value !== null) {
       //const locationSelected = getLocationById(value.id);
       setLocationId(value.id);
-      setSetlectedLocationName(value.label)
+      setSelectedLocationName(value.label)
     }
   };
   const [displayChangeButton, setDisplayChangeButton] = useState(
@@ -127,7 +127,7 @@ export default function LocationSection({ locationId, setLocationId }) {
         <Stack spacing={2}>
           <LocationForm
             fetchedLocations={fetchedLocations}
-            location={location}
+            setSelectedLocationName={setSelectedLocationName}
             setLocationId={setLocationId}
             showForm={showForm}
             setShowForm={setShowForm}

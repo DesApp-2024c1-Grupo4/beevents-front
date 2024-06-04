@@ -7,8 +7,8 @@ import { createLocation } from "../../services/LocationService";
 
 export default function LocationForm({
   fetchedLocations,
-  location,
-  setLocation,
+  setSelectedLocationName,
+  setLocationId,
   showForm,
   setShowForm,
   setDisplayChangeButton,
@@ -45,14 +45,14 @@ export default function LocationForm({
     const isFetched = fetchedLocations.some(
       (fetchedLocation) => fetchedLocation.name === newLocation.name
     );
-    const isSelected = location.name === newLocation.name;
-    return !(isFetched || isSelected);
+    return !isFetched;
   };
   const addLocation = async (newLocation) => {
     if (isValidLocation(newLocation)) {
-      //setLocation(newLocation); //Notificar
-      await createLocation(newLocation)
-      //console.log(newLocation)
+      const locationCreated = await createLocation(newLocation)
+      //console.log(locationCreated._id)
+      setLocationId(locationCreated._id)
+      setSelectedLocationName(locationCreated.name)
       setShowForm(false);
       setDisplayChangeButton(true);
     } else {
