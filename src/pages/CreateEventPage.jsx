@@ -15,14 +15,14 @@ import LocalDataBaseService from "../services/LocalDataBaseService";
 export function CreateEventPage() {
   const [sectors, setSectors] = useState([]);
   const [dates, setDates] = useState([]);
-  const [location, setLocation] = useState({});
+  const [locationId, setLocationId] = useState("");
   const { contrastGreen } = customMuiTheme.colors;
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
       name: "",
       artist: "",
       image: "",
-      location: location,
+      locationId: locationId,
       dates: dates,
       sectors: sectors,
     },
@@ -30,8 +30,8 @@ export function CreateEventPage() {
   const localDBService = new LocalDataBaseService();
 
   useEffect(() => {
-    setValue("location", location);
-  }, [location, setValue]);
+    setValue("locationId", locationId);
+  }, [locationId, setValue]);
   useEffect(() => {
     setValue("dates", dates);
   }, [dates, setValue]);
@@ -98,7 +98,7 @@ export function CreateEventPage() {
             />
           </Stack>
           {/* Others */}
-          <LocationSection location={location} setLocation={setLocation} />
+          <LocationSection locationId={locationId} setLocationId={setLocationId} />
           <DatesSection dates={dates} setDates={setDates} />
           <SectorsSection sectors={sectors} setSectors={setSectors} />
           <Button
