@@ -29,7 +29,7 @@ export function Header() {
 
   const handleLogout = () => {
     userService.removeUserFromLocalStorage();
-    setUser(null); // Actualiza el estado del usuario a null después de cerrar sesión
+    setUser(null);
   };
 
   const handleOpenNavMenu = (event) => {
@@ -98,11 +98,14 @@ export function Header() {
                 to="/"
                 onClick={handleCloseNavMenu}
                 sx={{
+                  display: "flex",
+                  whiteSpace: "nowrap",
+                  justifyContent: "center",
+                  alignItems: "center",
                   my: 2,
                   mx: 1,
                   px: 2,
                   color: "white",
-                  display: "block",
                   textDecoration: "none",
                   "&:hover": {
                     backgroundColor: contrastGreen,
@@ -120,11 +123,14 @@ export function Header() {
                 to="/events"
                 onClick={handleCloseNavMenu}
                 sx={{
+                  display: "flex",
+                  whiteSpace: "nowrap",
+                  justifyContent: "center",
+                  alignItems: "center",
                   my: 2,
                   mx: 1,
                   px: 2,
                   color: "white",
-                  display: "block",
                   textDecoration: "none",
                   "&:hover": {
                     backgroundColor: contrastGreen,
@@ -137,39 +143,21 @@ export function Header() {
               >
                 Eventos
               </Button>
-              <Button
-                component={Link}
-                to="/create_event"
-                onClick={handleCloseNavMenu}
-                sx={{
-                  my: 2,
-                  mx: 1,
-                  px: 2,
-                  color: "white",
-                  display: "block",
-                  border: `1px solid ${contrastGreen}`,
-                  textDecoration: "none",
-                  "&:hover": {
-                    backgroundColor: contrastGreen,
-                  },
-                  "&:visited": {
-                    color: "white",
-                  },
-                }}
-              >
-                Crear evento
-              </Button>
               {user === null ? (
                 <Button
                   component={Link}
                   to="/auth/login"
                   onClick={handleCloseNavMenu}
                   sx={{
+                    display: "flex",
+                    whiteSpace: "nowrap",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "8rem",
                     my: 2,
                     mx: 1,
                     px: 4,
                     color: "white",
-                    display: "block",
                     border: `1px solid ${contrastGreen}`,
                     textDecoration: "none",
                     "&:hover": {
@@ -183,26 +171,88 @@ export function Header() {
                   Ingresar
                 </Button>
               ) : (
-                <Button
-                  onClick={handleLogout}
-                  sx={{
-                    my: 2,
-                    mx: 1,
-                    px: 4,
-                    color: "white",
-                    display: "block",
-                    border: `1px solid ${contrastGreen}`,
-                    textDecoration: "none",
-                    "&:hover": {
-                      backgroundColor: contrastGreen,
-                    },
-                    "&:visited": {
+                <>
+                  <Button
+                    component={Link}
+                    to="/create_event"
+                    onClick={handleCloseNavMenu}
+                    sx={{
+                      display: "flex",
+                      whiteSpace: "nowrap",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      my: 2,
+                      mx: 1,
+                      px: 2,
                       color: "white",
-                    },
-                  }}
-                >
-                  Salir
-                </Button>
+                      border: `1px solid ${contrastGreen}`,
+                      textDecoration: "none",
+                      "&:hover": {
+                        backgroundColor: contrastGreen,
+                      },
+                      "&:visited": {
+                        color: "white",
+                      },
+                    }}
+                  >
+                    Crear evento
+                  </Button>
+                  <Button
+                    component={Link}
+                    to="/account"
+                    sx={{
+                      display: "flex",
+                      whiteSpace: "nowrap",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "8rem",
+                      my: 2,
+                      mx: 1,
+                      px: 4,
+                      color: "white",
+                      textDecoration: "none",
+                      "&:hover .MuiSvgIcon-root": {
+                        color: contrastGreen,
+                      },
+                      "&:hover": {
+                        backgroundColor: "transparent",
+                      },
+                      "&:visited": {
+                        color: "white",
+                      },
+                    }}
+                  >
+                    <PersonOutlineRoundedIcon sx={{ mr: 1 }} />
+                    Mi perfil
+                  </Button>
+                  <Button
+                    onClick={handleLogout}
+                    sx={{
+                      display: "flex",
+                      whiteSpace: "nowrap",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "8rem",
+                      my: 2,
+                      mx: 1,
+                      px: 4,
+                      color: "white",
+                      textDecoration: "none",
+                      "&:hover .MuiSvgIcon-root": {
+                        color: contrastGreen,
+                      },
+                      "&:hover": {
+                        backgroundColor: "transparent",
+                      },
+                      "&:visited": {
+                        color: "white",
+                      },
+                    }}
+                  >
+                    <LogoutIcon sx={{ mr: 1 }} />
+                    Log-out
+                  </Button>
+                </>
               )}
             </Menu>
           </Box>
@@ -306,7 +356,8 @@ export function Header() {
                   Crear evento
                 </Button>
                 <Button
-                  onClick={handleLogout}
+                  component={Link}
+                  to="/account"
                   sx={{
                     display: "flex",
                     justifyContent: "center",

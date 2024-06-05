@@ -1,16 +1,13 @@
 import { React, useState, useEffect } from "react";
 import { customMuiTheme } from "../config/customMuiTheme";
-import {
-  Button,
-  Container,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Container, Stack, Typography } from "@mui/material";
 import { TextFieldElement, useForm } from "react-hook-form-mui";
-import LocationSection from "../components/create-event-page-components/LocationSection"
-import DatesSection from "../components/create-event-page-components/DatesSection"
-import SectorsSection from "../components/create-event-page-components/SectorsSection"
-import LocalDataBaseService from "../services/LocalDataBaseService";
+import LocationSection from "../components/create-event-page-components/LocationSection";
+import DatesSection from "../components/create-event-page-components/DatesSection";
+import SectorsSection from "../components/create-event-page-components/SectorsSection";
+
+import { getAllEvents, createEvent } from "../services/EventService";
+// import LocalDataBaseService from "../services/LocalDataBaseService";
 
 export function CreateEventPage() {
   const [sectors, setSectors] = useState([]);
@@ -27,7 +24,9 @@ export function CreateEventPage() {
       sectors: sectors,
     },
   });
-  const localDBService = new LocalDataBaseService();
+  useEffect(async () => {
+    console.log(await getAllEvents());
+  }, []);
 
   useEffect(() => {
     setValue("locationId", locationId);
@@ -42,7 +41,7 @@ export function CreateEventPage() {
   const onSubmit = async (formData) => {
     console.log(formData);
     try {
-      const eventId = await localDBService.createEvent(formData);
+      await createEvent(formData);
       window.alert("Evento creado");
     } catch (error) {
       console.log(error);
@@ -98,7 +97,10 @@ export function CreateEventPage() {
             />
           </Stack>
           {/* Others */}
-          <LocationSection locationId={locationId} setLocationId={setLocationId} />
+          <LocationSection
+            locationId={locationId}
+            setLocationId={setLocationId}
+          />
           <DatesSection dates={dates} setDates={setDates} />
           <SectorsSection sectors={sectors} setSectors={setSectors} />
           <Button
