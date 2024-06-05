@@ -60,3 +60,30 @@ body {
           mask-composite: exclude;
 
 }
+
+.border-grad-right {
+  color: #313149;
+  padding: 10px;
+  display: inline-block;
+  margin: 75px 0;
+  position: relative;
+  z-index: 0;
+}
+.border-grad-right:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  padding: 2px;
+  border-radius: 10px;
+  background: linear-gradient(to right, #01bb89, black);
+  -webkit-mask: 
+     linear-gradient(#fff 0 0) content-box, 
+     linear-gradient(#fff 0 0);
+          mask: 
+     linear-gradient(#fff 0 0) content-box, 
+     linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+
+}

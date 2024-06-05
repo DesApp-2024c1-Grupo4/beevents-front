@@ -3,12 +3,12 @@ import { useState } from "react";
 import validator from "validator";
 import { customMuiTheme } from "../../config/customMuiTheme";
 import { ArrowBackOutlined, CheckCircleOutlineOutlined } from "@mui/icons-material";
-
+import { createLocation } from "../../services/LocationService";
 
 export default function LocationForm({
-  fakeFetchedLocations,
-  location,
-  setLocation,
+  fetchedLocations,
+  setSelectedLocationName,
+  setLocationId,
   showForm,
   setShowForm,
   setDisplayChangeButton,
@@ -38,20 +38,21 @@ export default function LocationForm({
     address: {
       street: street,
       number: Number(number),
-    },
-    already_exists: false,
+    }
   };
 
   const isValidLocation = (newLocation) => {
-    const isFetched = fakeFetchedLocations.some(
+    const isFetched = fetchedLocations.some(
       (fetchedLocation) => fetchedLocation.name === newLocation.name
     );
-    const isSelected = location.name === newLocation.name;
-    return !(isFetched || isSelected);
+    return !isFetched;
   };
-  const addLocation = (newLocation) => {
+  const addLocation = async (newLocation) => {
     if (isValidLocation(newLocation)) {
-      setLocation(newLocation); //Notificar
+      const locationCreated = await createLocation(newLocation)
+      //console.log(locationCreated._id)
+      setLocationId(locationCreated._id)
+      setSelectedLocationName(locationCreated.name)
       setShowForm(false);
       setDisplayChangeButton(true);
     } else {
