@@ -6,6 +6,7 @@ import LocalDataBaseService from "../services/LocalDataBaseService";
 import validator from "validator";
 import { getLocationById } from "../services/LocationService"
 import { Link } from "react-router-dom";
+import InputSearch from "../components/InputSearch";
 
 export default function CardHorizontalWBorder({ artist, title, location, dates, sectors }) {
   const { contrastGreen } = customMuiTheme.colors;
@@ -101,18 +102,20 @@ export default function CardHorizontalWBorder({ artist, title, location, dates, 
   )
 }
 
-
 export function MyAccountPage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [events, setEvents] = useState([]);
-  const [firstTwoEvents, setFirstTwoEvents] = useState([]);
+  const [shownEvents, setShownEvents] = useState([]);
   const localDBService = new LocalDataBaseService();
 
   useEffect(() => {
     const fetchEvents = async () => {
       const allEvents = await localDBService.getAllEvents();
       setEvents(allEvents);
-      setFirstTwoEvents(allEvents);
+      const totalEvents = allEvents.length
+      totalEvents > 1
+        ? setShownEvents([allEvents[totalEvents - 1], allEvents[totalEvents - 2]])
+        : setShownEvents(allEvents)
     };
     fetchEvents();
   }, []);
@@ -163,6 +166,17 @@ export function MyAccountPage() {
     : "";
   function handleNewPassChange(e) { setNewPassValue(e.target.value); }
 
+  const handleSearch = (searchValue) => {
+    const totalEvents = events.length
+    const previousShown = [events[totalEvents - 1], events[totalEvents - 2]]
+    const lowercasedFilter = searchValue.toLowerCase();
+    const filteredData = events.filter((item) =>
+      item.name.toLowerCase().includes(lowercasedFilter)
+      || item.artist.toLowerCase().includes(lowercasedFilter)
+    );
+    !validator.isEmpty(searchValue) ? setShownEvents(filteredData) : setShownEvents(previousShown)
+  };
+
   return (
     <Container maxWidth="md">
       <Stack spacing={10} my={4}>
@@ -190,17 +204,23 @@ export function MyAccountPage() {
           <Stack
             direction="row"
             justifyContent="space-between"
-            alignItems="baseline">
+            alignItems="center">
             <Typography
               variant="h2"
               sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
             >
-              Eventos que creaste
+              Últimos eventos creados
             </Typography>
             <StadiumOutlined sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
           </Stack>
           <Stack spacing={3} px={1}>
-            {firstTwoEvents.map((event) => (
+            <Stack alignItems={{xs: "center", sm: "end"}} pb={1}>
+              <InputSearch
+                options={events.map((event) => event.name)}
+                onSearch={handleSearch}
+              />
+            </Stack>
+            {shownEvents.map((event) => (
               <CardHorizontalWBorder
                 key={event.id}
                 artist={event.artist}
@@ -217,7 +237,7 @@ export function MyAccountPage() {
           <Stack
             direction="row"
             justifyContent="space-between"
-            alignItems="baseline">
+            alignItems="center">
             <Typography
               variant="h2"
               sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
