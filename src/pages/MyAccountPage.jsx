@@ -1,12 +1,22 @@
 import { Box, Button, Card, CardMedia, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
-import { Edit, Key, ManageAccounts, StadiumOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
+import { DeleteOutlineOutlined, Edit, Key, ManageAccounts, StadiumOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import LocalDataBaseService from "../services/LocalDataBaseService";
 import validator from "validator";
+import { getLocationById } from "../services/LocationService"
 
 export default function CardHorizontalWBorder({ imageUrl, artist, title, location, dates, sectors }) {
   const { contrastGreen } = customMuiTheme.colors;
+  const [locationName, setLocationName] = useState("")
+
+  useEffect(() => {
+    const getLocationName = async (locationId) => {
+      const locationObject = await getLocationById(location)
+      setLocationName(locationObject.name)
+    }
+    getLocationName()
+  }, []);
 
   return (
     <Card
@@ -15,21 +25,8 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
         background: "transparent",
         display: { sm: "flex" },
         p: 2,
-        columnGap: 3,
-        minHeight: "200px"
       }}
     >
-      <CardMedia
-        component="img"
-        sx={{
-          width: { sm: "500px" },
-          maxHeight: { sm: "196px" },
-          objectFit: "fill",
-          borderRadius: "5px"
-        }}
-        image={imageUrl}
-        alt="Event image"
-      />
       <Stack
         direction={{ sm: "row" }}
         spacing={{ xs: 2 }}
@@ -40,7 +37,7 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
           alignItems: { xs: "center", sm: "start" },
           justifyContent: "space-between"
         }}>
-        <Stack spacing={2} >
+        <Stack spacing={1}>
           <Typography
             variant="h2"
             sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
@@ -53,47 +50,47 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
           >
             {title}
           </Typography>
-          <Typography
-            variant="h2"
-            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
-          >
-            {location}
-          </Typography>
-          <Box>
-            {dates.map(date => (
-              <Typography
-                variant="info"
-                sx={{ fontSize: { md: "1.2rem" } }}
-                key={date}>
-                {date}
-              </Typography>
-            ))}
-          </Box>
         </Stack>
-        <Stack spacing={2} >
-          <Typography
-            variant="h2"
-            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
-          >
-            Sectores
-          </Typography>
-          <Box>
-            {sectors.map(sector => (
-              <Typography
-                key={sector.name}
-                variant="info"
-                sx={{ fontSize: { md: "1.2rem" } }}
-              >
-                {sector.name}
-              </Typography>
-            ))}
-          </Box>
+        <Typography
+          variant="h2"
+        
+          sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
+        >
+          {locationName}
+        </Typography>
+        <Stack textAlign="end">
+          {dates.map(date => (
+            <Typography
+              variant="info"
+              sx={{ fontSize: { md: "1.2rem" } }}
+              key={date}>
+              {date}
+            </Typography>
+          ))}
         </Stack>
-        <IconButton
-          title="Editar"
-          sx={{ alignSelf: "end", bgcolor: contrastGreen }}>
-          <Edit />
-        </IconButton>
+        <Stack>
+          {sectors.map(sector => (
+            <Typography
+              key={sector.name}
+              variant="info"
+              sx={{ fontSize: { md: "1.2rem" } }}
+            >
+              {sector.name}
+            </Typography>
+          ))}
+        </Stack>
+        <Stack direction="row" spacing={1}>
+          <IconButton
+            title="Editar"
+            sx={{ bgcolor: contrastGreen }}>
+            <Edit />
+          </IconButton>
+          <IconButton
+            title="Eliminar"
+            sx={{ bgcolor: "crimson" }}>
+            <DeleteOutlineOutlined />
+          </IconButton>
+        </Stack>
       </Stack>
     </Card>
   )
@@ -110,7 +107,7 @@ export function MyAccountPage() {
     const fetchEvents = async () => {
       const allEvents = await localDBService.getAllEvents();
       setEvents(allEvents);
-      setFirstTwoEvents([allEvents[0], allEvents[1]]);
+      setFirstTwoEvents([allEvents[5]]);
     };
     fetchEvents();
   }, []);
@@ -204,7 +201,7 @@ export function MyAccountPage() {
                 imageUrl={event.image}
                 artist={event.artist}
                 title={event.name}
-                location={event.location.name}
+                location={event.locationId}
                 dates={event.dates}
                 sectors={event.sectors}
               />
