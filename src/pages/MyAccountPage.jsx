@@ -1,12 +1,13 @@
-import { Box, Button, Card, CardMedia, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import { Button, Card, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
-import { DeleteOutlineOutlined, Edit, Key, ManageAccounts, StadiumOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
+import { DeleteOutlineOutlined, Edit, Key, Logout, ManageAccounts, StadiumOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import LocalDataBaseService from "../services/LocalDataBaseService";
 import validator from "validator";
 import { getLocationById } from "../services/LocationService"
+import { Link } from "react-router-dom";
 
-export default function CardHorizontalWBorder({ imageUrl, artist, title, location, dates, sectors }) {
+export default function CardHorizontalWBorder({ artist, title, location, dates, sectors }) {
   const { contrastGreen } = customMuiTheme.colors;
   const [locationName, setLocationName] = useState("")
 
@@ -36,7 +37,7 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
           alignItems: { xs: "center", sm: "start" },
           justifyContent: "space-between"
         }}>
-        <Stack spacing={1} width={{xs: "100%", sm: "25%"}}>
+        <Stack spacing={1} width={{ xs: "100%", sm: "25%" }}>
           <Typography
             variant="h2"
             sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
@@ -52,12 +53,12 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
         </Stack>
         <Typography
           variant="h2"
-          width={{xs: "100%", sm: "25%"}}
+          width={{ xs: "100%", sm: "25%" }}
           sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
         >
           {locationName}
         </Typography>
-        <Stack textAlign={{xs: "center", sm: "end"}} width={{xs: "100%", sm: "20%"}}>
+        <Stack textAlign={{ xs: "center", sm: "end" }} width={{ xs: "100%", sm: "20%" }}>
           {dates.map(date => (
             <Typography
               variant="info"
@@ -67,7 +68,7 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
             </Typography>
           ))}
         </Stack>
-        <Stack width={{xs: "100%", sm: "15%"}}>
+        <Stack width={{ xs: "100%", sm: "15%" }}>
           {sectors.map(sector => (
             <Typography
               key={sector.name}
@@ -78,11 +79,11 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
             </Typography>
           ))}
         </Stack>
-        <Stack 
-        direction="row" 
-        spacing={1}
-        width={{xs: "100%", sm: "15%"}}
-        justifyContent="center"
+        <Stack
+          direction="row"
+          spacing={1}
+          width={{ xs: "100%", sm: "15%" }}
+          justifyContent="center"
         >
           <IconButton
             title="Editar"
@@ -111,7 +112,7 @@ export function MyAccountPage() {
     const fetchEvents = async () => {
       const allEvents = await localDBService.getAllEvents();
       setEvents(allEvents);
-      setFirstTwoEvents([allEvents[0],allEvents[1]]);
+      setFirstTwoEvents(allEvents);
     };
     fetchEvents();
   }, []);
@@ -202,7 +203,6 @@ export function MyAccountPage() {
             {firstTwoEvents.map((event) => (
               <CardHorizontalWBorder
                 key={event.id}
-                imageUrl={event.image}
                 artist={event.artist}
                 title={event.name}
                 location={event.locationId}
@@ -352,6 +352,24 @@ export function MyAccountPage() {
               </Typography>
             </Button>
           </Stack>
+        </Stack>
+        <Stack spacing={1} alignItems="center">
+          <Typography
+            variant="h2"
+            sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
+          >
+            Cerrar sesión
+          </Typography>
+          <IconButton
+            component={Link}
+            to="/"
+            title="Cerrar sesión"
+            sx={{
+              "&:hover": { color: "white" }
+            }}
+          >
+            <Logout fontSize="large" />
+          </IconButton>
         </Stack>
       </Stack>
     </Container>
