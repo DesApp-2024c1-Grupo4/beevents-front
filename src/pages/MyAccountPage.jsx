@@ -24,20 +24,19 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
       sx={{
         background: "transparent",
         display: { sm: "flex" },
-        p: 2,
+        p: 2
       }}
     >
       <Stack
         direction={{ sm: "row" }}
         spacing={{ xs: 2 }}
-        mt={{ xs: 3, sm: 0 }}
         textAlign={{ xs: "center", sm: "left" }}
         sx={{
           width: "100%",
           alignItems: { xs: "center", sm: "start" },
           justifyContent: "space-between"
         }}>
-        <Stack spacing={1}>
+        <Stack spacing={1} width={{xs: "100%", sm: "25%"}}>
           <Typography
             variant="h2"
             sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
@@ -53,12 +52,12 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
         </Stack>
         <Typography
           variant="h2"
-        
+          width={{xs: "100%", sm: "25%"}}
           sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
         >
           {locationName}
         </Typography>
-        <Stack textAlign="end">
+        <Stack textAlign={{xs: "center", sm: "end"}} width={{xs: "100%", sm: "20%"}}>
           {dates.map(date => (
             <Typography
               variant="info"
@@ -68,7 +67,7 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
             </Typography>
           ))}
         </Stack>
-        <Stack>
+        <Stack width={{xs: "100%", sm: "15%"}}>
           {sectors.map(sector => (
             <Typography
               key={sector.name}
@@ -79,7 +78,12 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
             </Typography>
           ))}
         </Stack>
-        <Stack direction="row" spacing={1}>
+        <Stack 
+        direction="row" 
+        spacing={1}
+        width={{xs: "100%", sm: "15%"}}
+        justifyContent="center"
+        >
           <IconButton
             title="Editar"
             sx={{ bgcolor: contrastGreen }}>
@@ -107,7 +111,7 @@ export function MyAccountPage() {
     const fetchEvents = async () => {
       const allEvents = await localDBService.getAllEvents();
       setEvents(allEvents);
-      setFirstTwoEvents([allEvents[5]]);
+      setFirstTwoEvents([allEvents[0],allEvents[1]]);
     };
     fetchEvents();
   }, []);
