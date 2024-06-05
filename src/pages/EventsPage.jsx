@@ -68,7 +68,13 @@ export function EventsPage() {
             onSearch={handleSearch}
           />
         </Box>
-        <Grid container spacing={4}>
+        <Grid
+          container
+          spacing={4}
+          sx={{
+            my: 0.5,
+          }}
+        >
           {filteredEvents.map((event) => (
             <Grid item xs={12} md={6} lg={4} key={event.id}>
               <MediaCard

@@ -1,39 +1,43 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
+import { useLocation, Link } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import { Link } from "react-router-dom";
-import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
 import Logo from "../assets/img/logo.png";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import { customMuiTheme } from "../config/customMuiTheme";
-
-const pages = ["Inicio", "Eventos", "Ingresar"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+import UserService from "../services/userService";
 
 export function Header() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { contrastGreen, oceanicBlue } = customMuiTheme.colors;
+  const userService = new UserService();
+  const [user, setUser] = useState(null);
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const { contrastGreen } = customMuiTheme.colors;
+  const location = useLocation();
+
+  useEffect(() => {
+    const currentUser = userService.getUserFromLocalStorage();
+    setUser(currentUser);
+  }, [location]);
+
+  const handleLogout = () => {
+    userService.removeUserFromLocalStorage();
+    setUser(null); // Actualiza el estado del usuario a null después de cerrar sesión
+  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
   };
 
   return (
@@ -155,28 +159,51 @@ export function Header() {
               >
                 Crear evento
               </Button>
-              <Button
-                component={Link}
-                to="/auth/login"
-                onClick={handleCloseNavMenu}
-                sx={{
-                  my: 2,
-                  mx: 1,
-                  px: 4,
-                  color: "white",
-                  display: "block",
-                  border: `1px solid ${contrastGreen}`,
-                  textDecoration: "none",
-                  "&:hover": {
-                    backgroundColor: contrastGreen,
-                  },
-                  "&:visited": {
+              {user === null ? (
+                <Button
+                  component={Link}
+                  to="/auth/login"
+                  onClick={handleCloseNavMenu}
+                  sx={{
+                    my: 2,
+                    mx: 1,
+                    px: 4,
                     color: "white",
-                  },
-                }}
-              >
-                Ingresar
-              </Button>
+                    display: "block",
+                    border: `1px solid ${contrastGreen}`,
+                    textDecoration: "none",
+                    "&:hover": {
+                      backgroundColor: contrastGreen,
+                    },
+                    "&:visited": {
+                      color: "white",
+                    },
+                  }}
+                >
+                  Ingresar
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleLogout}
+                  sx={{
+                    my: 2,
+                    mx: 1,
+                    px: 4,
+                    color: "white",
+                    display: "block",
+                    border: `1px solid ${contrastGreen}`,
+                    textDecoration: "none",
+                    "&:hover": {
+                      backgroundColor: contrastGreen,
+                    },
+                    "&:visited": {
+                      color: "white",
+                    },
+                  }}
+                >
+                  Salir
+                </Button>
+              )}
             </Menu>
           </Box>
           <Box
@@ -228,90 +255,110 @@ export function Header() {
             >
               Eventos
             </Button>
-            <Button
-              component={Link}
-              to="/create_event"
-              onClick={handleCloseNavMenu}
-              sx={{
-                my: 2,
-                mx: 1,
-                px: 2,
-                color: "white",
-                display: "block",
-                border: `1px solid ${contrastGreen}`,
-                textDecoration: "none",
-                "&:hover": {
-                  backgroundColor: contrastGreen,
-                },
-                "&:visited": {
+            {user === null ? (
+              <Button
+                component={Link}
+                to="/auth/login"
+                onClick={handleCloseNavMenu}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "8rem",
+                  my: 2,
+                  mx: 1,
+                  px: 4,
                   color: "white",
-                },
-              }}
-            >
-              Crear evento
-            </Button>
-            <Button
-              onClick={handleCloseNavMenu}
-              component={Link}
-              to="/auth/login"
-              sx={{
-                my: 2,
-                mx: 1,
-                px: 4,
-                color: "white",
-                display: "block",
-                border: `1px solid ${contrastGreen}`,
-                textDecoration: "none",
-                "&:hover": {
-                  backgroundColor: contrastGreen,
-                },
-                "&:visited": {
-                  color: "white",
-                },
-              }}
-            >
-              Ingresar
-            </Button>
+                  border: `1px solid ${contrastGreen}`,
+                  textDecoration: "none",
+                  "&:hover": {
+                    backgroundColor: contrastGreen,
+                  },
+                  "&:visited": {
+                    color: "white",
+                  },
+                }}
+              >
+                Ingresar
+              </Button>
+            ) : (
+              <>
+                <Button
+                  component={Link}
+                  to="/create_event"
+                  onClick={handleCloseNavMenu}
+                  sx={{
+                    my: 2,
+                    mx: 1,
+                    px: 2,
+                    color: "white",
+                    display: "block",
+                    border: `1px solid ${contrastGreen}`,
+                    textDecoration: "none",
+                    "&:hover": {
+                      backgroundColor: contrastGreen,
+                    },
+                    "&:visited": {
+                      color: "white",
+                    },
+                  }}
+                >
+                  Crear evento
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "4rem",
+                    ml: 1,
+                    my: 2,
+                    pl: 4,
+                    pr: 1,
+                    color: "white",
+                    textDecoration: "none",
+                    "&:hover .MuiSvgIcon-root": {
+                      color: contrastGreen,
+                    },
+                    "&:hover": {
+                      backgroundColor: "transparent",
+                    },
+                    "&:visited": {
+                      color: "white",
+                    },
+                  }}
+                >
+                  <PersonOutlineRoundedIcon />
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "4rem",
+                    my: 2,
+                    pl: 1,
+                    pr: 4,
+                    color: "white",
+                    textDecoration: "none",
+                    "&:hover .MuiSvgIcon-root": {
+                      color: contrastGreen,
+                    },
+                    "&:hover": {
+                      backgroundColor: "transparent",
+                    },
+                    "&:visited": {
+                      color: "white",
+                    },
+                  }}
+                >
+                  <LogoutIcon />
+                </Button>
+              </>
+            )}
           </Box>
-          {/* <Box
-            sx={{
-              flexGrow: 0,
-              display: { xs: "none", md: "flex" },
-              justifyContent: "flex-end",
-            }}
-          >
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{
-                flexGrow: 0,
-                display: { xs: "none", md: "flex" },
-                justifyContent: "flex-end",
-              }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box> */}
         </Toolbar>
       </Container>
     </AppBar>
