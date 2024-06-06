@@ -7,6 +7,7 @@ import validator from "validator";
 import { getLocationById } from "../services/LocationService"
 import { Link } from "react-router-dom";
 import InputSearch from "../components/InputSearch";
+import { getAllEvents } from "../services/EventService";
 
 export default function CardHorizontalWBorder({ artist, title, location, dates, sectors }) {
   const { contrastGreen } = customMuiTheme.colors;
@@ -18,7 +19,7 @@ export default function CardHorizontalWBorder({ artist, title, location, dates, 
       setLocationName(locationObject.name)
     }
     getLocationName()
-  }, []);
+  }, [location]);
 
   return (
     <Card
@@ -43,13 +44,13 @@ export default function CardHorizontalWBorder({ artist, title, location, dates, 
             variant="h2"
             sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
           >
-            {artist}
+            {title}
           </Typography>
           <Typography
             variant="h2"
             sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
           >
-            {title}
+            {artist}
           </Typography>
         </Stack>
         <Typography
@@ -65,7 +66,7 @@ export default function CardHorizontalWBorder({ artist, title, location, dates, 
               variant="info"
               sx={{ fontSize: { md: "1.2rem" } }}
               key={date}>
-              {date}
+              {new Date(date).toLocaleString()}
             </Typography>
           ))}
         </Stack>
@@ -106,11 +107,26 @@ export function MyAccountPage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [events, setEvents] = useState([]);
   const [shownEvents, setShownEvents] = useState([]);
-  const localDBService = new LocalDataBaseService();
+  //const localDBService = new LocalDataBaseService();
 
+  {/** 
   useEffect(() => {
     const fetchEvents = async () => {
       const allEvents = await localDBService.getAllEvents();
+      setEvents(allEvents);
+      const totalEvents = allEvents.length
+      totalEvents > 1
+        ? setShownEvents([allEvents[totalEvents - 1], allEvents[totalEvents - 2]])
+        : setShownEvents(allEvents)
+    };
+    fetchEvents();
+  }, []);
+
+  */}
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const allEvents = await getAllEvents();
       setEvents(allEvents);
       const totalEvents = allEvents.length
       totalEvents > 1
@@ -214,7 +230,7 @@ export function MyAccountPage() {
             <StadiumOutlined sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
           </Stack>
           <Stack spacing={3} px={1}>
-            <Stack alignItems={{xs: "center", sm: "end"}} pb={1}>
+            <Stack alignItems={{ xs: "center", sm: "end" }} pb={1}>
               <InputSearch
                 options={events.map((event) => event.name)}
                 onSearch={handleSearch}
@@ -222,11 +238,11 @@ export function MyAccountPage() {
             </Stack>
             {shownEvents.map((event) => (
               <CardHorizontalWBorder
-                key={event.id}
+                key={event._id}
                 artist={event.artist}
                 title={event.name}
-                location={event.locationId}
-                dates={event.dates}
+                location={event.location_id}
+                dates={event.date_times}
                 sectors={event.sectors}
               />
             ))}
