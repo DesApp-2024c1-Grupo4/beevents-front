@@ -2,14 +2,13 @@ import { Button, Card, Container, IconButton, InputAdornment, Stack, TextField, 
 import { customMuiTheme } from "../config/customMuiTheme";
 import { DeleteOutlineOutlined, Edit, Key, Logout, ManageAccounts, StadiumOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import LocalDataBaseService from "../services/LocalDataBaseService";
 import validator from "validator";
 import { getLocationById } from "../services/LocationService"
 import { Link } from "react-router-dom";
 import InputSearch from "../components/InputSearch";
-import { getAllEvents } from "../services/EventService";
+import { deleteEvent, getAllEvents } from "../services/EventService";
 
-export default function CardHorizontalWBorder({ artist, title, location, dates, sectors }) {
+export default function CardHorizontalWBorder({ fetchEvents, id, artist, title, location, dates, sectors }) {
   const { contrastGreen } = customMuiTheme.colors;
   const [locationName, setLocationName] = useState("")
 
@@ -20,6 +19,14 @@ export default function CardHorizontalWBorder({ artist, title, location, dates, 
     }
     getLocationName()
   }, [location]);
+
+  const handleDelete = async (eventId) => {
+    const confirm = window.confirm("Estás a punto de eliminar este evento. ¿Estás segur@?");
+    if (confirm) { 
+      await deleteEvent(eventId);
+      fetchEvents();
+    }
+  }
 
   return (
     <Card
@@ -42,13 +49,13 @@ export default function CardHorizontalWBorder({ artist, title, location, dates, 
         <Stack spacing={1} width={{ xs: "100%", sm: "25%" }}>
           <Typography
             variant="h2"
-            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
+            sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
           >
             {title}
           </Typography>
           <Typography
             variant="h2"
-            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
+            sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
           >
             {artist}
           </Typography>
@@ -56,7 +63,7 @@ export default function CardHorizontalWBorder({ artist, title, location, dates, 
         <Typography
           variant="h2"
           width={{ xs: "100%", sm: "25%" }}
-          sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
+          sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
         >
           {locationName}
         </Typography>
@@ -94,6 +101,7 @@ export default function CardHorizontalWBorder({ artist, title, location, dates, 
           </IconButton>
           <IconButton
             title="Eliminar"
+            onClick={() => handleDelete(id)}
             sx={{ bgcolor: "crimson" }}>
             <DeleteOutlineOutlined />
           </IconButton>
@@ -107,34 +115,19 @@ export function MyAccountPage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [events, setEvents] = useState([]);
   const [shownEvents, setShownEvents] = useState([]);
-  //const localDBService = new LocalDataBaseService();
 
-  {/** 
   useEffect(() => {
-    const fetchEvents = async () => {
-      const allEvents = await localDBService.getAllEvents();
-      setEvents(allEvents);
-      const totalEvents = allEvents.length
-      totalEvents > 1
-        ? setShownEvents([allEvents[totalEvents - 1], allEvents[totalEvents - 2]])
-        : setShownEvents(allEvents)
-    };
     fetchEvents();
   }, []);
 
-  */}
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      const allEvents = await getAllEvents();
-      setEvents(allEvents);
-      const totalEvents = allEvents.length
-      totalEvents > 1
-        ? setShownEvents([allEvents[totalEvents - 1], allEvents[totalEvents - 2]])
-        : setShownEvents(allEvents)
-    };
-    fetchEvents();
-  }, []);
+  const fetchEvents = async () => {
+    const allEvents = await getAllEvents();
+    setEvents(allEvents);
+    const totalEvents = allEvents.length
+    totalEvents > 1
+      ? setShownEvents([allEvents[totalEvents - 1], allEvents[totalEvents - 2]])
+      : setShownEvents(allEvents)
+  };
 
   const [emailValue, setEmailValue] = useState("fetchedEmail@email.com");
   const isNotAnEmail = !(validator.isEmpty(emailValue) || validator.isEmail(emailValue))
@@ -239,6 +232,8 @@ export function MyAccountPage() {
             {shownEvents.map((event) => (
               <CardHorizontalWBorder
                 key={event._id}
+                fetchEvents={fetchEvents}
+                id={event._id}
                 artist={event.artist}
                 title={event.name}
                 location={event.location_id}
