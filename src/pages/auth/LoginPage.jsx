@@ -52,7 +52,7 @@ export function LoginPage() {
     setLoading(true);
 
     try {
-      const isLogged = await userService.loginUser(emailValue, passValue);
+      const isLogged = userService.loginUser(emailValue, passValue);
       if (isLogged) {
         setTimeout(() => {
           navigate("/");

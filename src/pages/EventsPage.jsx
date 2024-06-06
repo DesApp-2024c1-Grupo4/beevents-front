@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Grid, Box } from "@mui/material/";
-import LocalDataBaseService from "../services/LocalDataBaseService";
+import { getAllEvents, deleteEvent } from "../services/EventService";
 import MediaCard from "../components/Card";
 import Typography from "@mui/material/Typography";
 import { customMuiTheme } from "../config/customMuiTheme";
@@ -10,11 +10,10 @@ export function EventsPage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
-  const localDBService = new LocalDataBaseService();
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const allEvents = await localDBService.getAllEvents();
+      const allEvents = await getAllEvents();
       setEvents(allEvents);
       setFilteredEvents(allEvents);
     };
