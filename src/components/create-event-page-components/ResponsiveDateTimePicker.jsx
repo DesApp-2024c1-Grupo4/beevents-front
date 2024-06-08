@@ -15,8 +15,8 @@ export default function ResponsiveDateTimePicker({
   const { contrastGreen } = customMuiTheme.colors;
   const [date, setDate] = useState("");
   const handleDateChange = (value) => {
-    const date = new Date(value).toLocaleString();
-    setDate(date);
+    const thisDate = new Date(value).toString();
+    setDate(thisDate);
   };
   const isValidDate = (aDate) => {
     const isEmpty = validator.isEmpty(aDate);

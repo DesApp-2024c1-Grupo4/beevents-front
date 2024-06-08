@@ -20,9 +20,20 @@ export default function CardHorizontalWBorder({ fetchEvents, id, artist, title, 
     getLocationName()
   }, [location]);
 
+  const getFormatedDate = (date) => {
+    const thisDate = new Date(date);
+    const day = thisDate.getDate()
+    const month = thisDate.toLocaleString("es-AR", { month: "long" });
+    const year = thisDate.getFullYear()
+    const hour = ("0" + thisDate.getHours()).slice(-2);
+    const minutes = ("0" + thisDate.getMinutes()).slice(-2);
+    const time = "" + hour + ":" + minutes + " hs."
+    return ("" + day + " de " + month + " de " + year + ", " + time)
+  };
+
   const handleDelete = async (eventId) => {
     const confirm = window.confirm("Estás a punto de eliminar este evento. ¿Estás segur@?");
-    if (confirm) { 
+    if (confirm) {
       await deleteEvent(eventId);
       fetchEvents();
     }
@@ -67,22 +78,29 @@ export default function CardHorizontalWBorder({ fetchEvents, id, artist, title, 
         >
           {locationName}
         </Typography>
-        <Stack textAlign={{ xs: "center", sm: "end" }} width={{ xs: "100%", sm: "20%" }}>
+        <Stack
+          spacing={1}
+          textAlign={{ xs: "center", sm: "end" }}
+          width={{ xs: "100%", sm: "20%" }}
+        >
           {dates.map(date => (
             <Typography
               variant="info"
-              sx={{ fontSize: { md: "1.2rem" } }}
+              sx={{ fontSize: { md: "1rem" } }}
               key={date}>
-              {new Date(date).toLocaleString()}
+              {getFormatedDate(date)}
             </Typography>
           ))}
         </Stack>
-        <Stack width={{ xs: "100%", sm: "15%" }}>
+        <Stack
+          width={{ xs: "100%", sm: "15%" }}
+          spacing={1}
+        >
           {sectors.map(sector => (
             <Typography
               key={sector.name}
               variant="info"
-              sx={{ fontSize: { md: "1.2rem" } }}
+              sx={{ fontSize: { md: "1rem" } }}
             >
               {sector.name}
             </Typography>

@@ -1,8 +1,15 @@
 import axios from "axios";
 
+const API_URL = "https://beevents-back-dev.onrender.com";
+//const API_URL = "https://beevents-back-reserva-tickets.onrender.com";
+
+const api = axios.create({
+  baseURL: API_URL,
+});
+
 export async function getAllLocations() {
   try {
-    const response = await axios.get(`https://beevents-back-dev.onrender.com/location`);
+    const response = await api.get(`/location`);
     //console.log(response.data)
     return response.data;
   } catch (error) {
@@ -12,7 +19,7 @@ export async function getAllLocations() {
 
 export async function getLocationById(id) {
   try {
-    const response = await axios.get(`https://beevents-back-dev.onrender.com/location/${id}`);
+    const response = await api.get(`/location/${id}`);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -21,7 +28,7 @@ export async function getLocationById(id) {
 
 export async function createLocation(location) {
   try {
-    const response = await axios.post(`https://beevents-back-dev.onrender.com/location/`, location);
+    const response = await api.post(`/location/`, location);
     console.log(response.data)
     return response.data;
   } catch (error) {
@@ -31,7 +38,7 @@ export async function createLocation(location) {
 
 export async function deleteLocation(id) {
   try {
-    const response = await axios.delete(`https://beevents-back-dev.onrender.com/location/${id}`);
+    const response = await api.delete(`/location/${id}`);
     return response.data;
   } catch (error) {
     console.log(error);
