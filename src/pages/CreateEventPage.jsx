@@ -62,12 +62,13 @@ export function CreateEventPage() {
       reset({
         name: event.name,
         artist: event.artist,
-        image: event.image,
-        location_id: event.location_id,
-        date_times: event.date_times,
-        sectors: event.sectors
+        image: event.image
       });
+      setLocationId(event.location_id)
+      setDates(event.date_times)
+      setSectors(event.sectors)
     }
+
   }, [event]);
 
   const onSubmit = async (formData) => {
