@@ -12,7 +12,8 @@ import LocationSection from "../components/create-event-page-components/Location
 import DatesSection from "../components/create-event-page-components/DatesSection";
 import SectorsSection from "../components/create-event-page-components/SectorsSection";
 import SnackBar from "../components/SnackBar";
-import { createEvent } from "../services/EventService";
+import { createEvent, getEventById } from "../services/EventService";
+import { useParams } from "react-router-dom";
 
 export function CreateEventPage() {
   const [sectors, setSectors] = useState([]);
@@ -21,7 +22,9 @@ export function CreateEventPage() {
   const [locationId, setLocationId] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [event, setEvent] = useState(null);
   const { contrastGreen } = customMuiTheme.colors;
+  const { eventId } = useParams();
   const { control, handleSubmit, setValue, reset } = useForm({
     defaultValues: {
       name: "",
@@ -45,6 +48,27 @@ export function CreateEventPage() {
   useEffect(() => {
     setValue("sectors", sectors);
   }, [sectors, setValue]);
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      const fetchedEvent = await getEventById(eventId);
+      setEvent(fetchedEvent);
+    }
+    if (eventId) { fetchEvent(); }
+  }, []);
+
+  useEffect(() => {
+    if (event) {
+      reset({
+        name: event.name,
+        artist: event.artist,
+        image: event.image,
+        location_id: event.location_id,
+        date_times: event.date_times,
+        sectors: event.sectors
+      });
+    }
+  }, [event]);
 
   const onSubmit = async (formData) => {
     setLoading(true);
@@ -87,7 +111,7 @@ export function CreateEventPage() {
           alignSelf: "flex-start",
         }}
       >
-        Crear un evento nuevo
+        {eventId ? "Editar evento" : "Crear un evento nuevo"}
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Stack spacing={5}>
