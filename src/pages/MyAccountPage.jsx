@@ -1,4 +1,4 @@
-import { Button, Card, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import { Button, Card, CircularProgress, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
 import { DeleteOutlineOutlined, Edit, Key, Logout, ManageAccounts, StadiumOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useEffect, useState } from "react";
@@ -8,10 +8,21 @@ import { Link } from "react-router-dom";
 import InputSearch from "../components/InputSearch";
 import { deleteEvent, getAllEvents } from "../services/EventService";
 import UserService from "../services/userService";
+import SnackBar from "../components/SnackBar";
 
-export default function CardHorizontalWBorder({ fetchEvents, id, artist, title, location, dates, sectors }) {
+export default function CardHorizontalWBorder({
+  fetchEvents,
+  setSnackbarMessage,
+  setSnackbarOpen,
+  id,
+  artist,
+  title,
+  location,
+  dates,
+  sectors }) {
   const { contrastGreen } = customMuiTheme.colors;
   const [locationName, setLocationName] = useState("")
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getLocationName = async (locationId) => {
@@ -35,8 +46,18 @@ export default function CardHorizontalWBorder({ fetchEvents, id, artist, title, 
   const handleDelete = async (eventId) => {
     const confirm = window.confirm("Estás a punto de eliminar este evento. ¿Estás segur@?");
     if (confirm) {
-      await deleteEvent(eventId);
-      fetchEvents();
+      try {
+        setLoading(true);
+        await deleteEvent(eventId);
+        fetchEvents();
+        setSnackbarMessage("Evento eliminado");
+      } catch (error) {
+        console.log(error)
+        setSnackbarMessage("Error al eliminar evento");
+      } finally {
+        setSnackbarOpen(true);
+        setLoading(false);
+      }
     }
   }
 
@@ -127,7 +148,9 @@ export default function CardHorizontalWBorder({ fetchEvents, id, artist, title, 
             title="Eliminar"
             onClick={() => handleDelete(id)}
             sx={{ bgcolor: "crimson" }}>
-            <DeleteOutlineOutlined />
+            {loading
+              ? <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+              : <DeleteOutlineOutlined />}
           </IconButton>
         </Stack>
       </Stack>
@@ -139,11 +162,11 @@ export function MyAccountPage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [events, setEvents] = useState([]);
   const [shownEvents, setShownEvents] = useState([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const userService = new UserService();
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
+  useEffect(() => { fetchEvents(); }, []);
 
   const fetchEvents = async () => {
     const allEvents = await getAllEvents();
@@ -157,9 +180,7 @@ export function MyAccountPage() {
   const [emailValue, setEmailValue] = useState("fetchedEmail@email.com");
   const isNotAnEmail = !(validator.isEmpty(emailValue) || validator.isEmail(emailValue))
   const getEmailHelperText = isNotAnEmail ? "Escribe un email válido" : "";
-  function handleEmailChange(e) {
-    setEmailValue(e.target.value);
-  }
+  const handleEmailChange = (e) => { setEmailValue(e.target.value); }
 
   const [nameValue, setNameValue] = useState("Fetched Name");
   const handleNameChange = (e) => { setNameValue(e.target.value) }
@@ -167,13 +188,9 @@ export function MyAccountPage() {
   const [phoneValue, setPhoneValue] = useState("11-3333-3333");
   const isNotAPhone = !(validator.isEmpty(phoneValue) || validator.isMobilePhone(phoneValue))
   const getPhoneHelperText = isNotAPhone ? "Escribe un teléfono válido" : "";
-  function handlePhoneChange(e) {
-    setPhoneValue(e.target.value);
-  }
+  const handlePhoneChange = (e) => { setPhoneValue(e.target.value); }
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+  const handleMouseDownPassword = (event) => { event.preventDefault(); };
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const handleShowCurrentPassword = () => setShowCurrentPassword((show) => !show);
   const [currentPassValue, setCurrentPassValue] = useState("");
@@ -211,12 +228,18 @@ export function MyAccountPage() {
     !validator.isEmpty(searchValue) ? setShownEvents(filteredData) : setShownEvents(previousShown)
   };
 
-  const handleLogout = () => {
-    userService.removeUserFromLocalStorage();
-  };
+  const handleLogout = () => { userService.removeUserFromLocalStorage(); };
+
+  const handleSnackbarClose = () => { setSnackbarOpen(false); };
 
   return (
     <Container maxWidth="md">
+      <SnackBar
+        open={snackbarOpen}
+        message={snackbarMessage}
+        severity="success"
+        handleClose={handleSnackbarClose}
+      />
       <Stack spacing={10} my={4}>
         {/* Title and subtitle */}
         <Stack>
@@ -262,6 +285,8 @@ export function MyAccountPage() {
               <CardHorizontalWBorder
                 key={event._id}
                 fetchEvents={fetchEvents}
+                setSnackbarMessage={setSnackbarMessage}
+                setSnackbarOpen={setSnackbarOpen}
                 id={event._id}
                 artist={event.artist}
                 title={event.name}
