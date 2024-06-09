@@ -7,6 +7,7 @@ import { getLocationById } from "../services/LocationService"
 import { Link } from "react-router-dom";
 import InputSearch from "../components/InputSearch";
 import { deleteEvent, getAllEvents } from "../services/EventService";
+import UserService from "../services/userService";
 
 export default function CardHorizontalWBorder({ fetchEvents, id, artist, title, location, dates, sectors }) {
   const { contrastGreen } = customMuiTheme.colors;
@@ -114,7 +115,12 @@ export default function CardHorizontalWBorder({ fetchEvents, id, artist, title, 
         >
           <IconButton
             title="Editar"
-            sx={{ bgcolor: contrastGreen }}>
+            component={Link}
+            to={`/create_event/${id}`}
+            sx={{
+              bgcolor: contrastGreen,
+              "&:hover": { color: "white" }
+            }}>
             <Edit />
           </IconButton>
           <IconButton
@@ -133,6 +139,7 @@ export function MyAccountPage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [events, setEvents] = useState([]);
   const [shownEvents, setShownEvents] = useState([]);
+  const userService = new UserService();
 
   useEffect(() => {
     fetchEvents();
@@ -204,6 +211,10 @@ export function MyAccountPage() {
     !validator.isEmpty(searchValue) ? setShownEvents(filteredData) : setShownEvents(previousShown)
   };
 
+  const handleLogout = () => {
+    userService.removeUserFromLocalStorage();
+  };
+
   return (
     <Container maxWidth="md">
       <Stack spacing={10} my={4}>
@@ -220,7 +231,7 @@ export function MyAccountPage() {
               alignSelf: "flex-start",
             }}
           >
-            ¡Hola Cristian!
+            ¡Hola!
           </Typography>
           <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}>
             Acá podés ver tus eventos, tus datos, y cambiar tu contraseña.
@@ -412,6 +423,7 @@ export function MyAccountPage() {
           <IconButton
             component={Link}
             to="/"
+            onClick={() => handleLogout()}
             title="Cerrar sesión"
             sx={{
               "&:hover": { color: "white" }
