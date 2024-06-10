@@ -13,7 +13,7 @@ import DatesSection from "../components/create-event-page-components/DatesSectio
 import SectorsSection from "../components/create-event-page-components/SectorsSection";
 import SnackBar from "../components/SnackBar";
 import { createEvent, getEventById, updateEvent } from "../services/EventService";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export function CreateEventPage() {
   const [sectors, setSectors] = useState([]);
@@ -25,6 +25,7 @@ export function CreateEventPage() {
   const [event, setEvent] = useState(null);
   const { contrastGreen } = customMuiTheme.colors;
   const { eventId } = useParams();
+  const navigate = useNavigate();
   const { control, handleSubmit, setValue, reset } = useForm({
     defaultValues: {
       name: "",
@@ -70,7 +71,7 @@ export function CreateEventPage() {
     }
   }, [event]);
 
-  const onSubmit = async (formData) => {
+  const onSubmit = (formData) => {
     setLoading(true);
     eventId ? updateAnEvent(formData) : createNewEvent(formData);
   };
@@ -79,7 +80,7 @@ export function CreateEventPage() {
     try {
       await createEvent(formData);
       setSnackbarMessage("¡Evento creado exitosamente!");
-      reset();
+      setTimeout(navigate, 3000, "/account")
     } catch (error) {
       console.log(error);
       setSnackbarMessage("Hubo un error al crear el evento");
@@ -93,7 +94,7 @@ export function CreateEventPage() {
     try {
       await updateEvent(formData, eventId);
       setSnackbarMessage("¡Evento editado exitosamente!");
-      reset();
+      setTimeout(navigate, 3000, "/account")
     } catch (error) {
       console.log(error);
       setSnackbarMessage("Hubo un error al editar el evento");
