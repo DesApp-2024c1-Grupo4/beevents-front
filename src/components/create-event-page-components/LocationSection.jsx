@@ -4,32 +4,34 @@ import { useEffect, useState } from "react";
 import { AddCircleOutlineOutlined } from "@mui/icons-material";
 import { getAllLocations, getLocationById } from "../../services/LocationService"
 import validator from "validator";
+import { useParams } from "react-router-dom";
 
 export default function LocationSection({ locationId, setLocationId }) {
   const [showForm, setShowForm] = useState(false);
-  const [ fetchedLocations, setFetchedLocations ] = useState([])
-  const [ selectedLocationName, setSelectedLocationName ] = useState("")
+  const [fetchedLocations, setFetchedLocations] = useState([])
+  const [selectedLocationName, setSelectedLocationName] = useState("");
+  const { eventId } = useParams();
 
   useEffect(() => {
     const fetchLocations = async () => {
       setFetchedLocations(await getAllLocations());
     }
-    fetchLocations()
-  }, [])
+    fetchLocations();
+  }, []);
 
   useEffect(() => {
-    const getLocationName = async() => {
+    const getLocationName = async () => {
       const location = await getLocationById(locationId);
       setSelectedLocationName(location.name)
     }
-    getLocationName()
-  },[locationId])
+    if (eventId && !selectedLocationName) { getLocationName(); }
+  }, [locationId]);
 
   const getLocationOptions = () => {
     const options = [];
     for (let i = 0; i < fetchedLocations.length; i++) {
       const location = fetchedLocations[i];
-      options.push({ id: location._id , label: location.name });
+      options.push({ id: location._id, label: location.name });
     }
     return options;
   };
