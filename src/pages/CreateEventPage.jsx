@@ -12,8 +12,8 @@ import LocationSection from "../components/create-event-page-components/Location
 import DatesSection from "../components/create-event-page-components/DatesSection";
 import SectorsSection from "../components/create-event-page-components/SectorsSection";
 import SnackBar from "../components/SnackBar";
-import { createEvent, getEventById } from "../services/EventService";
-import { useParams } from "react-router-dom";
+import { createEvent, getEventById, updateEvent } from "../services/EventService";
+import { Link, useParams } from "react-router-dom";
 
 export function CreateEventPage() {
   const [sectors, setSectors] = useState([]);
@@ -68,11 +68,14 @@ export function CreateEventPage() {
       setDates(event.date_times)
       setSectors(event.sectors)
     }
-
   }, [event]);
 
   const onSubmit = async (formData) => {
     setLoading(true);
+    eventId ? updateAnEvent(formData) : createNewEvent(formData);
+  };
+
+  const createNewEvent = async (formData) => {
     try {
       await createEvent(formData);
       setSnackbarMessage("¡Evento creado exitosamente!");
@@ -84,7 +87,21 @@ export function CreateEventPage() {
       setLoading(false);
       setSnackbarOpen(true);
     }
-  };
+  }
+
+  const updateAnEvent = async (formData) => {
+    try {
+      await updateEvent(formData, eventId);
+      setSnackbarMessage("¡Evento editado exitosamente!");
+      reset();
+    } catch (error) {
+      console.log(error);
+      setSnackbarMessage("Hubo un error al editar el evento");
+    } finally {
+      setLoading(false);
+      setSnackbarOpen(true);
+    }
+  }
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -151,7 +168,6 @@ export function CreateEventPage() {
           <SectorsSection sectors={sectors} setSectors={setSectors} />
           <Button
             size="large"
-            variant="contained"
             type="submit"
             disabled={loading}
             sx={{
@@ -165,13 +181,13 @@ export function CreateEventPage() {
                 backgroundColor: contrastGreen,
                 color: "whitesmoke",
               },
-              width: "100px",
+              width: "120px",
             }}
           >
             {loading ? (
               <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
             ) : (
-              <Typography variant="h2">Crear</Typography>
+              <Typography variant="h2">{eventId ? "Confirmar" : "Crear"}</Typography>
             )}
           </Button>
         </Stack>
