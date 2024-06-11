@@ -1,14 +1,23 @@
 import React, { useEffect, useState, useRef } from "react";
-import BackgroundImage from "../assets/img/homebanner.png";
-import { getAllEvents } from "../services/EventService";
-import InputSearch from "../components/InputSearch";
-import HexagonalCard from "./HexagonalCard";
+import BackgroundImage from "../../assets/img/homebanner.png";
+import { getAllEvents } from "../../services/EventService";
+import InputSearch from "../../components/InputSearch";
+import logo from "../../assets/img/abreviatura.png";
+import Box from "@mui/material/Box";
+import HeroImageCard from "../../components/home-page-components/HeroImageCard";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { customMuiTheme } from "../../config/customMuiTheme";
 
 const HeroImage = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const carouselRef = useRef(null);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -19,12 +28,16 @@ const HeroImage = () => {
     fetchEvents();
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
+  const startCarousel = () => {
+    intervalRef.current = setInterval(() => {
       if (carouselRef.current) {
         const firstChild = carouselRef.current.children[0];
+        const cardWidth = firstChild.clientWidth;
+        const cardMargin = 12;
         carouselRef.current.style.transition = "transform 1s ease";
-        carouselRef.current.style.transform = `translateX(-${firstChild.clientWidth}px)`;
+        carouselRef.current.style.transform = `translateX(-${
+          cardWidth + cardMargin * 2
+        }px)`;
 
         const handleTransitionEnd = () => {
           carouselRef.current.style.transition = "none";
@@ -41,10 +54,21 @@ const HeroImage = () => {
           handleTransitionEnd
         );
       }
-    }, 3000); // Intervalo de tiempo para el desplazamiento (3 segundos)
+    }, 3000);
+  };
 
-    return () => clearInterval(interval);
-  }, []);
+  const stopCarousel = () => {
+    clearInterval(intervalRef.current);
+  };
+
+  useEffect(() => {
+    if (searchTerm === "") {
+      startCarousel();
+    } else {
+      stopCarousel();
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [searchTerm]);
 
   const handleSearch = (searchValue) => {
     setSearchTerm(searchValue);
@@ -59,7 +83,7 @@ const HeroImage = () => {
     <div
       style={{
         position: "relative",
-        height: "90vh",
+        height: isTablet ? "50vh" : "90vh",
         width: "100%",
         overflow: "hidden",
       }}
@@ -69,7 +93,7 @@ const HeroImage = () => {
           position: "absolute",
           top: 0,
           left: 0,
-          height: "90vh",
+          height: isTablet ? "50vh" : "90vh",
           width: "100%",
           background: `url(${BackgroundImage}) no-repeat center center`,
           backgroundSize: "cover",
@@ -103,18 +127,32 @@ const HeroImage = () => {
         <div
           style={{
             width: "100%",
-            marginTop: "20px",
-            marginBottom: "20px",
+            marginTop: isMobile ? "40px" : "20px",
+            marginBottom: isMobile ? "0px" : "10px",
             position: "relative",
             display: "flex",
+            flexDirection: "column",
             justifyContent: "center",
+            alignItems: "center",
             zIndex: 1,
           }}
         >
-          <InputSearch
-            options={events.map((event) => event.name)}
-            onSearch={handleSearch}
-          />
+          {!isMobile ? (
+            <>
+              <Box sx={{ maxWidth: { xs: 60, sm: 100 }, m: 4 }}>
+                <img src={logo} alt="brandLogo" style={{ maxWidth: "100%" }} />
+              </Box>
+              <InputSearch
+                options={events.map((event) => event.name)}
+                onSearch={handleSearch}
+              />
+            </>
+          ) : (
+            <InputSearch
+              options={events.map((event) => event.name)}
+              onSearch={handleSearch}
+            />
+          )}
         </div>
         <div
           ref={carouselRef}
@@ -125,15 +163,15 @@ const HeroImage = () => {
             display: "flex",
             flexWrap: "nowrap",
             overflow: "hidden",
-            width: "100%",
+            width: "auto",
             position: "relative",
             zIndex: 1,
           }}
         >
           {(searchTerm === "" ? events : filteredEvents).map((event) => (
-            <HexagonalCard
-              key={event.id}
-              id={event.id}
+            <HeroImageCard
+              key={event._id}
+              id={event._id}
               artist={event.artist}
               imageUrl={event.image}
               style={{ flex: "0 0 auto", margin: "0 20px" }}

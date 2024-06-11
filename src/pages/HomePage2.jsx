@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid";
 import Card from "../components/Card";
 import CardHorizontal from "../components/CardHorizontal";
 import DateCard from "../components/home-page-components/DateCard";
-import HeroImage from "../components/HeroImage";
+import HeroImage from "../components/home-page-components/HeroImage";
 import { customMuiTheme } from "../config/customMuiTheme";
 import { getAllEvents } from "../services/EventService";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";

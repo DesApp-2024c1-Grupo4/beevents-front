@@ -14,8 +14,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import { customMuiTheme } from "../config/customMuiTheme";
 import UserService from "../services/userService";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export function Header() {
+  const theme = useTheme();
+  const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
   const userService = new UserService();
   const [user, setUser] = useState(null);
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -44,7 +48,7 @@ export function Header() {
     <AppBar
       position="static"
       sx={{
-        minHeight: "10vh",
+        minHeight: isTablet ? "5vh" : "10vh",
         backgroundColor: "var(--primary-color)",
         color: "var(--color)",
       }}

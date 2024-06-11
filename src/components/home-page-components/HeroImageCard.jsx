@@ -5,23 +5,22 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
-import { customMuiTheme } from "../config/customMuiTheme";
+import { customMuiTheme } from "../../config/customMuiTheme";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-export default function HexagonCard({ id, date, artist, imageUrl }) {
+export default function HeroImageCard({ id, date, artist, imageUrl }) {
   const theme = useTheme();
   const { contrastGreen } = customMuiTheme.colors;
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Card
+      component={Link}
+      to={`/event/${id}`}
       sx={{
         position: "relative",
-        maxWidth: !isMobile ? 200 : 100,
-        width: "100%",
-        height: "auto",
-        margin: "auto",
+        margin: "10px",
         mb: isMobile ? "0.5rem" : "auto",
         boxShadow: "0px 4px 8px rgba(0, 0, 0, 2.3)",
         transition: "transform 0.3s, box-shadow 0.3s",
@@ -29,7 +28,7 @@ export default function HexagonCard({ id, date, artist, imageUrl }) {
           transform: "scale(1.05)",
           boxShadow: "0px 8px 16px rgba(0, 0, 0, 1)",
         },
-        border: `2px solid ${contrastGreen}`, // Añade una línea de borde alrededor de la tarjeta
+        border: `2px solid ${contrastGreen}`,
       }}
     >
       <div style={{ position: "relative", overflow: "hidden" }}>
@@ -37,8 +36,8 @@ export default function HexagonCard({ id, date, artist, imageUrl }) {
           src={imageUrl}
           alt="Event"
           style={{
-            width: "100%",
-            height: !isMobile ? 200 : 100,
+            width: !isMobile ? 200 : 100,
+            height: !isMobile ? 200 : 120,
             objectFit: "cover",
           }}
         />
@@ -75,7 +74,11 @@ export default function HexagonCard({ id, date, artist, imageUrl }) {
             {date}
           </Typography>
           <Typography
-            sx={{ color: "white", fontWeight: "bold", fontSize: "18px" }}
+            sx={{
+              color: "white",
+              fontWeight: "bold",
+              fontSize: isMobile ? "13px" : "18px",
+            }}
           >
             {artist}
           </Typography>

@@ -77,7 +77,7 @@ export function EventsPage() {
           {filteredEvents.map((event) => (
             <Grid item xs={12} md={6} lg={4} key={event.name}>
               <MediaCard
-                id={event.id}
+                id={event._id}
                 title={event.name}
                 artist={event.artist}
                 imageUrl={event.image}
