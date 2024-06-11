@@ -5,52 +5,74 @@ import {
   Container,
   Stack,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { TextFieldElement, useForm } from "react-hook-form-mui";
-import LocationSection from "../components/create-event-page-components/LocationSection"
-import DatesSection from "../components/create-event-page-components/DatesSection"
-import SectorsSection from "../components/create-event-page-components/SectorsSection"
-import LocalDataBaseService from "../services/LocalDataBaseService";
+import LocationSection from "../components/create-event-page-components/LocationSection";
+import DatesSection from "../components/create-event-page-components/DatesSection";
+import SectorsSection from "../components/create-event-page-components/SectorsSection";
+import SnackBar from "../components/SnackBar";
+import { createEvent } from "../services/EventService";
 
 export function CreateEventPage() {
   const [sectors, setSectors] = useState([]);
   const [dates, setDates] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [locationId, setLocationId] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const { contrastGreen } = customMuiTheme.colors;
-  const { control, handleSubmit, setValue } = useForm({
+  const { control, handleSubmit, setValue, reset } = useForm({
     defaultValues: {
       name: "",
       artist: "",
       image: "",
-      locationId: locationId,
-      dates: dates,
+      location_id: locationId,
+      user_id: "user1",
+      date_times: dates,
       sectors: sectors,
     },
   });
-  const localDBService = new LocalDataBaseService();
 
   useEffect(() => {
-    setValue("locationId", locationId);
+    setValue("location_id", locationId);
   }, [locationId, setValue]);
+
   useEffect(() => {
-    setValue("dates", dates);
+    setValue("date_times", dates);
   }, [dates, setValue]);
+
   useEffect(() => {
     setValue("sectors", sectors);
   }, [sectors, setValue]);
 
   const onSubmit = async (formData) => {
-    console.log(formData);
+    setLoading(true);
     try {
-      const eventId = await localDBService.createEvent(formData);
-      window.alert("Evento creado");
+      await createEvent(formData);
+      setSnackbarMessage("¡Evento creado exitosamente!");
+      reset();
     } catch (error) {
       console.log(error);
+      setSnackbarMessage("Hubo un error al crear el evento");
+    } finally {
+      setLoading(false);
+      setSnackbarOpen(true);
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
     <Container maxWidth="md" sx={{ mb: 5 }}>
+      <SnackBar
+        open={snackbarOpen}
+        message={snackbarMessage}
+        severity="success"
+        handleClose={handleSnackbarClose}
+      />
       <Typography
         variant="h2"
         component="h2"
@@ -69,7 +91,6 @@ export function CreateEventPage() {
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Stack spacing={5}>
-          {/* Main data */}
           <Stack spacing={3} px={3}>
             <Typography
               variant="h1"
@@ -97,22 +118,36 @@ export function CreateEventPage() {
               required
             />
           </Stack>
-          {/* Others */}
-          <LocationSection locationId={locationId} setLocationId={setLocationId} />
+          <LocationSection
+            locationId={locationId}
+            setLocationId={setLocationId}
+          />
           <DatesSection dates={dates} setDates={setDates} />
           <SectorsSection sectors={sectors} setSectors={setSectors} />
           <Button
             size="large"
             variant="contained"
-            type={"submit"}
+            type="submit"
+            disabled={loading}
             sx={{
-              display: "block",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               backgroundColor: contrastGreen,
               color: "whitesmoke",
               alignSelf: { xs: "center", sm: "flex-end" },
+              "&.Mui-disabled": {
+                backgroundColor: contrastGreen,
+                color: "whitesmoke",
+              },
+              width: "100px",
             }}
           >
-            <Typography variant="h2">Crear</Typography>
+            {loading ? (
+              <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+            ) : (
+              <Typography variant="h2">Crear</Typography>
+            )}
           </Button>
         </Stack>
       </form>

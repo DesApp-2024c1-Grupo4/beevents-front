@@ -1,4 +1,3 @@
-import React from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -28,33 +27,42 @@ export default function MediaCard({ id, title, artist, imageUrl }) {
             background: "rgba(0, 0, 0, 0.8)",
             backdropFilter: "blur(5px)",
             padding: "10px",
+            height: "100px", // Altura fija para el CardContent
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between", // Alinear contenido verticalmente
           }}
         >
-          <Typography
-            gutterBottom
-            variant="h6"
-            component="div"
-            sx={{ color: iconGrey }}
-          >
-            {title}
-          </Typography>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ color: iconGrey, fontWeight: "light" }}
-          >
-            {artist}
-          </Typography>
-          <CardActions sx={{ justifyContent: "flex-end" }}>
-            <Button
-              component={Link}
-              to={`/event/${id}`}
-              size="medium"
-              sx={{ color: contrastGreen, fontWeight: "bold" }}
+          <div>
+            <Typography
+              gutterBottom
+              variant="h6"
+              component="div"
+              sx={{ color: iconGrey, lineHeight: 1.2 }} // Ajustar el espacio entre líneas
             >
-              Ver
-            </Button>
-          </CardActions>
+              {title}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ color: iconGrey, fontWeight: "light" }}
+            >
+              {artist}
+            </Typography>
+          </div>
+          {/* Contenedor adicional para el botón Ver */}
+          <div style={{ position: "absolute", bottom: 0, right: 0 }}>
+            <CardActions>
+              <Button
+                component={Link}
+                to={`/event/${id}`}
+                size="medium"
+                sx={{ color: contrastGreen, fontWeight: "bold" }}
+              >
+                Ver
+              </Button>
+            </CardActions>
+          </div>
         </CardContent>
       </div>
     </Card>

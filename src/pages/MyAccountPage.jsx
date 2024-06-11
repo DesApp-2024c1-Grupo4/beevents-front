@@ -1,12 +1,65 @@
-import { Box, Button, Card, CardMedia, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import { Button, Card, CircularProgress, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
-import { Edit, Key, ManageAccounts, StadiumOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
+import { DeleteOutlineOutlined, Edit, Key, Logout, ManageAccounts, StadiumOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import LocalDataBaseService from "../services/LocalDataBaseService";
 import validator from "validator";
+import { getLocationById } from "../services/LocationService"
+import { Link } from "react-router-dom";
+import InputSearch from "../components/InputSearch";
+import { deleteEvent, getAllEvents } from "../services/EventService";
+import UserService from "../services/userService";
+import SnackBar from "../components/SnackBar";
 
-export default function CardHorizontalWBorder({ imageUrl, artist, title, location, dates, sectors }) {
+export default function CardHorizontalWBorder({
+  fetchEvents,
+  setSnackbarMessage,
+  setSnackbarOpen,
+  id,
+  artist,
+  title,
+  location,
+  dates,
+  sectors }) {
   const { contrastGreen } = customMuiTheme.colors;
+  const [locationName, setLocationName] = useState("")
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const getLocationName = async (locationId) => {
+      const locationObject = await getLocationById(location)
+      setLocationName(locationObject.name)
+    }
+    getLocationName()
+  }, [location]);
+
+  const getFormatedDate = (date) => {
+    const thisDate = new Date(date);
+    const day = thisDate.getDate()
+    const month = thisDate.toLocaleString("es-AR", { month: "long" });
+    const year = thisDate.getFullYear()
+    const hour = ("0" + thisDate.getHours()).slice(-2);
+    const minutes = ("0" + thisDate.getMinutes()).slice(-2);
+    const time = "" + hour + ":" + minutes + " hs."
+    return ("" + day + " de " + month + " de " + year + ", " + time)
+  };
+
+  const handleDelete = async (eventId) => {
+    const confirm = window.confirm("Estás a punto de eliminar este evento. ¿Estás segur@?");
+    if (confirm) {
+      try {
+        setLoading(true);
+        await deleteEvent(eventId);
+        fetchEvents();
+        setSnackbarMessage("Evento eliminado");
+      } catch (error) {
+        console.log(error)
+        setSnackbarMessage("Error al eliminar evento");
+      } finally {
+        setSnackbarOpen(true);
+        setLoading(false);
+      }
+    }
+  }
 
   return (
     <Card
@@ -14,113 +67,120 @@ export default function CardHorizontalWBorder({ imageUrl, artist, title, locatio
       sx={{
         background: "transparent",
         display: { sm: "flex" },
-        p: 2,
-        columnGap: 3,
-        minHeight: "200px"
+        p: 2
       }}
     >
-      <CardMedia
-        component="img"
-        sx={{
-          width: { sm: "500px" },
-          maxHeight: { sm: "196px" },
-          objectFit: "fill",
-          borderRadius: "5px"
-        }}
-        image={imageUrl}
-        alt="Event image"
-      />
       <Stack
         direction={{ sm: "row" }}
         spacing={{ xs: 2 }}
-        mt={{ xs: 3, sm: 0 }}
         textAlign={{ xs: "center", sm: "left" }}
         sx={{
           width: "100%",
           alignItems: { xs: "center", sm: "start" },
           justifyContent: "space-between"
         }}>
-        <Stack spacing={2} >
+        <Stack spacing={1} width={{ xs: "100%", sm: "25%" }}>
           <Typography
             variant="h2"
-            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
-          >
-            {artist}
-          </Typography>
-          <Typography
-            variant="h2"
-            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
+            sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
           >
             {title}
           </Typography>
           <Typography
             variant="h2"
-            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
+            sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
           >
-            {location}
+            {artist}
           </Typography>
-          <Box>
-            {dates.map(date => (
-              <Typography
-                variant="info"
-                sx={{ fontSize: { md: "1.2rem" } }}
-                key={date}>
-                {date}
-              </Typography>
-            ))}
-          </Box>
         </Stack>
-        <Stack spacing={2} >
-          <Typography
-            variant="h2"
-            sx={{ fontSize: { xs: "1rem", md: "1.5rem" } }}
-          >
-            Sectores
-          </Typography>
-          <Box>
-            {sectors.map(sector => (
-              <Typography
-                key={sector.name}
-                variant="info"
-                sx={{ fontSize: { md: "1.2rem" } }}
-              >
-                {sector.name}
-              </Typography>
-            ))}
-          </Box>
+        <Typography
+          variant="h2"
+          width={{ xs: "100%", sm: "25%" }}
+          sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
+        >
+          {locationName}
+        </Typography>
+        <Stack
+          spacing={1}
+          textAlign={{ xs: "center", sm: "end" }}
+          width={{ xs: "100%", sm: "20%" }}
+        >
+          {dates.map(date => (
+            <Typography
+              variant="info"
+              sx={{ fontSize: { md: "1rem" } }}
+              key={date}>
+              {getFormatedDate(date)}
+            </Typography>
+          ))}
         </Stack>
-        <IconButton
-          title="Editar"
-          sx={{ alignSelf: "end", bgcolor: contrastGreen }}>
-          <Edit />
-        </IconButton>
+        <Stack
+          width={{ xs: "100%", sm: "15%" }}
+          spacing={1}
+        >
+          {sectors.map(sector => (
+            <Typography
+              key={sector.name}
+              variant="info"
+              sx={{ fontSize: { md: "1rem" } }}
+            >
+              {sector.name}
+            </Typography>
+          ))}
+        </Stack>
+        <Stack
+          direction="row"
+          spacing={1}
+          width={{ xs: "100%", sm: "15%" }}
+          justifyContent="center"
+        >
+          <IconButton
+            title="Editar"
+            component={Link}
+            to={`/create_event/${id}`}
+            sx={{
+              bgcolor: contrastGreen,
+              "&:hover": { color: "white" }
+            }}>
+            <Edit />
+          </IconButton>
+          <IconButton
+            title="Eliminar"
+            onClick={() => handleDelete(id)}
+            sx={{ bgcolor: "crimson" }}>
+            {loading
+              ? <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+              : <DeleteOutlineOutlined />}
+          </IconButton>
+        </Stack>
       </Stack>
     </Card>
   )
 }
 
-
 export function MyAccountPage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [events, setEvents] = useState([]);
-  const [firstTwoEvents, setFirstTwoEvents] = useState([]);
-  const localDBService = new LocalDataBaseService();
+  const [shownEvents, setShownEvents] = useState([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const userService = new UserService();
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      const allEvents = await localDBService.getAllEvents();
-      setEvents(allEvents);
-      setFirstTwoEvents([allEvents[0], allEvents[1]]);
-    };
-    fetchEvents();
-  }, []);
+  useEffect(() => { fetchEvents(); }, []);
+
+  const fetchEvents = async () => {
+    const allEvents = await getAllEvents();
+    setEvents(allEvents);
+    const totalEvents = allEvents.length
+    totalEvents > 1
+      ? setShownEvents([allEvents[totalEvents - 1], allEvents[totalEvents - 2]])
+      : setShownEvents(allEvents)
+  };
 
   const [emailValue, setEmailValue] = useState("fetchedEmail@email.com");
   const isNotAnEmail = !(validator.isEmpty(emailValue) || validator.isEmail(emailValue))
   const getEmailHelperText = isNotAnEmail ? "Escribe un email válido" : "";
-  function handleEmailChange(e) {
-    setEmailValue(e.target.value);
-  }
+  const handleEmailChange = (e) => { setEmailValue(e.target.value); }
 
   const [nameValue, setNameValue] = useState("Fetched Name");
   const handleNameChange = (e) => { setNameValue(e.target.value) }
@@ -128,13 +188,9 @@ export function MyAccountPage() {
   const [phoneValue, setPhoneValue] = useState("11-3333-3333");
   const isNotAPhone = !(validator.isEmpty(phoneValue) || validator.isMobilePhone(phoneValue))
   const getPhoneHelperText = isNotAPhone ? "Escribe un teléfono válido" : "";
-  function handlePhoneChange(e) {
-    setPhoneValue(e.target.value);
-  }
+  const handlePhoneChange = (e) => { setPhoneValue(e.target.value); }
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+  const handleMouseDownPassword = (event) => { event.preventDefault(); };
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const handleShowCurrentPassword = () => setShowCurrentPassword((show) => !show);
   const [currentPassValue, setCurrentPassValue] = useState("");
@@ -161,8 +217,29 @@ export function MyAccountPage() {
     : "";
   function handleNewPassChange(e) { setNewPassValue(e.target.value); }
 
+  const handleSearch = (searchValue) => {
+    const totalEvents = events.length
+    const previousShown = [events[totalEvents - 1], events[totalEvents - 2]]
+    const lowercasedFilter = searchValue.toLowerCase();
+    const filteredData = events.filter((item) =>
+      item.name.toLowerCase().includes(lowercasedFilter)
+      || item.artist.toLowerCase().includes(lowercasedFilter)
+    );
+    !validator.isEmpty(searchValue) ? setShownEvents(filteredData) : setShownEvents(previousShown)
+  };
+
+  const handleLogout = () => { userService.removeUserFromLocalStorage(); };
+
+  const handleSnackbarClose = () => { setSnackbarOpen(false); };
+
   return (
     <Container maxWidth="md">
+      <SnackBar
+        open={snackbarOpen}
+        message={snackbarMessage}
+        severity="success"
+        handleClose={handleSnackbarClose}
+      />
       <Stack spacing={10} my={4}>
         {/* Title and subtitle */}
         <Stack>
@@ -177,7 +254,7 @@ export function MyAccountPage() {
               alignSelf: "flex-start",
             }}
           >
-            ¡Hola Cristian!
+            ¡Hola!
           </Typography>
           <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}>
             Acá podés ver tus eventos, tus datos, y cambiar tu contraseña.
@@ -188,24 +265,33 @@ export function MyAccountPage() {
           <Stack
             direction="row"
             justifyContent="space-between"
-            alignItems="baseline">
+            alignItems="center">
             <Typography
               variant="h2"
               sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
             >
-              Eventos que creaste
+              Últimos eventos creados
             </Typography>
             <StadiumOutlined sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
           </Stack>
           <Stack spacing={3} px={1}>
-            {firstTwoEvents.map((event) => (
+            <Stack alignItems={{ xs: "center", sm: "end" }} pb={1}>
+              <InputSearch
+                options={events.map((event) => event.name)}
+                onSearch={handleSearch}
+              />
+            </Stack>
+            {shownEvents.map((event) => (
               <CardHorizontalWBorder
-                key={event.id}
-                imageUrl={event.image}
+                key={event._id}
+                fetchEvents={fetchEvents}
+                setSnackbarMessage={setSnackbarMessage}
+                setSnackbarOpen={setSnackbarOpen}
+                id={event._id}
                 artist={event.artist}
                 title={event.name}
-                location={event.location.name}
-                dates={event.dates}
+                location={event.location_id}
+                dates={event.date_times}
                 sectors={event.sectors}
               />
             ))}
@@ -216,7 +302,7 @@ export function MyAccountPage() {
           <Stack
             direction="row"
             justifyContent="space-between"
-            alignItems="baseline">
+            alignItems="center">
             <Typography
               variant="h2"
               sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
@@ -351,6 +437,25 @@ export function MyAccountPage() {
               </Typography>
             </Button>
           </Stack>
+        </Stack>
+        <Stack spacing={1} alignItems="center">
+          <Typography
+            variant="h2"
+            sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
+          >
+            Cerrar sesión
+          </Typography>
+          <IconButton
+            component={Link}
+            to="/"
+            onClick={() => handleLogout()}
+            title="Cerrar sesión"
+            sx={{
+              "&:hover": { color: "white" }
+            }}
+          >
+            <Logout fontSize="large" />
+          </IconButton>
         </Stack>
       </Stack>
     </Container>
