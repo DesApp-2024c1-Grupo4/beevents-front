@@ -126,7 +126,17 @@ export default function MediaCard({
           component={Link}
           to={`/event/${id}`}
           size="medium"
-          sx={{ color: contrastGreen, fontWeight: "bold" }}
+          sx={{
+            color: contrastGreen,
+            fontWeight: "bold",
+            textDecoration: "none",
+            "&:hover": {
+              color: contrastGreen,
+            },
+            "&:visited": {
+              color: contrastGreen,
+            },
+          }}
         >
           Ver
         </Button>

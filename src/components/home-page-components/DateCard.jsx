@@ -101,15 +101,16 @@ export default function DateCard({ id, date, artist, imageUrl }) {
             textAlign: "center",
           }}
         >
-          <Typography
-            sx={{ color: contrastGreen, fontWeight: "bold", fontSize: "25px" }}
-          >
-            {formatDateToMonth(date)}
-          </Typography>
+          {" "}
           <Typography
             sx={{ color: "white", fontWeight: "bold", fontSize: "18px" }}
           >
             {artist}
+          </Typography>
+          <Typography
+            sx={{ color: contrastGreen, fontWeight: "bold", fontSize: "30px" }}
+          >
+            {formatDateToMonth(date)}
           </Typography>
         </CardContent>
       </div>
@@ -118,7 +119,17 @@ export default function DateCard({ id, date, artist, imageUrl }) {
           component={Link}
           to={`/event/${id}`}
           size="medium"
-          sx={{ color: contrastGreen, fontWeight: "bold" }}
+          sx={{
+            color: contrastGreen,
+            fontWeight: "bold",
+            textDecoration: "none",
+            "&:hover": {
+              color: contrastGreen,
+            },
+            "&:visited": {
+              color: contrastGreen,
+            },
+          }}
         >
           Ver
         </Button>

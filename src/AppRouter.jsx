@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { HomePage2 } from "./pages/HomePage2";
+import { HomePage } from "./pages/HomePage";
 import { EventsPage } from "./pages/EventsPage";
 import { EventPage } from "./pages/EventPage";
 import { CreateEventPage } from "./pages/CreateEventPage";
@@ -11,7 +11,7 @@ import { MyAccountPage } from "./pages/MyAccountPage";
 export function AppRouter() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage2 />} />
+      <Route path="/" element={<HomePage />} />
       <Route path="/events" element={<EventsPage />} />
       <Route path="/event/:eventId" element={<EventPage />} />
       <Route path="/create_event" element={<CreateEventPage />} />
