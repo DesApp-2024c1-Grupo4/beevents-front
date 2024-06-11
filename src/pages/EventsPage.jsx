@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Container, Grid, Box } from "@mui/material/";
 import { getAllEvents, deleteEvent } from "../services/EventService";
+import InputSearch from "../components/InputSearch";
 import MediaCard from "../components/Card";
 import Typography from "@mui/material/Typography";
 import { customMuiTheme } from "../config/customMuiTheme";
-import InputSearch from "../components/InputSearch";
 
 export function EventsPage() {
   const { contrastGreen } = customMuiTheme.colors;
@@ -63,7 +63,7 @@ export function EventsPage() {
             Todos los eventos
           </Typography>
           <InputSearch
-            options={events.map((event) => event.name)}
+            options={events.map((event) => event._id)}
             onSearch={handleSearch}
           />
         </Box>
@@ -75,12 +75,13 @@ export function EventsPage() {
           }}
         >
           {filteredEvents.map((event) => (
-            <Grid item xs={12} md={6} lg={4} key={event.id}>
+            <Grid item xs={12} md={6} lg={4} key={event.name}>
               <MediaCard
                 id={event.id}
                 title={event.name}
                 artist={event.artist}
                 imageUrl={event.image}
+                isHomePage={false}
               />
             </Grid>
           ))}

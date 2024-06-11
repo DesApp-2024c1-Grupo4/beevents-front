@@ -9,7 +9,6 @@ const api = axios.create({
 export async function getAllEvents() {
   try {
     const response = await api.get("/event");
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error(error);

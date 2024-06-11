@@ -44,7 +44,7 @@ export function Header() {
     <AppBar
       position="static"
       sx={{
-        height: "10vh",
+        minHeight: "10vh",
         backgroundColor: "var(--primary-color)",
         color: "var(--color)",
       }}
