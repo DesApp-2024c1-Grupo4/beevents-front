@@ -15,6 +15,7 @@ export function AppRouter() {
       <Route path="/events" element={<EventsPage />} />
       <Route path="/event/:eventId" element={<EventPage />} />
       <Route path="/create_event" element={<CreateEventPage />} />
+      <Route path="/create_event/:eventId" element={<CreateEventPage />} />
       <Route path="/auth/login" element={<LoginPage />} />
       <Route path="/auth/register" element={<RegisterPage />} />
       <Route path="/auth/recover" element={<RecoverPage />} />
