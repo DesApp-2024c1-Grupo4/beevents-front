@@ -2,57 +2,42 @@ import { Autocomplete, Button, Stack, TextField, Typography } from "@mui/materia
 import LocationForm from "./LocationForm"
 import { useEffect, useState } from "react";
 import { AddCircleOutlineOutlined } from "@mui/icons-material";
-import { getAllLocations } from "../../services/LocationService"
+import { getAllLocations, getLocationById } from "../../services/LocationService"
 import validator from "validator";
+import { useParams } from "react-router-dom";
 
 export default function LocationSection({ locationId, setLocationId }) {
   const [showForm, setShowForm] = useState(false);
-  const [ fetchedLocations, setFetchedLocations ] = useState([])
-  const [ selectedLocationName, setSelectedLocationName ] = useState("")
-  {/** 
-  const fakeFetchedLocations = [
-    {
-      _id: 1,
-      name: "River Plate",
-      address: {
-        street: "Av. Pres. Figueroa Alcorta",
-        number: 7597,
-      },
-    },
-    {
-      _id: 2,
-      name: "Movistar Arena",
-      address: {
-        street: "Humboldt",
-        number: 450,
-      },
-    },
-  ];
-  */}
+  const [fetchedLocations, setFetchedLocations] = useState([])
+  const [selectedLocationName, setSelectedLocationName] = useState("");
+  const { eventId } = useParams();
 
   useEffect(() => {
     const fetchLocations = async () => {
       setFetchedLocations(await getAllLocations());
     }
-    fetchLocations()
-  }, [])
+    fetchLocations();
+  }, []);
+
+  useEffect(() => {
+    const getLocationName = async () => {
+      const location = await getLocationById(locationId);
+      setSelectedLocationName(location.name)
+    }
+    if (eventId && !selectedLocationName) { getLocationName(); }
+  }, [locationId]);
 
   const getLocationOptions = () => {
     const options = [];
     for (let i = 0; i < fetchedLocations.length; i++) {
       const location = fetchedLocations[i];
-      options.push({ id: location._id , label: location.name });
+      options.push({ id: location._id, label: location.name });
     }
     return options;
   };
-   {/** 
-  const getLocationById = (id) => {
-    return fakeFetchedLocations.filter((location) => location._id === id)[0];
-  };
-  */}
+
   const handleLocationChange = (e, value) => {
     if (value !== null) {
-      //const locationSelected = getLocationById(value.id);
       setLocationId(value.id);
       setSelectedLocationName(value.label)
     }

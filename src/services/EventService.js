@@ -26,8 +26,16 @@ export async function getEventById(id) {
 
 export async function createEvent(event) {
   try {
-    console.log(event);
     const response = await api.post("/event/", event);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+}
+
+export async function updateEvent(event, id) {
+  try {
+    const response = await api.put(`/event/${id}`, event);
     return response.data;
   } catch (error) {
     return error;

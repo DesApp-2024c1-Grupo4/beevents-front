@@ -12,7 +12,8 @@ import LocationSection from "../components/create-event-page-components/Location
 import DatesSection from "../components/create-event-page-components/DatesSection";
 import SectorsSection from "../components/create-event-page-components/SectorsSection";
 import SnackBar from "../components/SnackBar";
-import { createEvent } from "../services/EventService";
+import { createEvent, getEventById, updateEvent } from "../services/EventService";
+import { useNavigate, useParams } from "react-router-dom";
 
 export function CreateEventPage() {
   const [sectors, setSectors] = useState([]);
@@ -21,7 +22,10 @@ export function CreateEventPage() {
   const [locationId, setLocationId] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [event, setEvent] = useState(null);
   const { contrastGreen } = customMuiTheme.colors;
+  const { eventId } = useParams();
+  const navigate = useNavigate();
   const { control, handleSubmit, setValue, reset } = useForm({
     defaultValues: {
       name: "",
@@ -46,12 +50,38 @@ export function CreateEventPage() {
     setValue("sectors", sectors);
   }, [sectors, setValue]);
 
-  const onSubmit = async (formData) => {
+  useEffect(() => {
+    const fetchEvent = async () => {
+      const fetchedEvent = await getEventById(eventId);
+      setEvent(fetchedEvent);
+    }
+    if (eventId) { fetchEvent(); }
+  }, []);
+
+  useEffect(() => {
+    if (event) {
+      reset({
+        name: event.name,
+        artist: event.artist,
+        image: event.image
+      });
+      setLocationId(event.location_id)
+      setDates(event.date_times)
+      setSectors(event.sectors)
+    }
+  }, [event]);
+
+  const onSubmit = (formData) => {
     setLoading(true);
+    eventId ? updateAnEvent(formData) : createNewEvent(formData);
+  };
+
+  const createNewEvent = async (formData) => {
     try {
       await createEvent(formData);
       setSnackbarMessage("¡Evento creado exitosamente!");
-      reset();
+      setTimeout(navigate, 2000, "/account")
+      setTimeout(window.scrollTo, 2001, 0, 0)
     } catch (error) {
       console.log(error);
       setSnackbarMessage("Hubo un error al crear el evento");
@@ -59,7 +89,22 @@ export function CreateEventPage() {
       setLoading(false);
       setSnackbarOpen(true);
     }
-  };
+  }
+
+  const updateAnEvent = async (formData) => {
+    try {
+      await updateEvent(formData, eventId);
+      setSnackbarMessage("¡Evento editado exitosamente!");
+      setTimeout(navigate, 2000, "/account")
+      setTimeout(window.scrollTo, 2001, 0, 0)
+    } catch (error) {
+      console.log(error);
+      setSnackbarMessage("Hubo un error al editar el evento");
+    } finally {
+      setLoading(false);
+      setSnackbarOpen(true);
+    }
+  }
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -87,7 +132,7 @@ export function CreateEventPage() {
           alignSelf: "flex-start",
         }}
       >
-        Crear un evento nuevo
+        {eventId ? "Editar evento" : "Crear un evento nuevo"}
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Stack spacing={5}>
@@ -126,7 +171,6 @@ export function CreateEventPage() {
           <SectorsSection sectors={sectors} setSectors={setSectors} />
           <Button
             size="large"
-            variant="contained"
             type="submit"
             disabled={loading}
             sx={{
@@ -140,13 +184,13 @@ export function CreateEventPage() {
                 backgroundColor: contrastGreen,
                 color: "whitesmoke",
               },
-              width: "100px",
+              width: "120px",
             }}
           >
             {loading ? (
               <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
             ) : (
-              <Typography variant="h2">Crear</Typography>
+              <Typography variant="h2">{eventId ? "Confirmar" : "Crear"}</Typography>
             )}
           </Button>
         </Stack>

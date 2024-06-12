@@ -90,7 +90,6 @@ const HeroImage = () => {
     <Box
       sx={{
         position: "relative",
-        height: isTablet ? "60vh" : "90vh",
         minHeight: isTablet ? "60vh" : "90vh",
         width: "100%",
         display: "flex",
@@ -125,7 +124,7 @@ const HeroImage = () => {
       ></div>
       <div
         style={{
-          position: "absolute",
+          position: "relative",
           top: 0,
           left: 0,
           height: "100%",
@@ -136,7 +135,6 @@ const HeroImage = () => {
           alignItems: "center",
         }}
       >
-        {" "}
         <div
           style={{
             width: "100%",
