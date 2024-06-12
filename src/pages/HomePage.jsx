@@ -15,6 +15,7 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 export function HomePage() {
   const theme = useTheme();
@@ -42,19 +43,7 @@ export function HomePage() {
 
   return (
     <>
-      <Box
-        component="section"
-        sx={{
-          margin: 0,
-          padding: 0,
-          width: "100%",
-          height: "60vh",
-          backgroundImage: `url(${HeroImageImg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      ></Box>
-      {/* <HeroImage /> */}
+      <HeroImage />
       <Container
         maxWidth="md"
         sx={{
@@ -101,18 +90,22 @@ export function HomePage() {
             justifyContent="center"
             alignItems="center"
           >
-            {events.slice(0, 3).map((event, index) => (
-              <Grid item xs={12} sm={4} key={index}>
-                <Card
-                  id={event._id}
-                  title={event.title}
-                  artist={event.artist}
-                  imageUrl={event.image}
-                  totalSeats={getRandomInt(100, 150)}
-                  isHomePage={true}
-                />
-              </Grid>
-            ))}
+            {events.length > 0 ? (
+              events.slice(0, 3).map((event, index) => (
+                <Grid item xs={12} sm={4} key={index}>
+                  <Card
+                    id={event._id}
+                    title={event.title}
+                    artist={event.artist}
+                    imageUrl={event.image}
+                    totalSeats={getRandomInt(100, 150)}
+                    isHomePage={true}
+                  />
+                </Grid>
+              ))
+            ) : (
+              <LoadingIndicator />
+            )}
           </Grid>
         </Box>
         <Box
@@ -164,7 +157,7 @@ export function HomePage() {
                 </Grid>
               ))
             ) : (
-              <Typography variant="body1">Cargando eventos...</Typography>
+              <LoadingIndicator />
             )}
           </Grid>
         </Box>

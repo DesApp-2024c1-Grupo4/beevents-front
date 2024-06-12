@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import HeroImageCard from "../../components/home-page-components/HeroImageCard";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { customMuiTheme } from "../../config/customMuiTheme";
+import LoadingIndicator from "../LoadingIndicator";
 
 const HeroImage = () => {
   const theme = useTheme();
@@ -16,14 +16,17 @@ const HeroImage = () => {
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const carouselRef = useRef(null);
   const intervalRef = useRef(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
+      setIsLoading(true);
       const allEvents = await getAllEvents();
       setEvents(allEvents);
       setFilteredEvents(allEvents);
+      setIsLoading(false);
     };
     fetchEvents();
   }, []);
@@ -54,7 +57,7 @@ const HeroImage = () => {
           handleTransitionEnd
         );
       }
-    }, 3000);
+    }, 2500);
   };
 
   const stopCarousel = () => {
@@ -74,17 +77,26 @@ const HeroImage = () => {
     setSearchTerm(searchValue);
     const lowercasedFilter = searchValue.toLowerCase();
     const filteredData = events.filter((item) =>
-      item.name.toLowerCase().includes(lowercasedFilter)
+      item.artist.toLowerCase().includes(lowercasedFilter)
     );
-    setFilteredEvents(filteredData);
+    const uniqueFilteredData = filteredData.filter(
+      (event, index, self) =>
+        index === self.findIndex((e) => e.artist === event.artist)
+    );
+    setFilteredEvents(uniqueFilteredData);
   };
 
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         position: "relative",
-        height: isTablet ? "50vh" : "90vh",
+        height: isTablet ? "60vh" : "90vh",
+        minHeight: isTablet ? "60vh" : "90vh",
         width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
         overflow: "hidden",
       }}
     >
@@ -93,7 +105,7 @@ const HeroImage = () => {
           position: "absolute",
           top: 0,
           left: 0,
-          height: isTablet ? "50vh" : "90vh",
+          minHeight: isTablet ? "60vh" : "90vh",
           width: "100%",
           background: `url(${BackgroundImage}) no-repeat center center`,
           backgroundSize: "cover",
@@ -124,10 +136,11 @@ const HeroImage = () => {
           alignItems: "center",
         }}
       >
+        {" "}
         <div
           style={{
             width: "100%",
-            marginTop: isMobile ? "40px" : "20px",
+            marginTop: isMobile ? "0px" : "40px",
             marginBottom: isMobile ? "0px" : "10px",
             position: "relative",
             display: "flex",
@@ -137,49 +150,55 @@ const HeroImage = () => {
             zIndex: 1,
           }}
         >
-          {!isMobile ? (
-            <>
-              <Box sx={{ maxWidth: { xs: 60, sm: 100 }, m: 4 }}>
-                <img src={logo} alt="brandLogo" style={{ maxWidth: "100%" }} />
-              </Box>
-              <InputSearch
-                options={events.map((event) => event.name)}
-                onSearch={handleSearch}
+          <Box sx={{ maxWidth: { xs: 60, sm: 100 }, m: 4 }}>
+            <img src={logo} alt="brandLogo" style={{ maxWidth: "100%" }} />
+          </Box>
+          <InputSearch
+            options={events.map((event) => event.artist)}
+            onSearch={handleSearch}
+          />
+        </div>
+        {isLoading ? (
+          <Box
+            sx={{
+              width: "100%",
+              height: "300px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <LoadingIndicator />
+          </Box>
+        ) : (
+          <div
+            ref={carouselRef}
+            style={{
+              marginTop: isMobile ? "0px" : "20px",
+              paddingTop: isMobile ? "1rem" : "2rem",
+              paddingBottom: isMobile ? "1rem" : "2rem",
+              display: "flex",
+              flexWrap: "nowrap",
+              overflow: "hidden",
+              width: "auto",
+              position: "relative",
+              zIndex: 1,
+            }}
+          >
+            {(searchTerm === "" ? events : filteredEvents).map((event) => (
+              <HeroImageCard
+                key={event._id}
+                id={event._id}
+                artist={event.artist}
+                imageUrl={event.image}
+                style={{ flex: "0 0 auto", margin: "0 20px" }}
               />
-            </>
-          ) : (
-            <InputSearch
-              options={events.map((event) => event.name)}
-              onSearch={handleSearch}
-            />
-          )}
-        </div>
-        <div
-          ref={carouselRef}
-          style={{
-            marginTop: "20px",
-            paddingTop: "2rem",
-            paddingBottom: "2rem",
-            display: "flex",
-            flexWrap: "nowrap",
-            overflow: "hidden",
-            width: "auto",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-          {(searchTerm === "" ? events : filteredEvents).map((event) => (
-            <HeroImageCard
-              key={event._id}
-              id={event._id}
-              artist={event.artist}
-              imageUrl={event.image}
-              style={{ flex: "0 0 auto", margin: "0 20px" }}
-            />
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </Box>
   );
 };
 
