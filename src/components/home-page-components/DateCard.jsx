@@ -1,40 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
-import { useMediaQuery } from "@mui/material";
-import { useInView } from "react-intersection-observer";
-import { customMuiTheme } from "../config/customMuiTheme";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { customMuiTheme } from "../../config/customMuiTheme";
 
-export default function MediaCard({
-  id,
-  title,
-  artist,
-  imageUrl,
-  totalSeats,
-  isHomePage,
-}) {
+export default function DateCard({ id, date, artist, imageUrl }) {
+  const theme = useTheme();
   const { contrastGreen, iconGrey } = customMuiTheme.colors;
-  const isMobile = useMediaQuery("(max-width:600px)");
-  const [reservedSeats, setReservedSeats] = useState(0);
-  const [ref, inView] = useInView({
-    threshold: 0.5,
-  });
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  useEffect(() => {
-    if (inView) {
-      const increment = Math.floor(totalSeats / 50);
-      const interval = setInterval(() => {
-        setReservedSeats((prevSeats) =>
-          prevSeats < totalSeats ? prevSeats + increment : totalSeats
-        );
-      }, 100);
-      return () => clearInterval(interval);
+  const formatDateToMonth = (dateString) => {
+    const date = new Date(dateString);
+    const month = date.getMonth() + 1;
+    switch (month) {
+      case 1:
+        return "Enero";
+      case 2:
+        return "Febrero";
+      case 3:
+        return "Marzo";
+      case 4:
+        return "Abril";
+      case 5:
+        return "Mayo";
+      case 6:
+        return "Junio";
+      case 7:
+        return "Julio";
+      case 8:
+        return "Agosto";
+      case 9:
+        return "Septiembre";
+      case 10:
+        return "Octubre";
+      case 11:
+        return "Noviembre";
+      case 12:
+        return "Diciembre";
+      default:
+        return "";
     }
-  }, [inView, totalSeats]);
+  };
 
   return (
     <Card
@@ -59,7 +70,7 @@ export default function MediaCard({
           alt="Event"
           style={{
             width: "100%",
-            height: !isMobile ? 400 : 290,
+            height: !isMobile ? 500 : 300,
             objectFit: "cover",
           }}
         />
@@ -76,7 +87,6 @@ export default function MediaCard({
           }}
         ></div>
         <CardContent
-          ref={ref}
           sx={{
             position: "absolute",
             bottom: 0,
@@ -93,32 +103,15 @@ export default function MediaCard({
         >
           {" "}
           <Typography
-            sx={{ color: iconGrey, fontWeight: "bold", fontSize: "25px" }}
+            sx={{ color: "white", fontWeight: "bold", fontSize: "18px" }}
           >
             {artist}
           </Typography>
           <Typography
-            sx={{
-              color: contrastGreen,
-              fontWeight: "bold",
-              fontSize: isHomePage ? "25px" : "13px",
-            }}
+            sx={{ color: contrastGreen, fontWeight: "bold", fontSize: "30px" }}
           >
-            {title}
+            {formatDateToMonth(date)}
           </Typography>
-          {isHomePage && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                color: contrastGreen,
-                fontWeight: "bold",
-                fontSize: "18px",
-              }}
-            >
-              + de {reservedSeats} asientos reservados
-            </Typography>
-          )}
         </CardContent>
       </div>
       <CardActions sx={{ justifyContent: "center", padding: "10px" }}>

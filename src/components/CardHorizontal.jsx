@@ -56,7 +56,7 @@ export default function CardHorizontal() {
                 color: iconGrey,
                 fontWeight: "bold",
                 fontSize: {
-                  xs: "1rem",
+                  xs: "0.8rem",
                   sm: "1.5rem",
                   md: "1.6rem",
                 },

@@ -14,8 +14,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import { customMuiTheme } from "../config/customMuiTheme";
 import UserService from "../services/userService";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export function Header() {
+  const theme = useTheme();
+  const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
   const userService = new UserService();
   const [user, setUser] = useState(null);
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -40,11 +44,184 @@ export function Header() {
     setAnchorElNav(null);
   };
 
+  const menuItems = [
+    <Button
+      key="Inicio"
+      component={Link}
+      to="/"
+      onClick={handleCloseNavMenu}
+      sx={{
+        display: "flex",
+        whiteSpace: "nowrap",
+        justifyContent: "center",
+        alignItems: "center",
+        my: 2,
+        mx: 1,
+        px: 2,
+        color: "white",
+        textDecoration: "none",
+        "&:hover": {
+          backgroundColor: contrastGreen,
+          border: `2px solid ${contrastGreen}`,
+        },
+        "&:visited": {
+          color: "white",
+        },
+      }}
+    >
+      Inicio
+    </Button>,
+    <Button
+      key="Eventos"
+      component={Link}
+      to="/events"
+      onClick={handleCloseNavMenu}
+      sx={{
+        display: "flex",
+        whiteSpace: "nowrap",
+        justifyContent: "center",
+        alignItems: "center",
+        my: 2,
+        mx: 1,
+        px: 2,
+        color: "white",
+        textDecoration: "none",
+        "&:hover": {
+          backgroundColor: contrastGreen,
+          border: `2px solid ${contrastGreen}`,
+        },
+        "&:visited": {
+          color: "white",
+        },
+      }}
+    >
+      Eventos
+    </Button>,
+  ];
+
+  if (user === null) {
+    menuItems.push(
+      <Button
+        key="Ingresar"
+        component={Link}
+        to="/auth/login"
+        onClick={handleCloseNavMenu}
+        sx={{
+          display: "flex",
+          whiteSpace: "nowrap",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "8rem",
+          my: 2,
+          mx: 1,
+          px: 4,
+          color: "white",
+          border: `1px solid ${contrastGreen}`,
+          textDecoration: "none",
+          "&:hover": {
+            backgroundColor: contrastGreen,
+          },
+          "&:visited": {
+            color: "white",
+          },
+        }}
+      >
+        Ingresar
+      </Button>
+    );
+  } else {
+    menuItems.push(
+      <Button
+        key="CrearEvento"
+        component={Link}
+        to="/create_event"
+        onClick={handleCloseNavMenu}
+        sx={{
+          display: "flex",
+          whiteSpace: "nowrap",
+          justifyContent: "center",
+          alignItems: "center",
+          my: 2,
+          mx: 1,
+          px: 2,
+          color: "white",
+          border: `1px solid ${contrastGreen}`,
+          textDecoration: "none",
+          "&:hover": {
+            backgroundColor: contrastGreen,
+          },
+          "&:visited": {
+            color: "white",
+          },
+        }}
+      >
+        Crear evento
+      </Button>,
+      <Button
+        key="MiPerfil"
+        component={Link}
+        to="/account"
+        sx={{
+          display: "flex",
+          whiteSpace: "nowrap",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "8rem",
+          my: 2,
+          mx: 1,
+          px: 4,
+          color: "white",
+          textDecoration: "none",
+          "&:hover .MuiSvgIcon-root": {
+            color: contrastGreen,
+          },
+          "&:hover": {
+            backgroundColor: "transparent",
+          },
+          "&:visited": {
+            color: "white",
+          },
+        }}
+      >
+        <PersonOutlineRoundedIcon sx={{ mr: 1 }} />
+        Mi perfil
+      </Button>,
+      <Button
+        key="CerrarSesion"
+        onClick={handleLogout}
+        sx={{
+          display: "flex",
+          whiteSpace: "nowrap",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "8rem",
+          my: 2,
+          mx: 1,
+          px: 4,
+          color: "white",
+          textDecoration: "none",
+          "&:hover .MuiSvgIcon-root": {
+            color: contrastGreen,
+          },
+          "&:hover": {
+            backgroundColor: "transparent",
+          },
+          "&:visited": {
+            color: "white",
+          },
+        }}
+      >
+        <LogoutIcon sx={{ mr: 1 }} />
+        Cerrar sesión
+      </Button>
+    );
+  }
+
   return (
     <AppBar
       position="static"
       sx={{
-        height: "10vh",
+        minHeight: isTablet ? "5vh" : "10vh",
         backgroundColor: "var(--primary-color)",
         color: "var(--color)",
       }}
@@ -93,167 +270,7 @@ export function Header() {
                 display: { xs: "block", md: "none" },
               }}
             >
-              <Button
-                component={Link}
-                to="/"
-                onClick={handleCloseNavMenu}
-                sx={{
-                  display: "flex",
-                  whiteSpace: "nowrap",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  my: 2,
-                  mx: 1,
-                  px: 2,
-                  color: "white",
-                  textDecoration: "none",
-                  "&:hover": {
-                    backgroundColor: contrastGreen,
-                    border: `2px solid ${contrastGreen}`,
-                  },
-                  "&:visited": {
-                    color: "white",
-                  },
-                }}
-              >
-                Inicio
-              </Button>
-              <Button
-                component={Link}
-                to="/events"
-                onClick={handleCloseNavMenu}
-                sx={{
-                  display: "flex",
-                  whiteSpace: "nowrap",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  my: 2,
-                  mx: 1,
-                  px: 2,
-                  color: "white",
-                  textDecoration: "none",
-                  "&:hover": {
-                    backgroundColor: contrastGreen,
-                    border: `2px solid ${contrastGreen}`,
-                  },
-                  "&:visited": {
-                    color: "white",
-                  },
-                }}
-              >
-                Eventos
-              </Button>
-              {user === null ? (
-                <Button
-                  component={Link}
-                  to="/auth/login"
-                  onClick={handleCloseNavMenu}
-                  sx={{
-                    display: "flex",
-                    whiteSpace: "nowrap",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "8rem",
-                    my: 2,
-                    mx: 1,
-                    px: 4,
-                    color: "white",
-                    border: `1px solid ${contrastGreen}`,
-                    textDecoration: "none",
-                    "&:hover": {
-                      backgroundColor: contrastGreen,
-                    },
-                    "&:visited": {
-                      color: "white",
-                    },
-                  }}
-                >
-                  Ingresar
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    component={Link}
-                    to="/create_event"
-                    onClick={handleCloseNavMenu}
-                    sx={{
-                      display: "flex",
-                      whiteSpace: "nowrap",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      my: 2,
-                      mx: 1,
-                      px: 2,
-                      color: "white",
-                      border: `1px solid ${contrastGreen}`,
-                      textDecoration: "none",
-                      "&:hover": {
-                        backgroundColor: contrastGreen,
-                      },
-                      "&:visited": {
-                        color: "white",
-                      },
-                    }}
-                  >
-                    Crear evento
-                  </Button>
-                  <Button
-                    component={Link}
-                    to="/account"
-                    sx={{
-                      display: "flex",
-                      whiteSpace: "nowrap",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "8rem",
-                      my: 2,
-                      mx: 1,
-                      px: 4,
-                      color: "white",
-                      textDecoration: "none",
-                      "&:hover .MuiSvgIcon-root": {
-                        color: contrastGreen,
-                      },
-                      "&:hover": {
-                        backgroundColor: "transparent",
-                      },
-                      "&:visited": {
-                        color: "white",
-                      },
-                    }}
-                  >
-                    <PersonOutlineRoundedIcon sx={{ mr: 1 }} />
-                    Mi perfil
-                  </Button>
-                  <Button
-                    onClick={handleLogout}
-                    sx={{
-                      display: "flex",
-                      whiteSpace: "nowrap",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "8rem",
-                      my: 2,
-                      mx: 1,
-                      px: 4,
-                      color: "white",
-                      textDecoration: "none",
-                      "&:hover .MuiSvgIcon-root": {
-                        color: contrastGreen,
-                      },
-                      "&:hover": {
-                        backgroundColor: "transparent",
-                      },
-                      "&:visited": {
-                        color: "white",
-                      },
-                    }}
-                  >
-                    <LogoutIcon sx={{ mr: 1 }} />
-                    Log-out
-                  </Button>
-                </>
-              )}
+              {menuItems}
             </Menu>
           </Box>
           <Box
