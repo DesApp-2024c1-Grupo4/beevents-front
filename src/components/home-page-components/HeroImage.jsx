@@ -105,7 +105,7 @@ const HeroImage = () => {
           position: "absolute",
           top: 0,
           left: 0,
-          minHeight: isTablet ? "60vh" : "90vh",
+          height: "100%",
           width: "100%",
           background: `url(${BackgroundImage}) no-repeat center center`,
           backgroundSize: "cover",
