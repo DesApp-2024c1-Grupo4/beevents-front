@@ -9,6 +9,7 @@ import InputSearch from "../components/InputSearch";
 import { deleteEvent, getAllEvents } from "../services/EventService";
 import UserService from "../services/userService";
 import SnackBar from "../components/SnackBar";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 export default function CardHorizontalWBorder({
   fetchEvents,
@@ -164,6 +165,7 @@ export function MyAccountPage() {
   const [shownEvents, setShownEvents] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [ isLoading, setIsLoading ] = useState(true);
   const userService = new UserService();
 
   useEffect(() => { fetchEvents(); }, []);
@@ -175,6 +177,7 @@ export function MyAccountPage() {
     totalEvents > 1
       ? setShownEvents([allEvents[totalEvents - 1], allEvents[totalEvents - 2]])
       : setShownEvents(allEvents)
+    setIsLoading(false)
   };
 
   const [emailValue, setEmailValue] = useState("fetchedEmail@email.com");
@@ -281,20 +284,22 @@ export function MyAccountPage() {
                 onSearch={handleSearch}
               />
             </Stack>
-            {shownEvents.map((event) => (
-              <CardHorizontalWBorder
-                key={event._id}
-                fetchEvents={fetchEvents}
-                setSnackbarMessage={setSnackbarMessage}
-                setSnackbarOpen={setSnackbarOpen}
-                id={event._id}
-                artist={event.artist}
-                title={event.name}
-                location={event.location_id}
-                dates={event.date_times}
-                sectors={event.sectors}
-              />
-            ))}
+            {!isLoading
+              ? shownEvents.map((event) => (
+                <CardHorizontalWBorder
+                  key={event._id}
+                  fetchEvents={fetchEvents}
+                  setSnackbarMessage={setSnackbarMessage}
+                  setSnackbarOpen={setSnackbarOpen}
+                  id={event._id}
+                  artist={event.artist}
+                  title={event.name}
+                  location={event.location_id}
+                  dates={event.date_times}
+                  sectors={event.sectors}
+                />
+              ))
+              : <LoadingIndicator />}
           </Stack>
         </Stack>
         {/* Personal data */}

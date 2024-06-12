@@ -80,7 +80,8 @@ export function CreateEventPage() {
     try {
       await createEvent(formData);
       setSnackbarMessage("¡Evento creado exitosamente!");
-      setTimeout(navigate, 3000, "/account")
+      setTimeout(navigate, 2000, "/account")
+      setTimeout(window.scrollTo, 2001, 0, 0)
     } catch (error) {
       console.log(error);
       setSnackbarMessage("Hubo un error al crear el evento");
@@ -94,7 +95,8 @@ export function CreateEventPage() {
     try {
       await updateEvent(formData, eventId);
       setSnackbarMessage("¡Evento editado exitosamente!");
-      setTimeout(navigate, 3000, "/account")
+      setTimeout(navigate, 2000, "/account")
+      setTimeout(window.scrollTo, 2001, 0, 0)
     } catch (error) {
       console.log(error);
       setSnackbarMessage("Hubo un error al editar el evento");
