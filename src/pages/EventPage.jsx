@@ -19,7 +19,7 @@ export function EventPage() {
       setLocation(locationObject)
     };
     fetchEvent();
-  }, [eventId]);
+  }, []);
 
   const getFormatedDate = (date) => {
     const thisDate = new Date(date);
@@ -34,14 +34,15 @@ export function EventPage() {
 
   return (
     <Container maxWidth="md">
-      {event && (
-        <Stack my={4}>
+      {event && location && (
+        <Stack my={5} spacing={5}>
+          {/* Artist, name and location */}
           <Stack
             direction={{ xs: "column", sm: "row" }}
             spacing={2}
             justifyContent="space-between"
-            >
-            <Stack alignItems={{xs:"center", sm: "start"}}>
+          >
+            <Stack alignItems={{ xs: "center", sm: "start" }}>
               <Typography
                 variant="h2"
                 gutterBottom
@@ -63,7 +64,7 @@ export function EventPage() {
                 {event.name}
               </Typography>
             </Stack>
-            <Stack alignItems={{xs: "center", sm:"end"}}>
+            <Stack alignItems={{ xs: "center", sm: "end" }}>
               <Typography
                 variant="h2"
                 gutterBottom
@@ -80,32 +81,130 @@ export function EventPage() {
               </Typography>
             </Stack>
           </Stack>
+          {/* Image */}
           <Stack
             alignItems="center"
+            color="inherit"
             className="border-grad"
-            my={3}
+            justifyContent="space-between"
+            mx={{ xs: 1.5, sm: 2.5 }}
           >
             <img
               src={event.image}
               alt={event.name}
               style={{
                 width: "100%",
-                height: "auto",
-                borderRadius: "10px"
+                borderRadius: "5px"
               }}
             />
           </Stack>
-          <Stack direction={{ sm: "row" }} justifyContent="space-evenly">
-            {event.date_times.map(date =>
-              <Typography
-                className="border-grad"
-                m={2}
-                color="inherit"
-                textAlign="center">
-                {getFormatedDate(date)}
-              </Typography>
-            )}
-
+          {/* Dates */}
+          <Stack
+            alignItems={{ xs: "center", sm: "start" }}
+            spacing={2}
+          >
+            <Typography
+              variant="h2"
+              gutterBottom
+              sx={{
+                fontSize: { xs: "1.5rem", md: "2rem" }
+              }}
+            >
+              Funciones
+            </Typography>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              px={2}
+            >
+              {event.date_times.map(date =>
+                <Typography
+                  key={date}
+                  className="border-grad-right"
+                  color="inherit"
+                  textAlign="center"
+                  variant="info"
+                  sx={{ fontSize: { md: "1rem" } }}
+                >
+                  {getFormatedDate(date)}
+                </Typography>
+              )}
+            </Stack>
+          </Stack>
+          {/* Sectors */}
+          <Stack
+            alignItems={{ xs: "center", sm: "start" }}
+            spacing={2}
+          >
+            <Typography
+              variant="h2"
+              gutterBottom
+              sx={{
+                fontSize: { xs: "1.5rem", md: "2rem" }
+              }}
+            >
+              Sectores
+            </Typography>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              px={2}
+            >
+              {event.sectors.map(sector =>
+                <Typography
+                  key={sector}
+                  className="border-grad-right"
+                  color="inherit"
+                  textAlign="center"
+                  variant="info"
+                  sx={{ fontSize: { md: "1rem" } }}
+                >
+                  {sector.name}
+                </Typography>
+              )}
+            </Stack>
+          </Stack>
+          <Button
+            size="large"
+            sx={{
+              backgroundColor: contrastGreen,
+              color: "whitesmoke",
+              alignSelf: "center",
+              px: 2
+            }}
+          >
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: "1.5rem", md: "2rem" }
+              }}
+            >
+              ¡Reservar entradas!
+            </Typography>
+          </Button>
+          {/* About */}
+          <Stack textAlign={{ xs: "center", sm: "left" }} spacing={2}>
+            <Typography
+              variant="h2"
+              gutterBottom
+              sx={{
+                fontSize: { xs: "1.5rem", md: "2rem" }
+              }}
+            >
+              Acerca de este evento
+            </Typography>
+            <Typography
+              variant="info"
+              sx={{ fontSize: { md: "1rem" } }}
+              px={2}
+            >
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+              exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+              dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+              Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+              anim id est laborum.
+            </Typography>
           </Stack>
         </Stack>
       )}
