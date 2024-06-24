@@ -6,7 +6,7 @@ import { customMuiTheme } from "../config/customMuiTheme";
 import { getLocationById } from "../services/LocationService";
 
 export function EventPage() {
-  const { contrastGreen } = customMuiTheme.colors;
+  const { contrastGreen, softGrey, oceanicBlue } = customMuiTheme.colors;
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
   const [location, setLocation] = useState("")
@@ -46,6 +46,7 @@ export function EventPage() {
               <Typography
                 variant="h2"
                 gutterBottom
+                textAlign={{xs:"center", sm:"left"}}
                 sx={{
                   fontSize: { xs: "1.5rem", md: "2rem" },
                   color: contrastGreen
@@ -56,6 +57,7 @@ export function EventPage() {
               <Typography
                 variant="h2"
                 gutterBottom
+                textAlign={{xs:"center", sm:"left"}}
                 sx={{
                   fontSize: { xs: "1.5rem", md: "2rem" },
                   color: contrastGreen
@@ -68,6 +70,7 @@ export function EventPage() {
               <Typography
                 variant="h2"
                 gutterBottom
+                textAlign={{xs:"center", sm:"right"}}
                 sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
               >
                 {location.name}
@@ -75,6 +78,7 @@ export function EventPage() {
               <Typography
                 variant="h2"
                 gutterBottom
+                textAlign={{xs:"center", sm:"right"}}
                 sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
               >
                 {location.address.street} {location.address.number}
@@ -82,12 +86,15 @@ export function EventPage() {
             </Stack>
           </Stack>
           {/* Image */}
-          <Stack
-            alignItems="center"
-            color="inherit"
-            className="border-grad"
-            justifyContent="space-between"
-            mx={{ xs: 1.5, sm: 2.5 }}
+          <Box
+            boxShadow="
+              -0.5rem -0.5rem 0.5rem black, 
+               0.5rem 0.5rem 0.5rem black,
+               0.5rem -0.5rem 0.5rem black,
+               -0.5rem 0.5rem 0.5rem black
+            "
+            alignSelf="center"
+            width="95%"
           >
             <img
               src={event.image}
@@ -97,7 +104,7 @@ export function EventPage() {
                 borderRadius: "5px"
               }}
             />
-          </Stack>
+          </Box>
           {/* Dates */}
           <Stack
             alignItems={{ xs: "center", sm: "start" }}
@@ -120,7 +127,9 @@ export function EventPage() {
               {event.date_times.map(date =>
                 <Typography
                   key={date}
-                  className="border-grad-right"
+                  className="border-grad"
+                  backgroundColor={oceanicBlue}
+                  borderRadius={2}
                   color="inherit"
                   textAlign="center"
                   variant="info"
@@ -152,8 +161,10 @@ export function EventPage() {
             >
               {event.sectors.map(sector =>
                 <Typography
-                  key={sector}
-                  className="border-grad-right"
+                  key={sector._id}
+                  className="border-grad"
+                  backgroundColor={oceanicBlue}
+                  borderRadius={2}
                   color="inherit"
                   textAlign="center"
                   variant="info"
@@ -175,11 +186,8 @@ export function EventPage() {
           >
             <Typography
               variant="h2"
-              sx={{
-                fontSize: { xs: "1.5rem", md: "2rem" }
-              }}
             >
-              ¡Reservar entradas!
+              Reservar entradas
             </Typography>
           </Button>
           {/* About */}
