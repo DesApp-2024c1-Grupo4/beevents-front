@@ -51,7 +51,7 @@ export function EventPage() {
           </Box>
           : <Stack
             my={5}
-            spacing={4}
+            spacing={{ xs: 4, sm: 8 }}
           >
             {/* Artist and name */}
             <Stack spacing={2}>
@@ -77,9 +77,10 @@ export function EventPage() {
               </Typography>
             </Stack>
             <Stack
-              direction="row"
+              direction={{ sm: "row" }}
+              spacing={{ xs: 3, sm: 0 }}
               justifyContent="space-between"
-              px={{sm:2}}
+              px={{ sm: 2 }}
             >
               {/* Image */}
               <img
@@ -93,43 +94,46 @@ export function EventPage() {
                   alignSelf: "center"
                 }}
               />
-              <Stack justifyContent="space-between">
-                <Stack spacing={3}>
-                  {/* Dates */}
-                  <Stack
-                    alignItems="center"
-                    spacing={3}
+              {/* Dates and reserve button */}
+              <Stack 
+              justifyContent="space-between"
+              spacing={4}
+              >
+                {/* Dates */}
+                <Stack
+                  alignItems="center"
+                  spacing={3}
+                >
+                  <Typography
+                    variant="h2"
+                    gutterBottom
+                    sx={{
+                      fontSize: { xs: "1.5rem", md: "2rem" }
+                    }}
                   >
-                    <Typography
-                      variant="h2"
-                      gutterBottom
-                      sx={{
-                        fontSize: { xs: "1.5rem", md: "2rem" }
-                      }}
-                    >
-                      Funciones
-                    </Typography>
-                    <Stack
-                      spacing={2}
-                      px={2}
-                    >
-                      {event.date_times.map(date =>
-                        <Typography
-                          key={date}
-                          className="border-grad"
-                          backgroundColor={oceanicBlue}
-                          borderRadius={2}
-                          color="inherit"
-                          textAlign="center"
-                          variant="info"
-                          sx={{ fontSize: { md: "1rem" } }}
-                        >
-                          {getFormatedDate(date)}
-                        </Typography>
-                      )}
-                    </Stack>
+                    Funciones
+                  </Typography>
+                  <Stack
+                    spacing={2}
+                    px={2}
+                  >
+                    {event.date_times.map(date =>
+                      <Typography
+                        key={date}
+                        className="border-grad"
+                        backgroundColor={oceanicBlue}
+                        borderRadius={2}
+                        color="inherit"
+                        textAlign="center"
+                        variant="info"
+                        sx={{ fontSize: { md: "1rem" } }}
+                      >
+                        {getFormatedDate(date)}
+                      </Typography>
+                    )}
                   </Stack>
-                  {/* Sectors 
+                </Stack>
+                {/* Sectors 
                   <Stack
                     alignItems="center"
                     spacing={3}
@@ -165,7 +169,6 @@ export function EventPage() {
                     </Stack>
                   </Stack>
                   */}
-                </Stack>
                 {/* Reserve button */}
                 <Button
                   size="large"
@@ -186,8 +189,10 @@ export function EventPage() {
             </Stack>
             {/* About */}
             <Stack
-              textAlign={{ xs: "center", sm: "left" }}
+              textAlign="center"
               spacing={2}
+              maxWidth={{ sm: "70%" }}
+              alignSelf="center"
             >
               <Typography
                 variant="h2"
@@ -211,11 +216,10 @@ export function EventPage() {
                 anim id est laborum.
               </Typography>
             </Stack>
-            
             {/* Location */}
             <Stack
               spacing={2}
-              alignItems={{ xs: "center", sm: "start" }}
+              alignItems="center"
             >
               <Typography
                 variant="h2"
@@ -229,10 +233,10 @@ export function EventPage() {
               <Stack
                 px={{ sm: 2 }}
                 spacing={2}
-                alignItems={{ xs: "center", sm: "start" }}
+                alignItems="center"
               >
                 <Stack
-                alignItems={{ xs: "center", sm: "start" }}
+                  alignItems="center"
                 >
                   <Typography
                     variant="h2"
@@ -268,7 +272,6 @@ export function EventPage() {
                 </Box>
               </Stack>
             </Stack>
-            
           </Stack>
       }
     </Container >
