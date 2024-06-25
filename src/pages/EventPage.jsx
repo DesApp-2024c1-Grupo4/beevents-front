@@ -40,193 +40,146 @@ export function EventPage() {
           ? <Box my={10}><LoadingIndicator /></Box>
           : <Stack
             my={5}
-            spacing={5}
+            spacing={4}
           >
             {/* Artist and name */}
-            <Stack 
-            direction="row"
-            justifyContent="space-between"
-            >
-              <Stack>
-                <Typography
-                  variant="h2"
-                  gutterBottom
-                  textAlign={{ xs: "center", sm: "left" }}
-                  sx={{
-                    fontSize: { xs: "1.5rem", md: "2rem" },
-                    color: contrastGreen
-                  }}
-                >
-                  {event.artist}
-                </Typography>
-                <Typography
-                  variant="h2"
-                  gutterBottom
-                  textAlign={{ xs: "center", sm: "left" }}
-                  sx={{
-                    fontSize: { xs: "1.5rem", md: "2rem" },
-                    color: contrastGreen
-                  }}
-                >
-                  {event.name}
-                </Typography>
-              </Stack>
-              <Button
-                size="large"
+            <Stack spacing={2}>
+              <Typography
+                variant="h2"
+                textAlign={{ xs: "center", sm: "left" }}
                 sx={{
-                  backgroundColor: contrastGreen,
-                  color: "whitesmoke",
-                  alignSelf: "start",
-                  px: 2
+                  fontSize: { xs: "1.5rem", md: "2rem" },
+                  color: contrastGreen
                 }}
               >
-                <Typography
-                  variant="h2"
-                >
-                  Reservar entradas
-                </Typography>
-              </Button>
-            </Stack>
-            {/* Image and (date and sectors) */}
-            <Stack
-              direction="row"
-              spacing={5}
-              justifyContent="space-between"
-              px={2}
-            >
-              <Box
-                boxShadow="
-              -0.5rem -0.5rem 0.5rem black, 
-               0.5rem 0.5rem 0.5rem black,
-               0.5rem -0.5rem 0.5rem black,
-               -0.5rem 0.5rem 0.5rem black
-            "
-                alignSelf="center"
-                width="50%"
-              >
-                <img
-                  src={event.image}
-                  alt={event.name}
-                  style={{
-                    width: "100%",
-                    borderRadius: "5px"
-                  }}
-                />
-              </Box>
-              {/* Date and sectors */}
-              <Stack>
-                {/* Dates */}
-                <Stack
-                  alignItems={{ xs: "center", sm: "start" }}
-                  spacing={2}
-                >
-                  <Typography
-                    variant="h2"
-                    gutterBottom
-                    sx={{
-                      fontSize: { xs: "1.5rem", md: "2rem" }
-                    }}
-                  >
-                    Funciones
-                  </Typography>
-                  <Stack
-                    direction={{ xs: "column", sm: "row" }}
-                    spacing={2}
-                    px={2}
-                  >
-                    {event.date_times.map(date =>
-                      <Typography
-                        key={date}
-                        className="border-grad"
-                        backgroundColor={oceanicBlue}
-                        borderRadius={2}
-                        color="inherit"
-                        textAlign="center"
-                        variant="info"
-                        sx={{ fontSize: { md: "1rem" } }}
-                      >
-                        {getFormatedDate(date)}
-                      </Typography>
-                    )}
-                  </Stack>
-                </Stack>
-                {/* Sectors */}
-                <Stack
-                  alignItems={{ xs: "center", sm: "start" }}
-                  spacing={2}
-                >
-                  <Typography
-                    variant="h2"
-                    gutterBottom
-                    sx={{
-                      fontSize: { xs: "1.5rem", md: "2rem" }
-                    }}
-                  >
-                    Sectores
-                  </Typography>
-                  <Stack
-                    direction={{ xs: "column", sm: "row" }}
-                    spacing={2}
-                    px={2}
-                  >
-                    {event.sectors.map(sector =>
-                      <Typography
-                        key={sector._id}
-                        className="border-grad"
-                        backgroundColor={oceanicBlue}
-                        borderRadius={2}
-                        color="inherit"
-                        textAlign="center"
-                        variant="info"
-                        sx={{ fontSize: { md: "1rem" } }}
-                      >
-                        {sector.name}
-                      </Typography>
-                    )}
-                  </Stack>
-                </Stack>
-              </Stack>
-            </Stack>
-            {/* About and location */}
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              spacing={5}
-            >
-              {/* About */}
-              <Stack
+                {event.artist}
+              </Typography>
+              <Typography
+                variant="h2"
                 textAlign={{ xs: "center", sm: "left" }}
-                spacing={2}
-                width="50%"
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "2rem" },
+                  color: contrastGreen
+                }}
               >
-                <Typography
-                  variant="h2"
-                  gutterBottom
-                  sx={{
-                    fontSize: { xs: "1.5rem", md: "2rem" }
-                  }}
-                >
-                  Acerca de este evento
-                </Typography>
-                <Typography
-                  variant="info"
-                  sx={{ fontSize: { md: "1rem" } }}
-                  px={2}
-                >
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                  incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                  exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-                  dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                  anim id est laborum.
-                </Typography>
+                {event.name}
+              </Typography>
+            </Stack>
+            {/* Image */}
+            <img
+              src={event.image}
+              alt={event.name}
+              style={{
+                borderRadius: "10px",
+                maxHeight: "500px",
+                maxWidth: "90%",
+                border: "5px solid black",
+                alignSelf: "center"
+              }}
+            />
+            {/* Reserve button */}
+            <Button
+              size="large"
+              sx={{
+                backgroundColor: contrastGreen,
+                color: "whitesmoke",
+                alignSelf: "center",
+                px: 2
+              }}
+            >
+              <Typography
+                variant="h2"
+              >
+                Reservar entradas
+              </Typography>
+            </Button>
+
+            {/* Dates */}
+            <Stack
+              alignItems={{ xs: "center", sm: "start" }}
+              spacing={3}
+            >
+              <Typography
+                variant="h2"
+                gutterBottom
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "2rem" }
+                }}
+              >
+                Funciones
+              </Typography>
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={2}
+                px={2}
+              >
+                {event.date_times.map(date =>
+                  <Typography
+                    key={date}
+                    className="border-grad"
+                    backgroundColor={oceanicBlue}
+                    borderRadius={2}
+                    color="inherit"
+                    textAlign="center"
+                    variant="info"
+                    sx={{ fontSize: { md: "1rem" } }}
+                  >
+                    {getFormatedDate(date)}
+                  </Typography>
+                )}
               </Stack>
-              {/* Location */}
-              <Stack>
+            </Stack>
+            {/* Sectors */}
+            <Stack
+              alignItems={{ xs: "center", sm: "start" }}
+              spacing={3}
+            >
+              <Typography
+                variant="h2"
+                gutterBottom
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "2rem" }
+                }}
+              >
+                Sectores
+              </Typography>
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={2}
+                px={2}
+              >
+                {event.sectors.map(sector =>
+                  <Typography
+                    key={sector._id}
+                    className="border-grad"
+                    backgroundColor={oceanicBlue}
+                    borderRadius={2}
+                    color="inherit"
+                    textAlign="center"
+                    variant="info"
+                    sx={{ fontSize: { md: "1rem" } }}
+                  >
+                    {sector.name}
+                  </Typography>
+                )}
+              </Stack>
+            </Stack>
+            {/* Location */}
+            <Stack spacing={2}>
+              <Typography
+                variant="h2"
+                gutterBottom
+                alignSelf="center"
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "2rem" }
+                }}
+              >
+                Ubicación
+              </Typography>
+              <Stack textAlign="center">
                 <Typography
                   variant="h2"
                   gutterBottom
-                  textAlign={{ xs: "center", sm: "right" }}
                   sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
                 >
                   {location.name}
@@ -234,21 +187,51 @@ export function EventPage() {
                 <Typography
                   variant="h2"
                   gutterBottom
-                  textAlign={{ xs: "center", sm: "right" }}
                   sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
                 >
                   {location.address.street} {location.address.number}
                 </Typography>
-                <iframe
-                  src={`https://maps.google.com/maps?q=${location.name}+${location.address.street}+${location.address.number}&z=15&output=embed`}
-                  width="100%"
-                  height="100%"
-                  style={{ borderRadius: "10px" }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade">
-                </iframe>
               </Stack>
+              <iframe
+                src={`https://maps.google.com/maps?q=${location.name}+${location.address.street}+${location.address.number}&z=15&output=embed`}
+                width="90%"
+                height="100%"
+                style={{
+                  borderRadius: "10px",
+                  alignSelf: "center",
+                  border: "5px solid black"
+                }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade">
+              </iframe>
+            </Stack>
+            {/* About */}
+            <Stack
+              textAlign={{ xs: "center", sm: "left" }}
+              spacing={2}
+            >
+              <Typography
+                variant="h2"
+                gutterBottom
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "2rem" }
+                }}
+              >
+                Acerca de este evento
+              </Typography>
+              <Typography
+                variant="info"
+                sx={{ fontSize: { md: "1rem" } }}
+                px={2}
+              >
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+                dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+                anim id est laborum.
+              </Typography>
             </Stack>
           </Stack>
       }
