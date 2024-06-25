@@ -76,28 +76,34 @@ export function EventPage() {
                 {event.name}
               </Typography>
             </Stack>
+            {/* Image and (dates and button) */}
             <Stack
               direction={{ sm: "row" }}
-              spacing={{ xs: 3, sm: 0 }}
+              spacing={{ xs: 4, sm: 0 }}
               justifyContent="space-between"
               px={{ sm: 2 }}
             >
               {/* Image */}
-              <img
-                src={event.image}
-                alt={event.name}
-                style={{
-                  borderRadius: "10px",
-                  maxHeight: "500px",
-                  maxWidth: "50%",
-                  border: "5px solid black",
-                  alignSelf: "center"
-                }}
-              />
+              <Stack
+                maxWidth={{ xs: "85%", sm: "50%" }}
+                alignSelf="center"
+              >
+                <img
+                  src={event.image}
+                  alt={event.name}
+                  style={{
+                    borderRadius: "10px",
+                    maxWidth: "100%",
+                    maxHeight: "500px",
+                    border: "5px solid black",
+                    alignSelf: "center"
+                  }}
+                />
+              </Stack>
               {/* Dates and reserve button */}
-              <Stack 
-              justifyContent="space-between"
-              spacing={4}
+              <Stack
+                justifyContent="space-between"
+                spacing={4}
               >
                 {/* Dates */}
                 <Stack
@@ -253,23 +259,25 @@ export function EventPage() {
                     {location.address.street} {location.address.number}
                   </Typography>
                 </Stack>
-                <Box
-                  width={{ xs: "90%", sm: "500px" }}
-                  height={{ xs: "90%", sm: "350px" }}
+                <Stack
+                  width={{ xs: "90%", sm: "400px" }}
+                  height={{ xs: "90%", sm: "250px" }}
+                  alignSelf="center"
                 >
                   <iframe
-                    src={`https://maps.google.com/maps?q=${location.name}+${location.address.street}+${location.address.number}&z=15&output=embed`}
+                    src={`https://maps.google.com/maps?q=${location.name}+${location.address.street}+${location.address.number}&z=14&output=embed`}
                     width="100%"
                     height="100%"
                     style={{
                       borderRadius: "10px",
-                      border: "5px solid black"
+                      border: "5px solid black",
+                      alignSelf: "center"
                     }}
                     allowFullScreen=""
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade">
                   </iframe>
-                </Box>
+                </Stack>
               </Stack>
             </Stack>
           </Stack>
