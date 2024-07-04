@@ -60,10 +60,9 @@ export function EventPage() {
                 textAlign={{ xs: "center", sm: "left" }}
                 sx={{
                   fontSize: { xs: "1.5rem", md: "2rem" },
-                  color: contrastGreen
                 }}
               >
-                {event.artist}
+                {event.artist} en {location.name}
               </Typography>
               <Typography
                 variant="h2"
