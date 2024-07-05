@@ -547,7 +547,13 @@ export function ReservationPage() {
           <Button
             variant="contained"
             onClick={handleConfirmReservations}
-            sx={{ mt: 2, mb: 6 }}
+            sx={{
+              mt: 2,
+              mb: 6,
+              backgroundColor: "#01BB89",
+              border: "1px solid #01BB89",
+              color: "white",
+            }}
           >
             Confirmar Reservas
           </Button>
