@@ -15,18 +15,29 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
       <div
         style={{
           color: "#fff",
-          margin: "5px",
-          fontSize: "20px",
+          fontSize: "18px",
           letterSpacing: "2px",
+          marginBottom: "1rem",
+          paddingRight: "1rem",
+          paddingLeft: "1rem",
+          paddingBottom: "0.5rem",
+          borderBottom: "1px solid #01BB89",
+          textAlign: "center",
         }}
       >
+        <span
+          style={{ color: "#01BB89", marginBottom: "1rem", fontWeight: 600 }}
+        >
+          Mapa de asientos
+        </span>
+        <br></br>
         {sectorName}
       </div>
-      <Grid container spacing={1} justifyContent="center">
+      <Grid container spacing={0.1} justifyContent="center">
         {rows.map((rowBlock) => (
           <Grid item xs={12} key={rowBlock.id}>
-            <Box display="flex" justifyContent="center">
-              {rowBlock.seats.map((seat) => (
+            <Box display="flex" justifyContent="center" width="100%">
+              {rowBlock.map((seat) => (
                 <Seat
                   key={seat.id}
                   seat={seat}

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 
 const SeatCard = ({ seat }) => {
+  console.log(seat.available);
   return (
     <div
       style={{
         position: "absolute",
-        top: seat.reservedBy ? "-80px" : "-50px",
+        top: seat.reservedBy ? "-70px" : "-40px",
         left: "50%",
         transform: "translateX(-50%)",
         backgroundColor: "#145362",
@@ -18,12 +19,12 @@ const SeatCard = ({ seat }) => {
       }}
     >
       <p style={{ fontSize: "10px", margin: "0.5px", color: "white" }}>
-        <b>Código asiento:</b> {seat.displayId}
+        <b>Estado:</b> {seat.available ? "Disponible" : "Reservado"}
       </p>
       <p style={{ fontSize: "10px", margin: "0.5px", color: "white" }}>
-        <b>Estado:</b> {seat.status}
+        <b>Asiento:</b> {seat.displayId}
       </p>
-      {seat.reservedBy && (
+      {/* {seat.reservedBy && (
         <p style={{ fontSize: "10px", margin: "0.5px", color: "white" }}>
           <b>Reservado por:</b> {seat.reservedBy.email}
         </p>
@@ -32,7 +33,7 @@ const SeatCard = ({ seat }) => {
         <p style={{ fontSize: "10px", margin: "0.5px", color: "white" }}>
           <b>Id usuario:</b> {seat.reservedBy.id}
         </p>
-      )}
+      )} */}
     </div>
   );
 };
@@ -45,19 +46,20 @@ const Seat = ({ seat, onSeatClick }) => {
   };
 
   const getSeatStyle = (status, salable) => {
-    let backgroundColor = "#DEE2E6";
+    let backgroundColor = "#606060";
     if (status === "Reservado") {
       backgroundColor = "#F79530";
     } else if (!salable) {
-      backgroundColor = "gray";
+      backgroundColor = "#606060";
     }
 
     return {
-      width: "30px",
-      height: "30px",
-      margin: "5px",
-      padding: "5px",
+      width: "10px",
+      height: "10px",
+      margin: "4px",
+      padding: "4px",
       cursor: "pointer",
+      border: "2px solid #01BB89",
       backgroundColor: backgroundColor,
       display: "flex",
       alignItems: "center",
@@ -84,7 +86,7 @@ const Seat = ({ seat, onSeatClick }) => {
       onClick={handleClick}
     >
       {hovered && <SeatCard seat={seat} />}
-      <div
+      {/* <div
         style={{
           fontSize: "13px",
           color: "greens",
@@ -93,7 +95,7 @@ const Seat = ({ seat, onSeatClick }) => {
         }}
       >
         {seat.displayId}
-      </div>
+      </div> */}
     </div>
   );
 };

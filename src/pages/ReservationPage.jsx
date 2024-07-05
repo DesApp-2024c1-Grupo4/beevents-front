@@ -15,6 +15,11 @@ import {
   CircularProgress,
   IconButton,
 } from "@mui/material";
+import EventSeatIcon from "@mui/icons-material/EventSeat";
+import FestivalIcon from "@mui/icons-material/Festival";
+import LocalActivityIcon from "@mui/icons-material/LocalActivity";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useParams } from "react-router-dom";
 import { customMuiTheme } from "../config/customMuiTheme";
 import SeatMap from "../components/reservation-page-components/SeatMap";
@@ -22,6 +27,11 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import UserService from "../services/userService";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+
+function getCurrentTimestamp() {
+  const now = new Date();
+  return now.getTime();
+}
 
 export function ReservationPage() {
   const { contrastGreen } = customMuiTheme.colors;
@@ -35,10 +45,10 @@ export function ReservationPage() {
   const [nonNumberedReservations, setNonNumberedReservations] = useState({});
   const [timers, setTimers] = useState({});
   const [counter, setCounter] = useState(300);
+  const [reservationUnconfirmed, setReservationUnconfirmed] = useState([]);
   const [reservationConfirmed, setReservationConfirmed] = useState(false);
 
   const event = {
-    _id: "6660f7f2529a95d7455a3f3d",
     name: "NTVG – Gira 30 años",
     artist: "No Te Va A Gustar",
     image: "https://www.rockaxis.com/img/newsList/3008122.png",
@@ -55,8 +65,7 @@ export function ReservationPage() {
             seatsNumber: 40,
             available: 40,
             rows: [],
-            reservedUnconfirmed: [],
-            _id: "6660f7f2529a95d7455a3f3e",
+            _id: "6660f7f2529a95d7455a3h8x",
           },
           {
             name: "Platea Alta",
@@ -64,19 +73,37 @@ export function ReservationPage() {
             rowsNumber: 3,
             seatsNumber: 10,
             available: 29,
-            rows: Array.from({ length: 3 }, (_, rowIndex) => ({
-              id: `row-${rowIndex + 1}`,
-              seats: Array.from({ length: 10 }, (_, seatIndex) => ({
-                id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
-                displayId: `${rowIndex + 1}-${String.fromCharCode(
-                  65 + seatIndex
-                )}`,
-                status: "Disponible",
-                salable: true,
-              })),
-            })),
-            reservedUnconfirmed: [],
-            _id: "6660f7f2529a95d7455a3f3f",
+            rows: Array.from({ length: 3 }, (_, rowIndex) =>
+              Array.from({ length: 10 }, (_, seatIndex) => ({
+                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
+                displayId: `${String.fromCharCode(65 + rowIndex)}-${
+                  seatIndex + 1
+                }`,
+                available: true,
+                timestamp: null,
+                reservedBy: null,
+              }))
+            ),
+            _id: "6660f7f2529a95d7455a3f9K",
+          },
+          {
+            name: "Platea Baja",
+            numbered: true,
+            rowsNumber: 5,
+            seatsNumber: 10,
+            available: 50,
+            rows: Array.from({ length: 5 }, (_, rowIndex) =>
+              Array.from({ length: 10 }, (_, seatIndex) => ({
+                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
+                displayId: `${String.fromCharCode(65 + rowIndex)}-${
+                  seatIndex + 1
+                }`,
+                available: true,
+                timestamp: null,
+                reservedBy: null,
+              }))
+            ),
+            _id: "6660f7f2529a95d7455a3yui",
           },
         ],
       },
@@ -90,7 +117,59 @@ export function ReservationPage() {
             seatsNumber: 40,
             available: 40,
             rows: [],
-            reservedUnconfirmed: [],
+            _id: "6660f7f2529a95d7455a3f3e",
+          },
+          {
+            name: "Platea Alta",
+            numbered: true,
+            rowsNumber: 3,
+            seatsNumber: 10,
+            available: 29,
+            rows: Array.from({ length: 3 }, (_, rowIndex) =>
+              Array.from({ length: 10 }, (_, seatIndex) => ({
+                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
+                displayId: `${String.fromCharCode(65 + rowIndex)}-${
+                  seatIndex + 1
+                }`,
+                available: true,
+                timestamp: null,
+                reservedBy: null,
+              }))
+            ),
+            _id: "6660f7f2529a95d7455a3f3f",
+          },
+          ,
+          {
+            name: "Platea Baja",
+            numbered: true,
+            rowsNumber: 5,
+            seatsNumber: 10,
+            available: 50,
+            rows: Array.from({ length: 5 }, (_, rowIndex) =>
+              Array.from({ length: 10 }, (_, seatIndex) => ({
+                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
+                displayId: `${String.fromCharCode(65 + rowIndex)}-${
+                  seatIndex + 1
+                }`,
+                available: true,
+                timestamp: null,
+                reservedBy: null,
+              }))
+            ),
+            _id: "6660f7f2529a95d7455a3w3g",
+          },
+        ],
+      },
+      {
+        date_time: "2024-06-24T23:00:00.000Z",
+        sectors: [
+          {
+            name: "Campo",
+            numbered: false,
+            rowsNumber: 1,
+            seatsNumber: 40,
+            available: 40,
+            rows: [],
             _id: "6660f7f2529a95d7455a3f3x",
           },
           {
@@ -99,19 +178,38 @@ export function ReservationPage() {
             rowsNumber: 3,
             seatsNumber: 10,
             available: 29,
-            rows: Array.from({ length: 3 }, (_, rowIndex) => ({
-              id: `row-${rowIndex + 1}`,
-              seats: Array.from({ length: 10 }, (_, seatIndex) => ({
-                id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
-                displayId: `${rowIndex + 1}-${String.fromCharCode(
-                  65 + seatIndex
-                )}`,
-                status: "Disponible",
-                salable: true,
-              })),
-            })),
-            reservedUnconfirmed: [],
+            rows: Array.from({ length: 3 }, (_, rowIndex) =>
+              Array.from({ length: 10 }, (_, seatIndex) => ({
+                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
+                displayId: `${String.fromCharCode(65 + rowIndex)}-${
+                  seatIndex + 1
+                }`,
+                available: true,
+                timestamp: null,
+                reservedBy: null,
+              }))
+            ),
             _id: "6660f7f2529a95d7455a3f3u",
+          },
+          ,
+          {
+            name: "Platea Baja",
+            numbered: true,
+            rowsNumber: 5,
+            seatsNumber: 10,
+            available: 50,
+            rows: Array.from({ length: 5 }, (_, rowIndex) =>
+              Array.from({ length: 10 }, (_, seatIndex) => ({
+                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
+                displayId: `${String.fromCharCode(65 + rowIndex)}-${
+                  seatIndex + 1
+                }`,
+                available: true,
+                timestamp: null,
+                reservedBy: null,
+              }))
+            ),
+            _id: "6660f7f2529a95d7455a3lp8",
           },
         ],
       },
@@ -119,6 +217,7 @@ export function ReservationPage() {
     __v: 0,
   };
 
+  console.log(event.dates[0].sectors[1]);
   useEffect(() => {
     const loggedUser = userService.getUserFromLocalStorage();
     setUser({ id: loggedUser.id, email: loggedUser.email });
@@ -150,76 +249,71 @@ export function ReservationPage() {
   }, [timers, reservationConfirmed]);
 
   const handleSeatClick = (clickedSeat) => {
-    setSeatMaps((prevSeatMaps) => {
-      const updatedSeatMaps = prevSeatMaps.map((seatMap) => {
-        if (
-          seatMap.rows.some((row) =>
-            row.seats.some((seat) => seat.id === clickedSeat.id)
-          )
-        ) {
-          return {
-            ...seatMap,
-            rows: seatMap.rows.map((row) => ({
-              ...row,
-              seats: row.seats.map((seat) =>
-                seat.id === clickedSeat.id
-                  ? {
-                      ...seat,
-                      status:
-                        seat.status === "Reservado"
-                          ? "Disponible"
-                          : "Reservado",
-                      reservedBy: seat.status === "Reservado" ? null : user,
-                    }
-                  : seat
-              ),
-            })),
-            reservedUnconfirmed: seatMap.reservedUnconfirmed.includes(
-              clickedSeat.id
-            )
-              ? seatMap.reservedUnconfirmed.filter(
-                  (id) => id !== clickedSeat.id
-                )
-              : [...seatMap.reservedUnconfirmed, clickedSeat.id],
-          };
-        }
-        return seatMap;
-      });
-
-      if (selectedSeatMap) {
-        const updatedSelectedSeatMap = updatedSeatMaps.find(
-          (map) => map.name === selectedSeatMap.name
-        );
-        setSelectedSeatMap(updatedSelectedSeatMap);
-      }
-
-      setTimers((prevTimers) => ({
-        ...prevTimers,
-        [clickedSeat.id]: true,
-      }));
-
-      setReservationConfirmed(false);
-
-      return updatedSeatMaps;
-    });
+    console.log(clickedSeat);
+    // Guardar los asientos en un array de asientos pre seleccionados:
   };
 
-  const handleTimeout = () => {
-    setSeatMaps((prevSeatMaps) =>
-      prevSeatMaps.map((seatMap) => ({
-        ...seatMap,
-        rows: seatMap.rows.map((row) => ({
-          ...row,
-          seats: row.seats.map((seat) =>
-            seatMap.reservedUnconfirmed.includes(seat.id)
-              ? { ...seat, status: "Disponible", reservedBy: null }
-              : seat
-          ),
-        })),
-        reservedUnconfirmed: [],
-      }))
-    );
-    setTimers({});
+  // const handleTimeout = () => {
+  //   setSeatMaps((prevSeatMaps) =>
+  //     prevSeatMaps.map((seatMap) => ({
+  //       ...seatMap,
+  //       rows: seatMap.rows.map((row) => ({
+  //         ...row,
+  //         seats: row.seats.map((seat) =>
+  //           seatMap.reservedUnconfirmed.includes(seat.id)
+  //             ? { ...seat, status: "Disponible", reservedBy: null }
+  //             : seat
+  //         ),
+  //       })),
+  //       reservedUnconfirmed: [],
+  //     }))
+  //   );
+  //   setTimers({});
+  // };
+
+  const handleNonNumberedReservation = (sectorName, sectorId, operation) => {
+    console.log(sectorName, sectorId, operation);
+    if (operation === "add") {
+      console.log("entre");
+      const newReservedUnconfirmed = {
+        timestamp: getCurrentTimestamp(),
+        reservedBy: user.id,
+      };
+      const newReservationUnconfirmed = [...reservationUnconfirmed];
+      console.log(newReservationUnconfirmed);
+      newReservationUnconfirmed.push(newReservedUnconfirmed);
+      console.log(newReservationUnconfirmed);
+      setReservationUnconfirmed(newReservationUnconfirmed);
+      console.log(reservationUnconfirmed);
+    } else if (operation === "remove") {
+      const newReservationUnconfirmed = [...reservationUnconfirmed];
+      if (newReservationUnconfirmed.length > 0) {
+        newReservationUnconfirmed.pop();
+      }
+      setReservationUnconfirmed(newReservationUnconfirmed);
+    }
+    console.log(reservationUnconfirmed);
+    // return updatedReservations;
+
+    // const updatedSeatMaps = seatMaps.map((sector) => {
+    //   if (sector.name === sectorName && !sector.numbered) {
+    //     const updatedRows =
+    //       operation === "add"
+    //         ? sector.rows.concat({
+    //             reservedBy: user.id,
+    //             timestamp: Date.now(),
+    //           })
+    //         : sector.rows.slice(0, -1);
+    //     return {
+    //       ...sector,
+    //       available: sector.available - (operation === "add" ? 1 : -1),
+    //       rows: updatedRows,
+    //     };
+    //   }
+    //   return sector;
+    // });
+
+    // setSeatMaps(updatedSeatMaps);
   };
 
   const handleOpenModal = (seatMap) => {
@@ -277,294 +371,366 @@ export function ReservationPage() {
   const handleConfirmReservations = () => {
     setReservationConfirmed(true);
     setTimers({});
-    setCounter(300); // Reset the counter
+    setCounter(300);
   };
 
   return (
-    <Container maxWidth="md">
-      <>
-        <Typography
-          variant="h6"
-          component="h6"
-          gutterBottom
-          sx={{
-            color: contrastGreen,
-            my: {
-              xs: 2,
-              md: 4,
-            },
-            fontSize: {
-              xs: "1.5rem",
-              md: "2rem",
-            },
-            alignSelf: "flex-start",
-          }}
-        >
-          Reserva de Tickets
-        </Typography>
-        <Typography
-          variant="h6"
-          gutterBottom
-          sx={{
-            color: contrastGreen,
-            my: {
-              xs: 2,
-            },
-            fontSize: {
-              xs: "1rem",
-              md: "1.5rem",
-            },
-            alignSelf: "flex-start",
-          }}
-        >
-          {event.artist}
-        </Typography>
-        <Typography
-          variant="h6"
-          gutterBottom
-          sx={{
-            color: contrastGreen,
-            my: {
-              xs: 2,
-            },
-            fontSize: {
-              xs: "1rem",
-              md: "1.5rem",
-            },
-            alignSelf: "flex-start",
-          }}
-        >
-          {event.name}
-        </Typography>
-      </>
-      <Typography
-        variant="h6"
-        gutterBottom
-        sx={{
-          color: contrastGreen,
-          my: {
-            xs: 1,
-          },
-          fontSize: {
-            xs: "1rem",
-            md: "1.2rem",
-          },
-          alignSelf: "flex-start",
-        }}
-      >
-        Fechas
-      </Typography>
-      <div style={{ marginBottom: "20px" }}>
-        {event.dates.map((date, index) => (
-          <Button
-            key={index}
-            variant="contained"
-            onClick={() => handleDateChange(index)}
+    <>
+      <Container maxWidth="md">
+        <>
+          <Typography
+            variant="h2"
+            component="h2"
+            gutterBottom
             sx={{
-              marginRight: "10px",
-              marginTop: "5px",
-              backgroundColor:
-                selectedDateIndex === index ? contrastGreen : "default",
+              color: contrastGreen,
+              mt: 4,
+              mb: {
+                xs: 3,
+                md: 6,
+              },
+              fontSize: {
+                xs: "1.2rem",
+                md: "2rem",
+              },
+              alignSelf: "flex-start",
             }}
           >
-            {new Date(date.date_time).toLocaleDateString()}{" "}
-            {new Date(date.date_time).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </Button>
-        ))}
-      </div>
-      <Typography
-        variant="h6"
-        gutterBottom
-        sx={{
-          color: contrastGreen,
-          my: {
-            xs: 1,
-          },
-          fontSize: {
-            xs: "1rem",
-            md: "1.2rem",
-          },
-          alignSelf: "flex-start",
-        }}
-      >
-        Sectores
-      </Typography>
-      {loading ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="200px"
-        >
-          <CircularProgress />
-        </Box>
-      ) : (
-        <TableContainer
-          component={Paper}
-          sx={{
-            backgroundColor: "#142539",
-            color: "GrayText",
-          }}
-        >
-          <Table
-            sx={{
-              backgroundColor: "#142539",
-              color: "lightgray",
-              borderColor: "lightgray",
-            }}
-            aria-label="simple table"
-          >
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  sx={{
-                    color: "lightgray",
-                    borderColor: "lightgray",
-                    textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-                    fontSize: "15px",
-                  }}
-                >
-                  <b>Sector</b>
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "lightgray",
-                    borderColor: "lightgray",
-                    textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-                    fontSize: "15px",
-                  }}
-                  align="right"
-                >
-                  <b>Asientos Totales</b>
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "lightgray",
-                    borderColor: "lightgray",
-                    textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-                    fontSize: "15px",
-                  }}
-                  align="right"
-                >
-                  <b>Asientos (Ocupados / Totales)</b>
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "lightgray",
-                    borderColor: "lightgray",
-                    textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-                    fontSize: "15px",
-                  }}
-                  align="center"
-                >
-                  <b>Ver asientos</b>
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "lightgray",
-                    borderColor: "lightgray",
-                    textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-                    fontSize: "15px",
-                  }}
-                  align="center"
-                >
-                  <b>Reservar</b>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {seatMaps.map((sector, index) => {
-                const totalSeats = sector.rowsNumber * sector.seatsNumber;
-                const occupiedSeats = sector.rows.reduce(
-                  (acc, row) =>
-                    acc +
-                    row.seats.filter((seat) => seat.status === "Reservado")
-                      .length,
-                  0
-                );
-
-                return (
-                  <TableRow key={index}>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{ color: "lightgray", borderColor: "lightgray" }}
-                    >
-                      {sector.name}
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{ color: "lightgray", borderColor: "lightgray" }}
-                    >
-                      {totalSeats}
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{ color: "lightgray", borderColor: "lightgray" }}
-                    >
-                      {occupiedSeats}/{totalSeats}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      sx={{ color: "lightgray", borderColor: "lightgray" }}
-                    >
-                      <Button
-                        variant="contained"
-                        onClick={() => handleOpenModal(sector)}
-                        disabled={!sector.numbered}
-                      >
-                        <VisibilityIcon />
-                      </Button>
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      sx={{ color: "lightgray", borderColor: "lightgray" }}
-                    >
-                      <div>
-                        <IconButton
-                          onClick={() =>
-                            handleReservationChange(sector.name, -1)
-                          }
-                          disabled={sector.numbered}
-                        >
-                          <RemoveIcon />
-                        </IconButton>
-                        {nonNumberedReservations[sector.name] || 0}
-                        <IconButton
-                          onClick={() =>
-                            handleReservationChange(sector.name, 1)
-                          }
-                          disabled={sector.numbered}
-                        >
-                          <AddIcon />
-                        </IconButton>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-      {Object.keys(timers).length > 0 && (
-        <Box sx={{ mt: 2, textAlign: "center" }}>
-          <Typography variant="h6" sx={{ color: contrastGreen }}>
-            Tiempo para confirmar: {Math.floor(counter / 60)}:
-            {("0" + (counter % 60)).slice(-2)}
+            {"Reserva de tickets"}
           </Typography>
+          <Typography
+            variant="h2"
+            component="h2"
+            gutterBottom
+            sx={{
+              mt: {
+                xs: 2,
+                md: 3,
+              },
+              fontSize: {
+                xs: "1rem",
+                md: "1.6rem",
+              },
+              alignSelf: "flex-start",
+              textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+              color: "#bdbdbd",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <LocalActivityIcon sx={{ mr: 2, color: contrastGreen }} /> Artista
+          </Typography>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{
+              color: contrastGreen,
+              // my: {
+              //   xs: 2,
+              // },
+              fontSize: {
+                xs: "0.8rem",
+                md: "1.4rem",
+              },
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              letterSpacing: "0.1rem",
+              textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
+            }}
+          >
+            {event.artist}
+          </Typography>
+          <Typography
+            variant="h2"
+            component="h2"
+            gutterBottom
+            sx={{
+              mt: {
+                xs: 2,
+                md: 3,
+              },
+              fontSize: {
+                xs: "1rem",
+                md: "1.6rem",
+              },
+              alignSelf: "flex-start",
+              textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+              color: "#bdbdbd",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <FestivalIcon sx={{ mr: 2, color: contrastGreen }} /> Evento
+          </Typography>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{
+              color: contrastGreen,
+              fontSize: {
+                xs: "0.8rem",
+                md: "1.4rem",
+              },
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              letterSpacing: "0.1rem",
+              textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
+            }}
+          >
+            {event.name}
+          </Typography>
+        </>
+        <Typography
+          variant="h2"
+          component="h2"
+          gutterBottom
+          sx={{
+            mt: {
+              xs: 2,
+              md: 3,
+            },
+            fontSize: {
+              xs: "1rem",
+              md: "1.6rem",
+            },
+            alignSelf: "flex-start",
+            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+            color: "#bdbdbd",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <CalendarMonthIcon sx={{ mr: 2, color: contrastGreen }} /> Fechas
+        </Typography>
+        <div style={{ marginBottom: "20px" }}>
+          {event.dates.map((date, index) => (
+            <Button
+              key={index}
+              variant="contained"
+              onClick={() => handleDateChange(index)}
+              sx={{
+                marginRight: "10px",
+                marginTop: "5px",
+                color: selectedDateIndex === index ? "black" : "white",
+                border: "1px solid #01BB89",
+                backgroundColor:
+                  selectedDateIndex === index ? contrastGreen : "transparent",
+              }}
+            >
+              {new Date(date.date_time).toLocaleDateString()}
+              {" - "}
+              {new Date(date.date_time).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+                timeZone: "UTC",
+              })}
+              {"hs"}
+            </Button>
+          ))}
+        </div>
+        <Typography
+          variant="h2"
+          component="h2"
+          gutterBottom
+          sx={{
+            mt: {
+              xs: 2,
+              md: 3,
+            },
+            fontSize: {
+              xs: "1rem",
+              md: "1.6rem",
+            },
+            alignSelf: "flex-start",
+            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+            color: "#bdbdbd",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <EventSeatIcon sx={{ mr: 2, color: contrastGreen }} /> Sectores
+        </Typography>
+        {loading ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="200px"
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
+          <TableContainer
+            component={Paper}
+            sx={{
+              mt: {
+                xs: 2,
+                md: 3,
+              },
+              backgroundColor: "#142539",
+              color: "GrayText",
+            }}
+          >
+            <Table
+              sx={{
+                backgroundColor: "#142539",
+                color: "lightgray",
+                borderColor: "lightgray",
+              }}
+              aria-label="simple table"
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      color: "lightgray",
+                      borderColor: "lightgray",
+                      textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+                      fontSize: "15px",
+                    }}
+                  >
+                    <b>Sector</b>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "lightgray",
+                      borderColor: "lightgray",
+                      textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+                      fontSize: "15px",
+                    }}
+                    align="right"
+                  >
+                    <b>Asientos Totales</b>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "lightgray",
+                      borderColor: "lightgray",
+                      textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+                      fontSize: "15px",
+                    }}
+                    align="right"
+                  >
+                    <b>Asientos (Ocupados / Totales)</b>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "lightgray",
+                      borderColor: "lightgray",
+                      textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+                      fontSize: "15px",
+                    }}
+                    align="center"
+                  >
+                    <b>Reservar</b>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {seatMaps.map((sector, index) => {
+                  const totalSeats = sector.rowsNumber * sector.seatsNumber;
+                  const occupiedSeats = sector.rows.reduce(
+                    (acc, row) =>
+                      acc +
+                      row.filter((seat) => seat.status === "Reservado").length,
+                    0
+                  );
+
+                  return (
+                    <TableRow key={index}>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {sector.name}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {totalSeats}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {occupiedSeats}/{totalSeats}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {sector.numbered ? (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleOpenModal(sector)}
+                          >
+                            Seleccionar Asientos
+                          </Button>
+                        ) : (
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <IconButton
+                              color="primary"
+                              onClick={() =>
+                                handleNonNumberedReservation(
+                                  sector.name,
+                                  sector._id,
+                                  "remove"
+                                )
+                              }
+                            >
+                              <RemoveIcon />
+                            </IconButton>
+                            <Typography>
+                              {nonNumberedReservations[sector.name]}
+                            </Typography>
+                            <IconButton
+                              color="primary"
+                              onClick={() =>
+                                handleNonNumberedReservation(
+                                  sector.name,
+                                  sector._id,
+                                  "add"
+                                )
+                              }
+                            >
+                              <AddIcon />
+                            </IconButton>
+                          </Box>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+        {Object.keys(timers).length > 0 && (
+          <Box sx={{ mt: 2, textAlign: "center" }}>
+            <Typography variant="h6" sx={{ color: contrastGreen }}>
+              Tiempo para confirmar: {Math.floor(counter / 60)}:
+              {("0" + (counter % 60)).slice(-2)}
+            </Typography>
+          </Box>
+        )}
+        <Box sx={{ mt: 2, textAlign: "center" }}>
           <Button
             variant="contained"
             onClick={handleConfirmReservations}
-            sx={{ mt: 2, mb: 2 }}
+            sx={{ mt: 2, mb: 6 }}
           >
             Confirmar Reservas
           </Button>
         </Box>
-      )}
+      </Container>
       <Modal
         open={modalOpen}
         onClose={handleCloseModal}
@@ -577,6 +743,7 @@ export function ReservationPage() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
+            maxWidth: "350px",
             bgcolor: "#142539",
             color: "lightgray",
             border: "1px solid lightgray",
@@ -600,6 +767,6 @@ export function ReservationPage() {
           </Button>
         </Box>
       </Modal>
-    </Container>
+    </>
   );
 }
