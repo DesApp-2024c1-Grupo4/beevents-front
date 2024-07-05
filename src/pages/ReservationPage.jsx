@@ -35,6 +35,7 @@ function getCurrentTimestamp() {
 
 export function ReservationPage() {
   const { contrastGreen } = customMuiTheme.colors;
+  const [event, setEvent] = useState(null);
   const [seatMaps, setSeatMaps] = useState([]);
   const [selectedSeatMap, setSelectedSeatMap] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -48,188 +49,36 @@ export function ReservationPage() {
   const [reservationUnconfirmed, setReservationUnconfirmed] = useState([]);
   const [reservationConfirmed, setReservationConfirmed] = useState(false);
 
-  const event = {
-    name: "NTVG – Gira 30 años",
-    artist: "No Te Va A Gustar",
-    image: "https://www.rockaxis.com/img/newsList/3008122.png",
-    location_id: "665f75a54a72077ce226e322",
-    user_id: "user1",
-    dates: [
-      {
-        date_time: "2024-06-22T23:00:00.000Z",
-        sectors: [
-          {
-            name: "Campo",
-            numbered: false,
-            rowsNumber: 1,
-            seatsNumber: 40,
-            available: 40,
-            rows: [],
-            _id: "6660f7f2529a95d7455a3h8x",
-          },
-          {
-            name: "Platea Alta",
-            numbered: true,
-            rowsNumber: 3,
-            seatsNumber: 10,
-            available: 29,
-            rows: Array.from({ length: 3 }, (_, rowIndex) =>
-              Array.from({ length: 10 }, (_, seatIndex) => ({
-                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
-                displayId: `${String.fromCharCode(65 + rowIndex)}-${
-                  seatIndex + 1
-                }`,
-                available: true,
-                timestamp: null,
-                reservedBy: null,
-              }))
-            ),
-            _id: "6660f7f2529a95d7455a3f9K",
-          },
-          {
-            name: "Platea Baja",
-            numbered: true,
-            rowsNumber: 5,
-            seatsNumber: 10,
-            available: 50,
-            rows: Array.from({ length: 5 }, (_, rowIndex) =>
-              Array.from({ length: 10 }, (_, seatIndex) => ({
-                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
-                displayId: `${String.fromCharCode(65 + rowIndex)}-${
-                  seatIndex + 1
-                }`,
-                available: true,
-                timestamp: null,
-                reservedBy: null,
-              }))
-            ),
-            _id: "6660f7f2529a95d7455a3yui",
-          },
-        ],
-      },
-      {
-        date_time: "2024-06-23T23:00:00.000Z",
-        sectors: [
-          {
-            name: "Campo",
-            numbered: false,
-            rowsNumber: 1,
-            seatsNumber: 40,
-            available: 40,
-            rows: [],
-            _id: "6660f7f2529a95d7455a3f3e",
-          },
-          {
-            name: "Platea Alta",
-            numbered: true,
-            rowsNumber: 3,
-            seatsNumber: 10,
-            available: 29,
-            rows: Array.from({ length: 3 }, (_, rowIndex) =>
-              Array.from({ length: 10 }, (_, seatIndex) => ({
-                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
-                displayId: `${String.fromCharCode(65 + rowIndex)}-${
-                  seatIndex + 1
-                }`,
-                available: true,
-                timestamp: null,
-                reservedBy: null,
-              }))
-            ),
-            _id: "6660f7f2529a95d7455a3f3f",
-          },
-          ,
-          {
-            name: "Platea Baja",
-            numbered: true,
-            rowsNumber: 5,
-            seatsNumber: 10,
-            available: 50,
-            rows: Array.from({ length: 5 }, (_, rowIndex) =>
-              Array.from({ length: 10 }, (_, seatIndex) => ({
-                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
-                displayId: `${String.fromCharCode(65 + rowIndex)}-${
-                  seatIndex + 1
-                }`,
-                available: true,
-                timestamp: null,
-                reservedBy: null,
-              }))
-            ),
-            _id: "6660f7f2529a95d7455a3w3g",
-          },
-        ],
-      },
-      {
-        date_time: "2024-06-24T23:00:00.000Z",
-        sectors: [
-          {
-            name: "Campo",
-            numbered: false,
-            rowsNumber: 1,
-            seatsNumber: 40,
-            available: 40,
-            rows: [],
-            _id: "6660f7f2529a95d7455a3f3x",
-          },
-          {
-            name: "Platea Alta",
-            numbered: true,
-            rowsNumber: 3,
-            seatsNumber: 10,
-            available: 29,
-            rows: Array.from({ length: 3 }, (_, rowIndex) =>
-              Array.from({ length: 10 }, (_, seatIndex) => ({
-                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
-                displayId: `${String.fromCharCode(65 + rowIndex)}-${
-                  seatIndex + 1
-                }`,
-                available: true,
-                timestamp: null,
-                reservedBy: null,
-              }))
-            ),
-            _id: "6660f7f2529a95d7455a3f3u",
-          },
-          ,
-          {
-            name: "Platea Baja",
-            numbered: true,
-            rowsNumber: 5,
-            seatsNumber: 10,
-            available: 50,
-            rows: Array.from({ length: 5 }, (_, rowIndex) =>
-              Array.from({ length: 10 }, (_, seatIndex) => ({
-                _id: `-${rowIndex + 1}-${String.fromCharCode(65 + seatIndex)}`,
-                displayId: `${String.fromCharCode(65 + rowIndex)}-${
-                  seatIndex + 1
-                }`,
-                available: true,
-                timestamp: null,
-                reservedBy: null,
-              }))
-            ),
-            _id: "6660f7f2529a95d7455a3lp8",
-          },
-        ],
-      },
-    ],
-    __v: 0,
-  };
-
-  console.log(event.dates[0].sectors[1]);
   useEffect(() => {
-    const loggedUser = userService.getUserFromLocalStorage();
-    setUser({ id: loggedUser.id, email: loggedUser.email });
-    setSeatMaps(event.dates[selectedDateIndex].sectors);
-    const initialReservations = {};
-    event.dates[selectedDateIndex].sectors.forEach((sector) => {
-      if (!sector.numbered) {
-        initialReservations[sector.name] = 0;
+    async function fetchEvent() {
+      try {
+        const response = await fetch(
+          "https://beevents-back-reserva-tickets.onrender.com/event/667edce656ef376013473396"
+        );
+        const data = await response.json();
+        setEvent(data);
+      } catch (error) {
+        console.error("Error fetching event data:", error);
       }
-    });
-    setNonNumberedReservations(initialReservations);
-  }, [selectedDateIndex]);
+    }
+
+    fetchEvent();
+  }, []);
+
+  useEffect(() => {
+    if (event) {
+      const loggedUser = userService.getUserFromLocalStorage();
+      setUser({ id: loggedUser.id, email: loggedUser.email });
+      setSeatMaps(event.dates[selectedDateIndex].sectors);
+      const initialReservations = {};
+      event.dates[selectedDateIndex].sectors.forEach((sector) => {
+        if (!sector.numbered) {
+          initialReservations[sector.name] = 0;
+        }
+      });
+      setNonNumberedReservations(initialReservations);
+    }
+  }, [event, selectedDateIndex]);
 
   useEffect(() => {
     let timer;
@@ -253,24 +102,6 @@ export function ReservationPage() {
     // Guardar los asientos en un array de asientos pre seleccionados:
   };
 
-  // const handleTimeout = () => {
-  //   setSeatMaps((prevSeatMaps) =>
-  //     prevSeatMaps.map((seatMap) => ({
-  //       ...seatMap,
-  //       rows: seatMap.rows.map((row) => ({
-  //         ...row,
-  //         seats: row.seats.map((seat) =>
-  //           seatMap.reservedUnconfirmed.includes(seat.id)
-  //             ? { ...seat, status: "Disponible", reservedBy: null }
-  //             : seat
-  //         ),
-  //       })),
-  //       reservedUnconfirmed: [],
-  //     }))
-  //   );
-  //   setTimers({});
-  // };
-
   const handleNonNumberedReservation = (sectorName, sectorId, operation) => {
     console.log(sectorName, sectorId, operation);
     if (operation === "add") {
@@ -293,27 +124,6 @@ export function ReservationPage() {
       setReservationUnconfirmed(newReservationUnconfirmed);
     }
     console.log(reservationUnconfirmed);
-    // return updatedReservations;
-
-    // const updatedSeatMaps = seatMaps.map((sector) => {
-    //   if (sector.name === sectorName && !sector.numbered) {
-    //     const updatedRows =
-    //       operation === "add"
-    //         ? sector.rows.concat({
-    //             reservedBy: user.id,
-    //             timestamp: Date.now(),
-    //           })
-    //         : sector.rows.slice(0, -1);
-    //     return {
-    //       ...sector,
-    //       available: sector.available - (operation === "add" ? 1 : -1),
-    //       rows: updatedRows,
-    //     };
-    //   }
-    //   return sector;
-    // });
-
-    // setSeatMaps(updatedSeatMaps);
   };
 
   const handleOpenModal = (seatMap) => {
@@ -374,6 +184,18 @@ export function ReservationPage() {
     setCounter(300);
   };
 
+  if (!event) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <>
       <Container maxWidth="md">
