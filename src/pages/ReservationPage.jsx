@@ -18,19 +18,29 @@ import {
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import FestivalIcon from "@mui/icons-material/Festival";
 import LocalActivityIcon from "@mui/icons-material/LocalActivity";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useParams } from "react-router-dom";
 import { customMuiTheme } from "../config/customMuiTheme";
 import SeatMap from "../components/reservation-page-components/SeatMap";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import UserService from "../services/userService";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
 function getCurrentTimestamp() {
   const now = new Date();
-  return now.getTime();
+  const argentinaTime = new Date(
+    now.toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" })
+  );
+
+  const year = argentinaTime.getFullYear();
+  const month = String(argentinaTime.getMonth() + 1).padStart(2, "0");
+  const day = String(argentinaTime.getDate()).padStart(2, "0");
+  const hours = String(argentinaTime.getHours()).padStart(2, "0");
+  const minutes = String(argentinaTime.getMinutes()).padStart(2, "0");
+  const seconds = String(argentinaTime.getSeconds()).padStart(2, "0");
+  const milliseconds = String(argentinaTime.getMilliseconds()).padStart(3, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
 }
 
 export function ReservationPage() {
@@ -40,14 +50,26 @@ export function ReservationPage() {
   const [selectedSeatMap, setSelectedSeatMap] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedDateIndex, setSelectedDateIndex] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(false);
   const [loading, setLoading] = useState(false);
   const userService = new UserService();
   const [user, setUser] = useState({});
+  const [selectedSectorId, setSelectedSectorId] = useState({});
   const [nonNumberedReservations, setNonNumberedReservations] = useState({});
   const [timers, setTimers] = useState({});
   const [counter, setCounter] = useState(300);
-  const [reservationUnconfirmed, setReservationUnconfirmed] = useState([]);
-  const [reservationConfirmed, setReservationConfirmed] = useState(false);
+  const [
+    notNumeredReservationUnconfirmed,
+    setNotNumeredReservationUnconfirmed,
+  ] = useState([]);
+  const [numeredReservationUnconfirmed, setNumeredReservationUnconfirmed] =
+    useState([]);
+  const [reservationConfirmed, setReservationConfirmed] = useState([]);
+
+  useEffect(() => {
+    console.log(notNumeredReservationUnconfirmed);
+    console.log(numeredReservationUnconfirmed);
+  }, [notNumeredReservationUnconfirmed, numeredReservationUnconfirmed]);
 
   useEffect(() => {
     async function fetchEvent() {
@@ -69,6 +91,7 @@ export function ReservationPage() {
     if (event) {
       const loggedUser = userService.getUserFromLocalStorage();
       setUser({ id: loggedUser.id, email: loggedUser.email });
+      setSelectedDate(event.dates[selectedDateIndex].date_time);
       setSeatMaps(event.dates[selectedDateIndex].sectors);
       const initialReservations = {};
       event.dates[selectedDateIndex].sectors.forEach((sector) => {
@@ -98,35 +121,48 @@ export function ReservationPage() {
   }, [timers, reservationConfirmed]);
 
   const handleSeatClick = (clickedSeat) => {
-    console.log(clickedSeat);
-    // Guardar los asientos en un array de asientos pre seleccionados:
+    const newNumeredReservationUnconfirmed = [...numeredReservationUnconfirmed];
+    const newSeat = clickedSeat;
+    newSeat.eventId = event._id;
+    newSeat.date_time = selectedDate;
+    newSeat.reservedBy = user.id;
+    newSeat.sectorId = selectedSectorId;
+    newNumeredReservationUnconfirmed.push(newSeat);
+    setNumeredReservationUnconfirmed(newNumeredReservationUnconfirmed);
   };
 
   const handleNonNumberedReservation = (sectorName, sectorId, operation) => {
-    console.log(sectorName, sectorId, operation);
     if (operation === "add") {
-      console.log("entre");
       const newReservedUnconfirmed = {
+        eventId: event._id,
+        sectorId: sectorId,
         timestamp: getCurrentTimestamp(),
         reservedBy: user.id,
+        date_time: selectedDate,
       };
-      const newReservationUnconfirmed = [...reservationUnconfirmed];
-      console.log(newReservationUnconfirmed);
-      newReservationUnconfirmed.push(newReservedUnconfirmed);
-      console.log(newReservationUnconfirmed);
-      setReservationUnconfirmed(newReservationUnconfirmed);
-      console.log(reservationUnconfirmed);
+      const newNotNumeredReservationUnconfirmed = [
+        ...notNumeredReservationUnconfirmed,
+      ];
+      newNotNumeredReservationUnconfirmed.push(newReservedUnconfirmed);
+      setNotNumeredReservationUnconfirmed(newNotNumeredReservationUnconfirmed);
     } else if (operation === "remove") {
-      const newReservationUnconfirmed = [...reservationUnconfirmed];
-      if (newReservationUnconfirmed.length > 0) {
-        newReservationUnconfirmed.pop();
+      const newNotNumeredReservationUnconfirmed = [
+        ...notNumeredReservationUnconfirmed,
+      ];
+      if (newNotNumeredReservationUnconfirmed.length > 0) {
+        newNotNumeredReservationUnconfirmed.pop();
       }
-      setReservationUnconfirmed(newReservationUnconfirmed);
+      setNotNumeredReservationUnconfirmed(newNotNumeredReservationUnconfirmed);
     }
-    console.log(reservationUnconfirmed);
+  };
+
+  const handleConfirmReservations = () => {
+    console.log(notNumeredReservationUnconfirmed);
+    console.log(numeredReservationUnconfirmed);
   };
 
   const handleOpenModal = (seatMap) => {
+    setSelectedSectorId(seatMap._id);
     setSelectedSeatMap(seatMap);
     setModalOpen(true);
   };
@@ -137,6 +173,7 @@ export function ReservationPage() {
   };
 
   const handleDateChange = (index) => {
+    setSelectedDate(event.dates[index].date_time);
     setLoading(true);
     setTimeout(() => {
       setSelectedDateIndex(index);
@@ -178,11 +215,17 @@ export function ReservationPage() {
     setReservationConfirmed(false);
   };
 
-  const handleConfirmReservations = () => {
-    setReservationConfirmed(true);
-    setTimers({});
-    setCounter(300);
-  };
+  window.addEventListener("beforeunload", function (event) {
+    const hasUnconfirmedReservations =
+      notNumeredReservationUnconfirmed.length > 0 ||
+      numeredReservationUnconfirmed.length > 0;
+    if (hasUnconfirmedReservations) {
+      const message =
+        "Tienes reservas sin confirmar, ¿Estás seguro que quieres salir?";
+      event.preventDefault();
+      return message;
+    }
+  });
 
   if (!event) {
     return (
