@@ -295,8 +295,8 @@ export function MyAccountPage() {
                   artist={event.artist}
                   title={event.name}
                   location={event.location_id}
-                  dates={event.date_times}
-                  sectors={event.sectors}
+                  dates={event.dates.map(date=> date.date_time)}
+                  sectors={event.dates[0].sectors}
                 />
               ))
               : <LoadingIndicator />}

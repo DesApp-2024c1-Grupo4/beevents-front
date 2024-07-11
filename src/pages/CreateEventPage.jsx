@@ -7,7 +7,7 @@ import {
   Typography,
   CircularProgress,
 } from "@mui/material";
-import { TextFieldElement, useForm } from "react-hook-form-mui";
+import { TextareaAutosizeElement, TextFieldElement, useForm } from "react-hook-form-mui";
 import LocationSection from "../components/create-event-page-components/LocationSection";
 import DatesSection from "../components/create-event-page-components/DatesSection";
 import SectorsSection from "../components/create-event-page-components/SectorsSection";
@@ -16,6 +16,7 @@ import { createEvent, getEventById, updateEvent } from "../services/EventService
 import { useNavigate, useParams } from "react-router-dom";
 
 export function CreateEventPage() {
+  const [datesArray, setDatesArray] = useState([])
   const [sectors, setSectors] = useState([]);
   const [dates, setDates] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -31,17 +32,26 @@ export function CreateEventPage() {
       name: "",
       artist: "",
       image: "",
+      description: "",
       location_id: locationId,
       user_id: "user1",
-      date_times: dates,
-      sectors: sectors,
+      dates: datesArray
     },
   });
+
+  useEffect(() => {
+    setDatesArray(dates.map(date => ({ date_time: date, sectors: sectors})));
+  }, [dates, sectors]);
 
   useEffect(() => {
     setValue("location_id", locationId);
   }, [locationId, setValue]);
 
+  useEffect(() => {
+    setValue("dates", datesArray);
+  }, [datesArray, setValue]);
+
+  /*
   useEffect(() => {
     setValue("date_times", dates);
   }, [dates, setValue]);
@@ -49,7 +59,8 @@ export function CreateEventPage() {
   useEffect(() => {
     setValue("sectors", sectors);
   }, [sectors, setValue]);
-
+  */
+  
   useEffect(() => {
     const fetchEvent = async () => {
       const fetchedEvent = await getEventById(eventId);
@@ -63,11 +74,12 @@ export function CreateEventPage() {
       reset({
         name: event.name,
         artist: event.artist,
-        image: event.image
+        image: event.image,
+        description: event.description
       });
       setLocationId(event.location_id)
-      setDates(event.date_times)
-      setSectors(event.sectors)
+      setDates(event.dates.map(date => date.date_time))
+      setSectors(event.dates[0].sectors)
     }
   }, [event]);
 
@@ -129,7 +141,7 @@ export function CreateEventPage() {
             xs: "1.5rem",
             md: "2rem",
           },
-          alignSelf: "flex-start",
+          textAlign: { xs: "center", sm: "left" }
         }}
       >
         {eventId ? "Editar evento" : "Crear un evento nuevo"}
@@ -159,6 +171,12 @@ export function CreateEventPage() {
             <TextFieldElement
               name={"image"}
               label={"Imagen"}
+              control={control}
+              required
+            />
+            <TextareaAutosizeElement
+              name={"description"}
+              label={"Descripción"}
               control={control}
               required
             />

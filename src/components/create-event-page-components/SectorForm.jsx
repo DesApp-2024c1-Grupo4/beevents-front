@@ -44,8 +44,8 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
   const sector = {
     name: name,
     numbered: isNumbered,
-    rows: isNumbered ? rows : 1,
-    seats: isNumbered ? seats : Number(capacity),
+    rowsNumber: isNumbered ? rows : 1,
+    seatsNumber: isNumbered ? seats : Number(capacity),
   };
   const isValidSector = (sector) => {
     return !sectors.some((storedSector) => storedSector.name === sector.name);
