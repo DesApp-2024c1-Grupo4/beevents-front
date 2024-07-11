@@ -81,7 +81,7 @@ export default function LocationSection({ locationId, setLocationId }) {
         <Stack spacing={3}>
           <Autocomplete
             disablePortal
-            options={fetchedLocations? getLocationOptions() : [{id: 1, label: "Cargando..."}]}
+            options={getLocationOptions()}
             onChange={handleLocationChange}
             isOptionEqualToValue={(option, value) => option.id === value.id}
             renderInput={(params) => (

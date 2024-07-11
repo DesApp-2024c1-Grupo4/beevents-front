@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Container, Stack, Typography } from "@mui/material/";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getEventById } from "../services/EventService";
 import { customMuiTheme } from "../config/customMuiTheme";
 import { getLocationById } from "../services/LocationService";
@@ -176,6 +176,8 @@ export function EventPage() {
                   */}
                 {/* Reserve button */}
                 <Button
+                  component={Link}
+                  to={`/reservation/${eventId}`}
                   size="large"
                   sx={{
                     backgroundColor: contrastGreen,
