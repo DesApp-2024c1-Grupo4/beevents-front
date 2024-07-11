@@ -25,23 +25,10 @@ import SeatMap from "../components/reservation-page-components/SeatMap";
 import UserService from "../services/userService";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-
-function getCurrentTimestamp() {
-  const now = new Date();
-  const argentinaTime = new Date(
-    now.toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" })
-  );
-
-  const year = argentinaTime.getFullYear();
-  const month = String(argentinaTime.getMonth() + 1).padStart(2, "0");
-  const day = String(argentinaTime.getDate()).padStart(2, "0");
-  const hours = String(argentinaTime.getHours()).padStart(2, "0");
-  const minutes = String(argentinaTime.getMinutes()).padStart(2, "0");
-  const seconds = String(argentinaTime.getSeconds()).padStart(2, "0");
-  const milliseconds = String(argentinaTime.getMilliseconds()).padStart(3, "0");
-
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
-}
+import {
+  patchEventPlace,
+  patchEventSeat,
+} from "../services/ReservationService";
 
 export function ReservationPage() {
   const { contrastGreen } = customMuiTheme.colors;
@@ -71,21 +58,41 @@ export function ReservationPage() {
     console.log(numeredReservationUnconfirmed);
   }, [notNumeredReservationUnconfirmed, numeredReservationUnconfirmed]);
 
-  useEffect(() => {
-    async function fetchEvent() {
-      try {
-        const response = await fetch(
-          "https://beevents-back-reserva-tickets.onrender.com/event/667edce656ef376013473396"
-        );
-        const data = await response.json();
-        setEvent(data);
-      } catch (error) {
-        console.error("Error fetching event data:", error);
-      }
+  const fetchEvent = async () => {
+    try {
+      const response = await fetch(
+        "https://beevents-back-reserva-tickets.onrender.com/event/668c39d35af3a02fc702dd00"
+      );
+      const data = await response.json();
+      setEvent(data);
+      console.log(event);
+    } catch (error) {
+      console.error("Error fetching event data:", error);
     }
+  };
 
+  useEffect(() => {
     fetchEvent();
   }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      const hasUnconfirmedReservations =
+        notNumeredReservationUnconfirmed.length > 0 ||
+        numeredReservationUnconfirmed.length > 0;
+      console.log(hasUnconfirmedReservations);
+      if (hasUnconfirmedReservations) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [notNumeredReservationUnconfirmed, numeredReservationUnconfirmed]);
 
   useEffect(() => {
     if (event) {
@@ -120,23 +127,84 @@ export function ReservationPage() {
     return () => clearInterval(timer);
   }, [timers, reservationConfirmed]);
 
-  const handleSeatClick = (clickedSeat) => {
-    const newNumeredReservationUnconfirmed = [...numeredReservationUnconfirmed];
-    const newSeat = clickedSeat;
-    newSeat.eventId = event._id;
-    newSeat.date_time = selectedDate;
-    newSeat.reservedBy = user.id;
-    newSeat.sectorId = selectedSectorId;
-    newNumeredReservationUnconfirmed.push(newSeat);
-    setNumeredReservationUnconfirmed(newNumeredReservationUnconfirmed);
-  };
+  useEffect(() => {
+    console.log(event);
+  }, [event]);
 
-  const handleNonNumberedReservation = (sectorName, sectorId, operation) => {
+  const handleSeatClick = (clickedSeat) => {
+    if (clickedSeat.available) {
+      const newNumeredReservationUnconfirmed = [
+        ...numeredReservationUnconfirmed,
+      ];
+      const seatIndex = newNumeredReservationUnconfirmed.findIndex(
+        (seat) => seat._id === clickedSeat._id
+      );
+
+      let updatedSeat;
+
+      if (seatIndex > -1) {
+        updatedSeat = { ...newNumeredReservationUnconfirmed[seatIndex] };
+        newNumeredReservationUnconfirmed.splice(seatIndex, 1);
+      } else {
+        updatedSeat = {
+          ...clickedSeat,
+          eventId: event._id,
+          date_time: selectedDate,
+          reservedBy: user.id,
+          sectorId: selectedSectorId,
+          preReserved: true,
+        };
+        delete updatedSeat.available;
+        newNumeredReservationUnconfirmed.push(updatedSeat);
+      }
+
+      setNumeredReservationUnconfirmed(newNumeredReservationUnconfirmed);
+
+      // setSeatMaps((prevSeatMaps) =>
+      //   prevSeatMaps.map((sector) =>
+      //     sector._id === selectedSectorId
+      //       ? {
+      //           ...sector,
+      //           rows: sector.rows.map((row) =>
+      //             row.map(
+      //               (seat) => console.log(seat),
+      //               seat._id === clickedSeat._id
+      //                 ? { ...seat, preReserved: !seat.preReserved }
+      //                 : seat
+      //             )
+      //           ),
+      //         }
+      //       : sector
+      //   )
+      // );
+    }
+    console.log(updatedSeat);
+  };
+  // const handleSeatClick = (clickedSeat) => {
+  //   if (!clickedSeat.preReserved) {
+  //     const newNumeredReservationUnconfirmed = [
+  //       ...numeredReservationUnconfirmed,
+  //     ];
+  //     const newSeat = {
+  //       ...clickedSeat,
+  //       eventId: event._id,
+  //       date_time: selectedDate,
+  //       reservedBy: user.id,
+  //       sectorId: selectedSectorId,
+  //     };
+  //     delete newSeat.available;
+  //     newNumeredReservationUnconfirmed.push(newSeat);
+  //     setNumeredReservationUnconfirmed(newNumeredReservationUnconfirmed);
+  //     clickedSeat.preReserved = true;
+  //   }
+  //   console.log(clickedSeat);
+  // };
+
+  const handleNonNumberedReservation = (sectorId, operation) => {
     if (operation === "add") {
       const newReservedUnconfirmed = {
         eventId: event._id,
         sectorId: sectorId,
-        timestamp: getCurrentTimestamp(),
         reservedBy: user.id,
         date_time: selectedDate,
       };
@@ -156,9 +224,39 @@ export function ReservationPage() {
     }
   };
 
-  const handleConfirmReservations = () => {
-    console.log(notNumeredReservationUnconfirmed);
-    console.log(numeredReservationUnconfirmed);
+  const handleConfirmReservations = async () => {
+    setLoading(true);
+    try {
+      if (notNumeredReservationUnconfirmed.length > 0) {
+        for (const reservation of notNumeredReservationUnconfirmed) {
+          console.log(reservation);
+          const response = await patchEventPlace(reservation);
+          if (response.message == "Place creado correctamente") {
+            window.alert("¡Reservas realizadas con éxito!");
+            await fetchEvent();
+            setNotNumeredReservationUnconfirmed([]);
+          }
+          console.log(response);
+        }
+      }
+
+      if (numeredReservationUnconfirmed.length > 0) {
+        for (const reservation of numeredReservationUnconfirmed) {
+          console.log(reservation);
+          const response = await patchEventSeat(reservation);
+          console.log(response);
+          if (response.message == "Seat creado correctamente") {
+            window.alert("¡Reservas realizadas con éxito!");
+            await fetchEvent();
+            setNumeredReservationUnconfirmed([]);
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOpenModal = (seatMap) => {
@@ -214,18 +312,6 @@ export function ReservationPage() {
 
     setReservationConfirmed(false);
   };
-
-  window.addEventListener("beforeunload", function (event) {
-    const hasUnconfirmedReservations =
-      notNumeredReservationUnconfirmed.length > 0 ||
-      numeredReservationUnconfirmed.length > 0;
-    if (hasUnconfirmedReservations) {
-      const message =
-        "Tienes reservas sin confirmar, ¿Estás seguro que quieres salir?";
-      event.preventDefault();
-      return message;
-    }
-  });
 
   if (!event) {
     return (
@@ -498,7 +584,7 @@ export function ReservationPage() {
                   const occupiedSeats = sector.rows.reduce(
                     (acc, row) =>
                       acc +
-                      row.filter((seat) => seat.status === "Reservado").length,
+                      row.filter((seat) => seat.available === false).length,
                     0
                   );
 
@@ -545,7 +631,6 @@ export function ReservationPage() {
                               color="primary"
                               onClick={() =>
                                 handleNonNumberedReservation(
-                                  sector.name,
                                   sector._id,
                                   "remove"
                                 )
@@ -554,16 +639,12 @@ export function ReservationPage() {
                               <RemoveIcon />
                             </IconButton>
                             <Typography>
-                              {nonNumberedReservations[sector.name]}
+                              {notNumeredReservationUnconfirmed.length}
                             </Typography>
                             <IconButton
                               color="primary"
                               onClick={() =>
-                                handleNonNumberedReservation(
-                                  sector.name,
-                                  sector._id,
-                                  "add"
-                                )
+                                handleNonNumberedReservation(sector._id, "add")
                               }
                             >
                               <AddIcon />

@@ -2,8 +2,13 @@ import React from "react";
 import Seat from "./Seat";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const SeatMap = ({ rows, sectorName, onSeatClick }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <Box
       display="flex"
@@ -35,20 +40,66 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
       </div>
       <Grid container spacing={0.1} justifyContent="center">
         {rows.map((rowBlock) => (
-          <Grid item xs={12} key={rowBlock.id}>
+          <Grid item xs={12} key={rowBlock[0]._id}>
             <Box display="flex" justifyContent="center" width="100%">
-              {rowBlock.map((seat) => (
-                <Seat
-                  key={seat.id}
-                  seat={seat}
-                  onSeatClick={onSeatClick}
-                  reservedBy={seat.reservedBy}
-                />
-              ))}
+              {rowBlock &&
+                rowBlock.map((seat) => {
+                  const seatWithPreReserved = { ...seat, preReserved: false };
+                  return (
+                    <Seat
+                      key={seatWithPreReserved._id}
+                      seat={seatWithPreReserved}
+                      onSeatClick={onSeatClick}
+                      reservedBy={seatWithPreReserved.reservedBy}
+                    />
+                  );
+                })}
             </Box>
           </Grid>
         ))}
       </Grid>
+      <div
+        style={{
+          color: "#fff",
+          fontSize: "12px",
+          letterSpacing: "2px",
+          marginTop: "1rem",
+        }}
+      >
+        <Box display="flex" alignItems="center" mb={1.5}>
+          <div
+            style={{
+              width: "15px",
+              height: "15px",
+              backgroundColor: "#B9B9B9",
+              marginRight: "8px",
+            }}
+          ></div>
+          <p style={{ margin: 0 }}>Asiento disponible</p>
+        </Box>
+        <Box display="flex" alignItems="center" mb={1.5}>
+          <div
+            style={{
+              width: "15px",
+              height: "15px",
+              backgroundColor: "#E067B8",
+              marginRight: "8px",
+            }}
+          ></div>
+          <p style={{ margin: 0 }}>Asiento reservado</p>
+        </Box>
+        <Box display="flex" alignItems="center">
+          <div
+            style={{
+              width: "15px",
+              height: "15px",
+              backgroundColor: "#51DD99",
+              marginRight: "8px",
+            }}
+          ></div>
+          <p style={{ margin: 0 }}>Asiento pre-reservado</p>
+        </Box>
+      </div>
     </Box>
   );
 };

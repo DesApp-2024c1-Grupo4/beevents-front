@@ -50,3 +50,5 @@ export async function deleteEvent(id) {
     console.error(error);
   }
 }
+
+
