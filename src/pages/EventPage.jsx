@@ -122,9 +122,9 @@ export function EventPage() {
                     spacing={2}
                     px={2}
                   >
-                    {event.date_times.map(date =>
+                    {event.dates.map(date =>
                       <Typography
-                        key={date}
+                        key={date.date_time}
                         className="border-grad"
                         backgroundColor={oceanicBlue}
                         borderRadius={2}
@@ -133,7 +133,7 @@ export function EventPage() {
                         variant="info"
                         sx={{ fontSize: { md: "1rem" } }}
                       >
-                        {getFormatedDate(date)}
+                        {getFormatedDate(date.date_time)}
                       </Typography>
                     )}
                   </Stack>
@@ -213,12 +213,7 @@ export function EventPage() {
                 sx={{ fontSize: { md: "1rem" } }}
                 px={2}
               >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-                dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                anim id est laborum.
+                {event.description}
               </Typography>
             </Stack>
             {/* Location */}

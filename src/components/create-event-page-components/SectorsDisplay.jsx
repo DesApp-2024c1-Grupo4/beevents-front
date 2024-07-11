@@ -18,7 +18,7 @@ export default function SectorsDisplay({ sectors, setSectors }) {
           spacing={1}
         >
           <Typography sx={{ alignSelf: "center" }}>
-            {`${sector.name}, capacidad: ${sector.rows * sector.seats}`}
+            {`${sector.name}, capacidad: ${sector.rowsNumber * sector.seatsNumber}`}
           </Typography>
           <Button onClick={() => deleteSector(sector)}>
             <DeleteOutlineOutlined />
