@@ -7,16 +7,24 @@ import {
   Typography,
   CircularProgress,
 } from "@mui/material";
-import { TextareaAutosizeElement, TextFieldElement, useForm } from "react-hook-form-mui";
+import {
+  TextareaAutosizeElement,
+  TextFieldElement,
+  useForm,
+} from "react-hook-form-mui";
 import LocationSection from "../components/create-event-page-components/LocationSection";
 import DatesSection from "../components/create-event-page-components/DatesSection";
 import SectorsSection from "../components/create-event-page-components/SectorsSection";
 import SnackBar from "../components/SnackBar";
-import { createEvent, getEventById, updateEvent } from "../services/EventService";
+import {
+  createEvent,
+  getEventById,
+  updateEvent,
+} from "../services/EventService";
 import { useNavigate, useParams } from "react-router-dom";
 
 export function CreateEventPage() {
-  const [datesArray, setDatesArray] = useState([])
+  const [datesArray, setDatesArray] = useState([]);
   const [sectors, setSectors] = useState([]);
   const [dates, setDates] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -35,12 +43,12 @@ export function CreateEventPage() {
       description: "",
       location_id: locationId,
       user_id: "user1",
-      dates: datesArray
+      dates: datesArray,
     },
   });
 
   useEffect(() => {
-    setDatesArray(dates.map(date => ({ date_time: date, sectors: sectors})));
+    setDatesArray(dates.map((date) => ({ date_time: date, sectors: sectors })));
   }, [dates, sectors]);
 
   useEffect(() => {
@@ -60,13 +68,15 @@ export function CreateEventPage() {
     setValue("sectors", sectors);
   }, [sectors, setValue]);
   */
-  
+
   useEffect(() => {
     const fetchEvent = async () => {
       const fetchedEvent = await getEventById(eventId);
       setEvent(fetchedEvent);
+    };
+    if (eventId) {
+      fetchEvent();
     }
-    if (eventId) { fetchEvent(); }
   }, []);
 
   useEffect(() => {
@@ -75,11 +85,11 @@ export function CreateEventPage() {
         name: event.name,
         artist: event.artist,
         image: event.image,
-        description: event.description
+        description: event.description,
       });
-      setLocationId(event.location_id)
-      setDates(event.dates.map(date => date.date_time))
-      setSectors(event.dates[0].sectors)
+      setLocationId(event.location_id);
+      setDates(event.dates.map((date) => date.date_time));
+      setSectors(event.dates[0].sectors);
     }
   }, [event]);
 
@@ -92,8 +102,8 @@ export function CreateEventPage() {
     try {
       await createEvent(formData);
       setSnackbarMessage("¡Evento creado exitosamente!");
-      setTimeout(navigate, 2000, "/account")
-      setTimeout(window.scrollTo, 2001, 0, 0)
+      setTimeout(navigate, 2000, "/account");
+      setTimeout(window.scrollTo, 2001, 0, 0);
     } catch (error) {
       console.log(error);
       setSnackbarMessage("Hubo un error al crear el evento");
@@ -101,14 +111,14 @@ export function CreateEventPage() {
       setLoading(false);
       setSnackbarOpen(true);
     }
-  }
+  };
 
   const updateAnEvent = async (formData) => {
     try {
       await updateEvent(formData, eventId);
       setSnackbarMessage("¡Evento editado exitosamente!");
-      setTimeout(navigate, 2000, "/account")
-      setTimeout(window.scrollTo, 2001, 0, 0)
+      setTimeout(navigate, 2000, "/account");
+      setTimeout(window.scrollTo, 2001, 0, 0);
     } catch (error) {
       console.log(error);
       setSnackbarMessage("Hubo un error al editar el evento");
@@ -116,7 +126,7 @@ export function CreateEventPage() {
       setLoading(false);
       setSnackbarOpen(true);
     }
-  }
+  };
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -141,7 +151,7 @@ export function CreateEventPage() {
             xs: "1.5rem",
             md: "2rem",
           },
-          textAlign: { xs: "center", sm: "left" }
+          textAlign: { xs: "center", sm: "left" },
         }}
       >
         {eventId ? "Editar evento" : "Crear un evento nuevo"}
@@ -208,7 +218,9 @@ export function CreateEventPage() {
             {loading ? (
               <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
             ) : (
-              <Typography variant="h2">{eventId ? "Confirmar" : "Crear"}</Typography>
+              <Typography variant="h2">
+                {eventId ? "Confirmar" : "Crear"}
+              </Typography>
             )}
           </Button>
         </Stack>

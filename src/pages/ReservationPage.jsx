@@ -19,10 +19,12 @@ import EventSeatIcon from "@mui/icons-material/EventSeat";
 import FestivalIcon from "@mui/icons-material/Festival";
 import LocalActivityIcon from "@mui/icons-material/LocalActivity";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import Logo from "../assets/img/logo.png";
 import { useParams } from "react-router-dom";
 import { customMuiTheme } from "../config/customMuiTheme";
 import SeatMap from "../components/reservation-page-components/SeatMap";
 import UserService from "../services/userService";
+import { getEventById } from "../services/EventService";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import {
@@ -30,12 +32,33 @@ import {
   patchEventSeat,
 } from "../services/ReservationService";
 
+const style = {
+  position: "absolute",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  borderRadius: "5px",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "90%",
+  maxWidth: "380px",
+  bgcolor: "#13273D",
+  border: "1px solid #000",
+  boxShadow: 24,
+  p: 2,
+};
+
 export function ReservationPage() {
   const { contrastGreen } = customMuiTheme.colors;
+  const { eventId } = useParams();
   const [event, setEvent] = useState(null);
+  const [apiMessage, setApiMessage] = useState("");
   const [seatMaps, setSeatMaps] = useState([]);
   const [selectedSeatMap, setSelectedSeatMap] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [selectedDateIndex, setSelectedDateIndex] = useState(0);
   const [selectedDate, setSelectedDate] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -58,22 +81,15 @@ export function ReservationPage() {
     console.log(numeredReservationUnconfirmed);
   }, [notNumeredReservationUnconfirmed, numeredReservationUnconfirmed]);
 
-  const fetchEvent = async () => {
-    try {
-      const response = await fetch(
-        "https://beevents-back-reserva-tickets.onrender.com/event/668c39d35af3a02fc702dd00"
-      );
-      const data = await response.json();
-      setEvent(data);
-      console.log(event);
-    } catch (error) {
-      console.error("Error fetching event data:", error);
-    }
-  };
+  async function fetchEvent() {
+    const event = await getEventById(eventId);
+    setEvent(event);
+    console.log(event);
+  }
 
-  useEffect(() => {
+  useEffect(async () => {
     fetchEvent();
-  }, []);
+  }, [eventId]);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -139,9 +155,7 @@ export function ReservationPage() {
       const seatIndex = newNumeredReservationUnconfirmed.findIndex(
         (seat) => seat._id === clickedSeat._id
       );
-
       let updatedSeat;
-
       if (seatIndex > -1) {
         updatedSeat = { ...newNumeredReservationUnconfirmed[seatIndex] };
         newNumeredReservationUnconfirmed.splice(seatIndex, 1);
@@ -152,34 +166,17 @@ export function ReservationPage() {
           date_time: selectedDate,
           reservedBy: user.id,
           sectorId: selectedSectorId,
-          preReserved: true,
         };
         delete updatedSeat.available;
         newNumeredReservationUnconfirmed.push(updatedSeat);
       }
-
+      clickedSeat.available = false;
+      console.log(clickedSeat);
       setNumeredReservationUnconfirmed(newNumeredReservationUnconfirmed);
-
-      // setSeatMaps((prevSeatMaps) =>
-      //   prevSeatMaps.map((sector) =>
-      //     sector._id === selectedSectorId
-      //       ? {
-      //           ...sector,
-      //           rows: sector.rows.map((row) =>
-      //             row.map(
-      //               (seat) => console.log(seat),
-      //               seat._id === clickedSeat._id
-      //                 ? { ...seat, preReserved: !seat.preReserved }
-      //                 : seat
-      //             )
-      //           ),
-      //         }
-      //       : sector
-      //   )
-      // );
     }
     console.log(updatedSeat);
   };
+
   // const handleSeatClick = (clickedSeat) => {
   //   if (!clickedSeat.preReserved) {
   //     const newNumeredReservationUnconfirmed = [
@@ -231,26 +228,28 @@ export function ReservationPage() {
         for (const reservation of notNumeredReservationUnconfirmed) {
           console.log(reservation);
           const response = await patchEventPlace(reservation);
+          console.log(response);
           if (response.message == "Place creado correctamente") {
-            window.alert("¡Reservas realizadas con éxito!");
+            setApiMessage(response.message);
+            handleOpen();
             await fetchEvent();
-            setNotNumeredReservationUnconfirmed([]);
           }
           console.log(response);
         }
+        setNotNumeredReservationUnconfirmed([]);
       }
-
       if (numeredReservationUnconfirmed.length > 0) {
         for (const reservation of numeredReservationUnconfirmed) {
           console.log(reservation);
           const response = await patchEventSeat(reservation);
           console.log(response);
-          if (response.message == "Seat creado correctamente") {
-            window.alert("¡Reservas realizadas con éxito!");
+          if (response.message == "Reserva realizada correctamente") {
+            setApiMessage(response.message);
+            handleOpen();
             await fetchEvent();
-            setNumeredReservationUnconfirmed([]);
           }
         }
+        setNumeredReservationUnconfirmed([]);
       }
     } catch (error) {
       console.log(error);
@@ -269,6 +268,10 @@ export function ReservationPage() {
     setModalOpen(false);
     setSelectedSeatMap(null);
   };
+
+  const handleOpen = () => setOpen(true);
+
+  const handleClose = () => setOpen(false);
 
   const handleDateChange = (index) => {
     setSelectedDate(event.dates[index].date_time);
@@ -715,6 +718,25 @@ export function ReservationPage() {
             />
           )}
           <Button onClick={handleCloseModal} variant="contained" sx={{ mt: 2 }}>
+            Cerrar
+          </Button>
+        </Box>
+      </Modal>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <img src={Logo} alt="Logo" style={{ width: 100, marginBottom: 5 }} />
+          <Typography
+            id="modal-modal-description"
+            sx={{ mt: 2, textAlign: "center" }}
+          >
+            ¡{apiMessage}!
+          </Typography>
+          <Button onClick={handleClose} variant="contained" sx={{ mt: 3 }}>
             Cerrar
           </Button>
         </Box>

@@ -25,17 +25,23 @@ export function HomePage() {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const allEvents = await getAllEvents();
-      const sortedEvents = allEvents.sort((a, b) => {
-        const dateA = new Date(a.date_times[0]);
-        const dateB = new Date(b.date_times[0]);
-        return dateA - dateB;
-      });
-      setEvents(sortedEvents);
+      // const allEvents = await getAllEvents();
+      const allEvents = [];
+
+      // const sortedEvents = allEvents.sort((a, b) => {
+      //   const dateA = new Date(a.dates[0].date_time);
+      //   const dateB = new Date(b.dates[0].date_time);
+      //   return dateA - dateB;
+      // });
+      setEvents(allEvents);
     };
 
     fetchEvents();
   }, []);
+
+  useEffect(() => {
+    console.log(events);
+  }, [events]);
 
   const getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -118,7 +124,6 @@ export function HomePage() {
             alignItems: "center",
           }}
         >
-          {" "}
           <Typography
             variant="h2"
             component="h2"

@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import availableIcon from "../../assets/img/available-seat.png";
 import notAvailableIcon from "../../assets/img/notavailable-seat.png";
-import prereservedIcon from "../../assets/img/prereserved-seat.png";
+import preReservedIcon from "../../assets/img/prereserved-seat.png";
 
 const getSeatStatus = (seat) => {
   if (seat.available) {
     return "Disponible";
   } else if (!seat.available) {
     return "Reservado";
-  } else if (seat.preReserved) {
+  } else if (seat.available == "pre-reserved") {
     return "Pre-Reservado";
   }
 };
@@ -37,9 +37,6 @@ const SeatCard = ({ seat }) => {
       <p style={{ fontSize: "10px", margin: "0.5px", color: "white" }}>
         <b>Asiento:</b> {seat.displayId}
       </p>
-      <p style={{ fontSize: "10px", margin: "0.5px", color: "white" }}>
-        <b>PreReserved:</b> {`${seat.preReserved}`}
-      </p>
     </div>
   );
 };
@@ -54,8 +51,8 @@ const Seat = ({ seat, onSeatClick }) => {
 
   const getSeatStyle = (seat) => {
     let backgroundStyle = {
-      width: "20px",
-      height: "20px",
+      width: "15px",
+      height: "15px",
       margin: "4px",
       padding: "4px",
       cursor: "pointer",
@@ -86,10 +83,10 @@ const Seat = ({ seat, onSeatClick }) => {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };
-    } else if (!seat.available && seat.preReserved) {
+    } else if (seat.available == "pre-reserved") {
       backgroundStyle = {
         ...backgroundStyle,
-        backgroundImage: `url(${prereservedIcon})`,
+        backgroundImage: `url(${preReservedIcon})`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };

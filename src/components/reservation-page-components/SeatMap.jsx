@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import escenario from "../../assets/img/escenario.png";
 
 const SeatMap = ({ rows, sectorName, onSeatClick }) => {
   const theme = useTheme();
@@ -38,13 +39,32 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
         <br></br>
         {sectorName}
       </div>
+      <img
+        src={escenario}
+        alt="Escenario"
+        style={{ width: "15%", marginBottom: 5 }}
+      />
+      <div
+        style={{
+          fontSize: "12px",
+          letterSpacing: "2px",
+          marginBottom: "1rem",
+          paddingRight: "1rem",
+          paddingLeft: "1rem",
+          paddingBottom: "0.5rem",
+          textAlign: "center",
+          fontWeight: 600,
+        }}
+      >
+        UBICACIÓN ESCENARIO
+      </div>
       <Grid container spacing={0.1} justifyContent="center">
         {rows.map((rowBlock) => (
           <Grid item xs={12} key={rowBlock[0]._id}>
             <Box display="flex" justifyContent="center" width="100%">
               {rowBlock &&
                 rowBlock.map((seat) => {
-                  const seatWithPreReserved = { ...seat, preReserved: false };
+                  const seatWithPreReserved = { ...seat };
                   return (
                     <Seat
                       key={seatWithPreReserved._id}
