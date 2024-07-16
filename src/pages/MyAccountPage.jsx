@@ -218,7 +218,7 @@ export default function CardHorizontalWBorder({
 export function TicketsTable() {
   const [reservations, setReservations] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(3);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - reservations.length) : 0;
@@ -233,8 +233,8 @@ export function TicketsTable() {
   const fetchReservations = async () => {
     const us = new UserService()
     const loggedUserId = us.getUserFromLocalStorage().id
-    const reservationsById = await getReservationsByUserId(1717478725800);
-    //const reservationsById = await getReservationsByUserId(loggedUserId);
+    //const reservationsById = await getReservationsByUserId(1717478725800);
+    const reservationsById = await getReservationsByUserId(loggedUserId);
     setReservations(reservationsById);
   }
 
@@ -247,11 +247,11 @@ export function TicketsTable() {
           <TableContainer >
             <Table size="small">
               <TableHead>
-                <TableRow>
+                <TableRow sx={{ height: 105}}>
                   <TableCell sx={{ color: "whitesmoke" }} align="center">Afiche</TableCell>
                   <TableCell sx={{ color: "whitesmoke" }} align="center">Evento</TableCell>
-                  <TableCell sx={{ color: "whitesmoke" }} align="center">Sector</TableCell>
-                  <TableCell sx={{ color: "whitesmoke" }} align="center">Lugar y fecha</TableCell>
+                  <TableCell sx={{ color: "whitesmoke" }} align="left">Lugar y fecha</TableCell>
+                  <TableCell sx={{ color: "whitesmoke" }} align="right">Sector</TableCell>
                   <TableCell sx={{ color: "whitesmoke" }} align="center">Asiento/Cantidad</TableCell>
                 </TableRow>
               </TableHead>
@@ -268,24 +268,24 @@ export function TicketsTable() {
                       <img src={r.image} style={{ maxHeight: 100 }} />
                     </TableCell>
                     <TableCell align="center">{r.eventName}</TableCell>
-                    <TableCell align="center">{r.sectorName}</TableCell>
-                    <TableCell align="center">
+                    <TableCell align="left">
                       <p>{r.locationName}</p>
                       {getFormatedDate(r.date_time)}
                     </TableCell>
+                    <TableCell align="right">{r.sectorName}</TableCell>
                     <TableCell align="center">{r.numbered ? r.displayId : r.cantidad}</TableCell>
                   </TableRow>
                 ))}
                 {emptyRows > 0 && (
-                  <TableRow style={{ height: 114 * emptyRows }}>
-                    <TableCell colSpan={6} />
+                  <TableRow style={{ height: 117 * emptyRows }}>
+                    <TableCell colSpan={5} />
                   </TableRow>
                 )}
               </TableBody>
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+            rowsPerPageOptions={[3, 6, 9, { label: 'All', value: -1 }]}
             component="div"
             count={reservations.length}
             rowsPerPage={rowsPerPage}
