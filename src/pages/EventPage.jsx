@@ -5,12 +5,15 @@ import { getEventById } from "../services/EventService";
 import { customMuiTheme } from "../config/customMuiTheme";
 import { getLocationById } from "../services/LocationService";
 import LoadingIndicator from "../components/LoadingIndicator"
+import UserService from "../services/userService";
 
 export function EventPage() {
   const { contrastGreen, oceanicBlue } = customMuiTheme.colors;
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
   const [location, setLocation] = useState("")
+  const us = new UserService()
+  const user = us.getUserFromLocalStorage()
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -177,7 +180,7 @@ export function EventPage() {
                 {/* Reserve button */}
                 <Button
                   component={Link}
-                  to={`/reservation/${eventId}`}
+                  to={user ? `/reservation/${eventId}` : "/auth/login"}
                   size="large"
                   sx={{
                     backgroundColor: contrastGreen,
