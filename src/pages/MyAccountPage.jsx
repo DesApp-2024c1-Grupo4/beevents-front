@@ -1,6 +1,6 @@
-import { Button, Card, CircularProgress, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, CircularProgress, Container, IconButton, InputAdornment, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
-import { DeleteOutlineOutlined, Edit, Key, Logout, ManageAccounts, StadiumOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
+import { ConfirmationNumberOutlined, DeleteOutlineOutlined, Edit, FirstPageOutlined, Key, KeyboardArrowLeft, KeyboardArrowRight, LastPageOutlined, Logout, ManageAccounts, StadiumOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import validator from "validator";
 import { getLocationById } from "../services/LocationService"
@@ -10,6 +10,73 @@ import { deleteEvent, getAllEvents } from "../services/EventService";
 import UserService from "../services/userService";
 import SnackBar from "../components/SnackBar";
 import LoadingIndicator from "../components/LoadingIndicator";
+import { getReservationsByUserId } from "../services/ReservationService";
+import { useTheme } from "@emotion/react";
+
+function getFormatedDate(date) {
+  const thisDate = new Date(date);
+  const day = thisDate.getDate()
+  const month = thisDate.toLocaleString("es-AR", { month: "long" });
+  const year = thisDate.getFullYear()
+  const hour = ("0" + thisDate.getHours()).slice(-2);
+  const minutes = ("0" + thisDate.getMinutes()).slice(-2);
+  const time = "" + hour + ":" + minutes + " hs."
+  return ("" + day + " de " + month + " de " + year + ", " + time)
+};
+
+function TablePaginationActions(props) {
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === 'rtl' ? <LastPageOutlined /> : <FirstPageOutlined />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === 'rtl' ? <FirstPageOutlined /> : <LastPageOutlined />}
+      </IconButton>
+    </Box>
+  );
+}
 
 export default function CardHorizontalWBorder({
   fetchEvents,
@@ -32,17 +99,6 @@ export default function CardHorizontalWBorder({
     }
     getLocationName()
   }, [location]);
-
-  const getFormatedDate = (date) => {
-    const thisDate = new Date(date);
-    const day = thisDate.getDate()
-    const month = thisDate.toLocaleString("es-AR", { month: "long" });
-    const year = thisDate.getFullYear()
-    const hour = ("0" + thisDate.getHours()).slice(-2);
-    const minutes = ("0" + thisDate.getMinutes()).slice(-2);
-    const time = "" + hour + ":" + minutes + " hs."
-    return ("" + day + " de " + month + " de " + year + ", " + time)
-  };
 
   const handleDelete = async (eventId) => {
     const confirm = window.confirm("Estás a punto de eliminar este evento. ¿Estás segur@?");
@@ -159,13 +215,106 @@ export default function CardHorizontalWBorder({
   )
 }
 
+export function TicketsTable() {
+  const [reservations, setReservations] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  // Avoid a layout jump when reaching the last page with empty rows.
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - reservations.length) : 0;
+
+  const handleChangePage = (event, newPage) => { setPage(newPage); };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const fetchReservations = async () => {
+    const us = new UserService()
+    const loggedUserId = us.getUserFromLocalStorage().id
+    const reservationsById = await getReservationsByUserId(1717478725800);
+    //const reservationsById = await getReservationsByUserId(loggedUserId);
+    setReservations(reservationsById);
+  }
+
+  useEffect(() => { fetchReservations(); }, []);
+
+  return (
+    <Stack px={2}>
+      {reservations.length > 0
+        ? <>
+          <TableContainer >
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ color: "whitesmoke" }} align="center">Afiche</TableCell>
+                  <TableCell sx={{ color: "whitesmoke" }} align="center">Evento</TableCell>
+                  <TableCell sx={{ color: "whitesmoke" }} align="center">Sector</TableCell>
+                  <TableCell sx={{ color: "whitesmoke" }} align="center">Lugar y fecha</TableCell>
+                  <TableCell sx={{ color: "whitesmoke" }} align="center">Asiento/Cantidad</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {(rowsPerPage > 0
+                  ? reservations.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : reservations
+                ).map((r) => (
+                  <TableRow
+                    key={r.idTicket}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell align="center">
+                      <img src={r.image} style={{ maxHeight: 100 }} />
+                    </TableCell>
+                    <TableCell align="center">{r.eventName}</TableCell>
+                    <TableCell align="center">{r.sectorName}</TableCell>
+                    <TableCell align="center">
+                      <p>{r.locationName}</p>
+                      {getFormatedDate(r.date_time)}
+                    </TableCell>
+                    <TableCell align="center">{r.numbered ? r.displayId : r.cantidad}</TableCell>
+                  </TableRow>
+                ))}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 114 * emptyRows }}>
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+            component="div"
+            count={reservations.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            slotProps={{
+              select: {
+                inputProps: {
+                  'aria-label': 'rows per page',
+                }
+              },
+            }}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            ActionsComponent={TablePaginationActions}
+          />
+        </>
+        : <Typography textAlign="center">Parece que no reservaste nada aún...</Typography>
+      }
+    </Stack>
+  )
+}
+
 export function MyAccountPage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [events, setEvents] = useState([]);
   const [shownEvents, setShownEvents] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [ isLoading, setIsLoading ] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const userService = new UserService();
 
   useEffect(() => { fetchEvents(); }, []);
@@ -295,12 +444,28 @@ export function MyAccountPage() {
                   artist={event.artist}
                   title={event.name}
                   location={event.location_id}
-                  dates={event.dates.map(date=> date.date_time)}
+                  dates={event.dates.map(date => date.date_time)}
                   sectors={event.dates[0].sectors}
                 />
               ))
               : <LoadingIndicator />}
           </Stack>
+        </Stack>
+        {/* Reserved tickets */}
+        <Stack spacing={5}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center">
+            <Typography
+              variant="h2"
+              sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
+            >
+              Tickets reservados
+            </Typography>
+            <ConfirmationNumberOutlined sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
+          </Stack>
+          <TicketsTable />
         </Stack>
         {/* Personal data */}
         <Stack spacing={5}>
