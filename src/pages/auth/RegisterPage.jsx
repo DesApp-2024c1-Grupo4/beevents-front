@@ -294,7 +294,7 @@ export function RegisterPage() {
               fontSize: "14px",
             }}
           >
-            Redirigiéndote a la página de inicio de sesión
+            Te estamos redirigiendo para que inicies sesión
           </Typography>
           <Box display="flex" justifyContent="center" alignItems="center">
             <CircularProgress size={30} />
