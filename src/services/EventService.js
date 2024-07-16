@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://beevents-api-back.onrender.com";
+const API_URL = "https://beevents-back-reserva-tickets.onrender.com";
 
 const api = axios.create({
   baseURL: API_URL,
