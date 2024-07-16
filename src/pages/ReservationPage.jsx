@@ -65,39 +65,35 @@ export function ReservationPage() {
   const userService = new UserService();
   const [user, setUser] = useState({});
   const [selectedSectorId, setSelectedSectorId] = useState({});
-  const [nonNumberedReservations, setNonNumberedReservations] = useState({});
-  const [timers, setTimers] = useState({});
-  const [counter, setCounter] = useState(300);
   const [
     notNumeredReservationUnconfirmed,
     setNotNumeredReservationUnconfirmed,
   ] = useState([]);
   const [numeredReservationUnconfirmed, setNumeredReservationUnconfirmed] =
     useState([]);
-  const [reservationConfirmed, setReservationConfirmed] = useState([]);
-
-  useEffect(() => {
-    console.log(notNumeredReservationUnconfirmed);
-    console.log(numeredReservationUnconfirmed);
-  }, [notNumeredReservationUnconfirmed, numeredReservationUnconfirmed]);
 
   async function fetchEvent() {
     const event = await getEventById(eventId);
     setEvent(event);
-    console.log(event);
   }
 
-  useEffect(async () => {
-    fetchEvent();
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchEvent();
+    };
+    fetchData();
   }, [eventId]);
+
+  const hasUnconfirmedReservations = () => {
+    return (
+      notNumeredReservationUnconfirmed.length > 0 ||
+      numeredReservationUnconfirmed.length > 0
+    );
+  };
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-      const hasUnconfirmedReservations =
-        notNumeredReservationUnconfirmed.length > 0 ||
-        numeredReservationUnconfirmed.length > 0;
-      console.log(hasUnconfirmedReservations);
-      if (hasUnconfirmedReservations) {
+      if (hasUnconfirmedReservations()) {
         event.preventDefault();
         event.returnValue = "";
       }
@@ -122,33 +118,14 @@ export function ReservationPage() {
           initialReservations[sector.name] = 0;
         }
       });
-      setNonNumberedReservations(initialReservations);
     }
   }, [event, selectedDateIndex]);
 
-  useEffect(() => {
-    let timer;
-    if (Object.keys(timers).length > 0 && !reservationConfirmed) {
-      timer = setInterval(() => {
-        setCounter((prevCounter) => {
-          if (prevCounter <= 1) {
-            handleTimeout();
-            clearInterval(timer);
-            return 300;
-          }
-          return prevCounter - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [timers, reservationConfirmed]);
-
-  useEffect(() => {
-    console.log(event);
-  }, [event]);
-
   const handleSeatClick = (clickedSeat) => {
-    if (clickedSeat.available) {
+    if (
+      clickedSeat.reservedBy == "vacio" ||
+      clickedSeat.reservedBy == "pre-reserved"
+    ) {
       const newNumeredReservationUnconfirmed = [
         ...numeredReservationUnconfirmed,
       ];
@@ -170,32 +147,38 @@ export function ReservationPage() {
         delete updatedSeat.available;
         newNumeredReservationUnconfirmed.push(updatedSeat);
       }
-      clickedSeat.available = false;
-      console.log(clickedSeat);
       setNumeredReservationUnconfirmed(newNumeredReservationUnconfirmed);
-    }
-    console.log(updatedSeat);
-  };
+      setSeatMaps((prevSeatMaps) => {
+        const updatedSeatMaps = prevSeatMaps.map((seatMap) => {
+          const updatedRows = seatMap.rows.map((row) =>
+            row.map((seat) => {
+              if (seat._id === clickedSeat._id) {
+                return {
+                  ...seat,
+                  available: !seat.available,
+                  reservedBy:
+                    seat.reservedBy == "vacio" ? "pre-reserved" : "vacio",
+                };
+              }
+              return seat;
+            })
+          );
+          return {
+            ...seatMap,
+            rows: updatedRows,
+          };
+        });
 
-  // const handleSeatClick = (clickedSeat) => {
-  //   if (!clickedSeat.preReserved) {
-  //     const newNumeredReservationUnconfirmed = [
-  //       ...numeredReservationUnconfirmed,
-  //     ];
-  //     const newSeat = {
-  //       ...clickedSeat,
-  //       eventId: event._id,
-  //       date_time: selectedDate,
-  //       reservedBy: user.id,
-  //       sectorId: selectedSectorId,
-  //     };
-  //     delete newSeat.available;
-  //     newNumeredReservationUnconfirmed.push(newSeat);
-  //     setNumeredReservationUnconfirmed(newNumeredReservationUnconfirmed);
-  //     clickedSeat.preReserved = true;
-  //   }
-  //   console.log(clickedSeat);
-  // };
+        if (selectedSeatMap) {
+          const updatedSelectedSeatMap = updatedSeatMaps.find(
+            (map) => map._id === selectedSeatMap._id
+          );
+          setSelectedSeatMap(updatedSelectedSeatMap);
+        }
+        return updatedSeatMaps;
+      });
+    }
+  };
 
   const handleNonNumberedReservation = (sectorId, operation) => {
     if (operation === "add") {
@@ -222,34 +205,38 @@ export function ReservationPage() {
   };
 
   const handleConfirmReservations = async () => {
+    if (!hasUnconfirmedReservations()) {
+      setApiMessage("No tiene reservas para confirmar");
+      handleOpen();
+      return;
+    }
     setLoading(true);
     try {
+      let reservationsConfirmed = false;
       if (notNumeredReservationUnconfirmed.length > 0) {
         for (const reservation of notNumeredReservationUnconfirmed) {
-          console.log(reservation);
           const response = await patchEventPlace(reservation);
-          console.log(response);
-          if (response.message == "Place creado correctamente") {
-            setApiMessage(response.message);
-            handleOpen();
+          if (response.message == "Asiento creado correctamente") {
+            reservationsConfirmed = true;
             await fetchEvent();
           }
-          console.log(response);
         }
         setNotNumeredReservationUnconfirmed([]);
       }
       if (numeredReservationUnconfirmed.length > 0) {
         for (const reservation of numeredReservationUnconfirmed) {
-          console.log(reservation);
           const response = await patchEventSeat(reservation);
-          console.log(response);
           if (response.message == "Reserva realizada correctamente") {
-            setApiMessage(response.message);
-            handleOpen();
+            reservationsConfirmed = true;
             await fetchEvent();
           }
         }
         setNumeredReservationUnconfirmed([]);
+      }
+
+      if (reservationsConfirmed) {
+        setApiMessage("Tickets reservados exitosamente");
+        handleOpen();
       }
     } catch (error) {
       console.log(error);
@@ -280,40 +267,6 @@ export function ReservationPage() {
       setSelectedDateIndex(index);
       setLoading(false);
     }, 1000);
-  };
-
-  const handleReservationChange = (sectorName, increment) => {
-    const newCount = Math.max(
-      0,
-      (nonNumberedReservations[sectorName] || 0) + increment
-    );
-
-    setNonNumberedReservations((prevReservations) => ({
-      ...prevReservations,
-      [sectorName]: newCount,
-    }));
-
-    setSeatMaps((prevSeatMaps) =>
-      prevSeatMaps.map((seatMap) => {
-        if (seatMap.name === sectorName) {
-          const newReservedUnconfirmed = Array(newCount)
-            .fill(null)
-            .map((_, idx) => `non-numbered-${idx}`);
-          return {
-            ...seatMap,
-            reservedUnconfirmed: newReservedUnconfirmed,
-          };
-        }
-        return seatMap;
-      })
-    );
-
-    setTimers((prevTimers) => ({
-      ...prevTimers,
-      [sectorName]: true,
-    }));
-
-    setReservationConfirmed(false);
   };
 
   if (!event) {
@@ -662,14 +615,6 @@ export function ReservationPage() {
             </Table>
           </TableContainer>
         )}
-        {Object.keys(timers).length > 0 && (
-          <Box sx={{ mt: 2, textAlign: "center" }}>
-            <Typography variant="h6" sx={{ color: contrastGreen }}>
-              Tiempo para confirmar: {Math.floor(counter / 60)}:
-              {("0" + (counter % 60)).slice(-2)}
-            </Typography>
-          </Box>
-        )}
         <Box sx={{ mt: 2, textAlign: "center" }}>
           <Button
             variant="contained"
@@ -698,7 +643,9 @@ export function ReservationPage() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            maxWidth: "350px",
+            // maxWidth: "90%",
+            width: "auto",
+            flexWrap: "wrap",
             bgcolor: "#142539",
             color: "lightgray",
             border: "1px solid lightgray",

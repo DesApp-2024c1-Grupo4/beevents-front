@@ -42,7 +42,7 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
       <img
         src={escenario}
         alt="Escenario"
-        style={{ width: "15%", marginBottom: 5 }}
+        style={{ width: "15%", maxWidth: "50px", marginBottom: 5 }}
       />
       <div
         style={{
@@ -61,10 +61,13 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
       <Grid container spacing={0.1} justifyContent="center">
         {rows.map((rowBlock) => (
           <Grid item xs={12} key={rowBlock[0]._id}>
-            <Box display="flex" justifyContent="center" width="100%">
+            <Box display="flex" justifyContent="center" width="auto">
               {rowBlock &&
                 rowBlock.map((seat) => {
-                  const seatWithPreReserved = { ...seat };
+                  console.log(seat);
+                  const seatWithPreReserved = {
+                    ...seat,
+                  };
                   return (
                     <Seat
                       key={seatWithPreReserved._id}

@@ -25,9 +25,7 @@ export function HomePage() {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      // const allEvents = await getAllEvents();
-      const allEvents = [];
-
+      const allEvents = await getAllEvents();
       // const sortedEvents = allEvents.sort((a, b) => {
       //   const dateA = new Date(a.dates[0].date_time);
       //   const dateB = new Date(b.dates[0].date_time);
@@ -154,8 +152,8 @@ export function HomePage() {
               events.slice(0, 4).map((event, index) => (
                 <Grid item xs={12} sm={3} key={index}>
                   <DateCard
-                    id={event.id}
-                    date={event.date_times[0]}
+                    id={event._id}
+                    // date={event.dates.date_times[0]}
                     artist={event.artist}
                     imageUrl={event.image}
                   />

@@ -51,9 +51,9 @@ const Seat = ({ seat, onSeatClick }) => {
 
   const getSeatStyle = (seat) => {
     let backgroundStyle = {
-      width: "15px",
-      height: "15px",
-      margin: "4px",
+      width: "10px",
+      height: "10px",
+      margin: "3px",
       padding: "4px",
       cursor: "pointer",
       display: "flex",
@@ -68,11 +68,11 @@ const Seat = ({ seat, onSeatClick }) => {
         ? "0 4px 8px rgba(0, 0, 0, 0.3)"
         : "0 2px 4px rgba(0, 0, 0, 0.2)",
     };
-
-    if (seat.available) {
+    console.log(seat);
+    if (!seat.available && seat.reservedBy == "pre-reserved") {
       backgroundStyle = {
         ...backgroundStyle,
-        backgroundImage: `url(${availableIcon})`,
+        backgroundImage: `url(${preReservedIcon})`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };
@@ -83,10 +83,10 @@ const Seat = ({ seat, onSeatClick }) => {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };
-    } else if (seat.available == "pre-reserved") {
+    } else if (seat.available && seat.reservedBy == "vacio") {
       backgroundStyle = {
         ...backgroundStyle,
-        backgroundImage: `url(${preReservedIcon})`,
+        backgroundImage: `url(${availableIcon})`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };
