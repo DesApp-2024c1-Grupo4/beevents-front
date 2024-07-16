@@ -1,4 +1,4 @@
-import { CheckCircleOutlineOutlined } from "@mui/icons-material";
+import { CheckCircleOutlineOutlined, Close } from "@mui/icons-material";
 import { Button, FormControlLabel, FormGroup, Input, Slider, Stack, Switch, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import validator from "validator";
@@ -81,8 +81,8 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
             <Switch size="small" onChange={() => setIsNumbered(!isNumbered)} />
           }
           label={`${isNumbered ? "Numerado" : "No numerado"}`}
-          labelPlacement="start"
-          sx={{ alignSelf: "end", mr: 0.01 }}
+          labelPlacement="end"
+          sx={{ alignSelf: "start", ml: 0.01 }}
         />
       </FormGroup>
       {isNumbered && (
@@ -152,7 +152,26 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
           <Typography>Capacidad: {rows * seats}</Typography>
         </Stack>
       )}
-      <Stack spacing={2} justifyContent="flex-end" alignItems="flex-end">
+      <Stack
+        spacing={2}
+        justifyContent="flex-end"
+        alignItems="flex-end"
+        direction="row"
+      >
+        <Button
+          size="medium"
+          variant="outlined"
+          onClick={() => setShowForm(!showForm)}
+          sx={{
+            width: 115,
+            display: "block"
+          }}
+        >
+          <Stack spacing={1} direction="row" justifyContent="center">
+            <Typography variant="info">Cerrar</Typography>
+            <Close />
+          </Stack>
+        </Button>
         <Button
           size="medium"
           variant="outlined"
@@ -160,26 +179,12 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
           sx={{
             width: 115,
             display: "block",
+            color: contrastGreen,
+            borderColor: contrastGreen
           }}
         >
           <Stack spacing={1} direction="row" justifyContent="center">
-            <Typography variant="info">Agregar</Typography>
-            <CheckCircleOutlineOutlined />
-          </Stack>
-        </Button>
-        <Button
-          size="medium"
-          variant="contained"
-          onClick={() => setShowForm(!showForm)}
-          sx={{
-            width: 115,
-            display: "block",
-            backgroundColor: contrastGreen,
-            color: "whitesmoke",
-          }}
-        >
-          <Stack spacing={1} direction="row" justifyContent="center">
-            <Typography variant="info">Listo</Typography>
+            <Typography variant="info" color={contrastGreen}>Agregar</Typography>
             <CheckCircleOutlineOutlined />
           </Stack>
         </Button>
