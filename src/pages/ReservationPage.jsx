@@ -237,6 +237,9 @@ export function ReservationPage() {
       if (reservationsConfirmed) {
         setApiMessage("Tickets reservados exitosamente");
         handleOpen();
+      } else {
+        setApiMessage("Hubo un inconveniente en la reserva de Tickets");
+        handleOpen();
       }
     } catch (error) {
       console.log(error);
