@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -15,7 +15,7 @@ export default function DateCard({ id, date, artist, imageUrl }) {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const formatDateToMonth = (dateString) => {
-    const date = new Date(dateString);
+    const date = new Date(dateString[0].date_time);
     const month = date.getMonth() + 1;
     switch (month) {
       case 1:

@@ -3,7 +3,7 @@ import { openDB } from "idb";
 const DB_NAME = "localDB";
 const STORE_NAME = "events";
 
-export default class LocalDataBaseService {
+export default class EventLocalDBService {
   constructor() {
     this.dbPromise = openDB(DB_NAME, 1, {
       upgrade(db) {

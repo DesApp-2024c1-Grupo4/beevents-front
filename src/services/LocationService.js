@@ -27,7 +27,7 @@ export async function getLocationById(id) {
 export async function createLocation(location) {
   try {
     const response = await api.post(`/location/`, location);
-    console.log(response.data)
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log(error);
