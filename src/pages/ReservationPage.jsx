@@ -269,6 +269,12 @@ export function ReservationPage() {
     }, 1000);
   };
 
+  const countReservationsBySectorId = (reservations, sectorId) => {
+    return reservations.filter(
+      (reservation) => reservation.sectorId === sectorId
+    ).length;
+  };
+
   if (!event) {
     return (
       <Box
@@ -595,7 +601,10 @@ export function ReservationPage() {
                               <RemoveIcon />
                             </IconButton>
                             <Typography>
-                              {notNumeredReservationUnconfirmed.length}
+                              {countReservationsBySectorId(
+                                notNumeredReservationUnconfirmed,
+                                sector._id
+                              )}
                             </Typography>
                             <IconButton
                               color="primary"

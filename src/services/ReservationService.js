@@ -1,5 +1,5 @@
 export async function patchEventSeat(seatData) {
-  const url = `https://beevents-back-reserva-tickets.onrender.com/event/${seatData.eventId}/seat`;
+  const url = `https://beevents-back-dev.onrender.com/event/${seatData.eventId}/seat`;
   const headers = {
     "Content-Type": "application/json",
   };
@@ -27,7 +27,7 @@ export async function patchEventSeat(seatData) {
 }
 
 export async function patchEventPlace(placeData) {
-  const url = `https://beevents-back-reserva-tickets.onrender.com/event/${placeData.eventId}/place`;
+  const url = `https://beevents-back-dev.onrender.com/event/${placeData.eventId}/place`;
   const headers = {
     "Content-Type": "application/json",
   };
@@ -56,7 +56,7 @@ export async function patchEventPlace(placeData) {
 
 import axios from "axios";
 
-const API_URL = "https://beevents-back-reserva-tickets.onrender.com/";
+const API_URL = "https://beevents-back-dev.onrender.com/";
 
 const api = axios.create({
   baseURL: API_URL,
