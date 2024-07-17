@@ -7,7 +7,6 @@ import Card from "../components/Card";
 import CardHorizontal from "../components/CardHorizontal";
 import DateCard from "../components/home-page-components/DateCard";
 import HeroImage from "../components/home-page-components/HeroImage";
-import HeroImageImg from "../assets/img/hero-image.png";
 import { customMuiTheme } from "../config/customMuiTheme";
 import { getAllEvents } from "../services/EventService";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
@@ -21,28 +20,64 @@ export function HomePage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { contrastGreen } = customMuiTheme.colors;
-  const [events, setEvents] = useState([]);
+  const [eventsOrderByDates, setEventsOrderByDates] = useState([]);
+  const [eventsOrderByTickets, setEventsOrderByTickets] = useState([]);
 
   useEffect(() => {
     const fetchEvents = async () => {
       const allEvents = await getAllEvents();
-      // const sortedEvents = allEvents.sort((a, b) => {
-      //   const dateA = new Date(a.dates[0].date_time);
-      //   const dateB = new Date(b.dates[0].date_time);
-      //   return dateA - dateB;
-      // });
-      setEvents(allEvents);
+      console.log(allEvents);
+      const sortedEvents = orderEventsByDate(allEvents);
+      setEventsOrderByDates(sortedEvents);
+      const countedTickets = countReservedTickets(allEvents);
+      setEventsOrderByTickets(countedTickets);
+      console.log(eventsOrderByTickets);
     };
-
     fetchEvents();
   }, []);
 
-  useEffect(() => {
-    console.log(events);
-  }, [events]);
+  const orderEventsByDate = (events) => {
+    const orderEvents = events.sort((a, b) => {
+      const dateA = new Date(a.dates[0].date_time);
+      const dateB = new Date(b.dates[0].date_time);
+      return dateA - dateB;
+    });
+    return orderEvents;
+  };
 
-  const getRandomInt = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  const countReservedTickets = (events) => {
+    const countedEvents = events.map((event) => {
+      let reservedTicketsCount = 0;
+      event.dates.forEach((date) => {
+        date.sectors.forEach((sector) => {
+          if (sector.numbered) {
+            sector.rows.forEach((row) => {
+              row.forEach((seat) => {
+                if (!seat.available) {
+                  reservedTicketsCount++;
+                }
+              });
+            });
+          } else {
+            sector.rows.forEach((row) => {
+              row.forEach((seat) => {
+                reservedTicketsCount++;
+              });
+            });
+          }
+        });
+      });
+      return {
+        _id: event._id,
+        title: event.name,
+        artist: event.artist,
+        name: event.name,
+        image: event.image,
+        reservedTickets: reservedTicketsCount,
+      };
+    });
+    countedEvents.sort((a, b) => b.reservedTickets - a.reservedTickets);
+    return countedEvents;
   };
 
   return (
@@ -94,15 +129,15 @@ export function HomePage() {
             justifyContent="center"
             alignItems="center"
           >
-            {events.length > 0 ? (
-              events.slice(0, 3).map((event, index) => (
+            {eventsOrderByTickets.length > 0 ? (
+              eventsOrderByTickets.slice(0, 3).map((event, index) => (
                 <Grid item xs={12} sm={4} key={index}>
                   <Card
                     id={event._id}
-                    title={event.title}
+                    title={event.name}
                     artist={event.artist}
                     imageUrl={event.image}
-                    totalSeats={getRandomInt(100, 150)}
+                    totalSeats={event.reservedTickets}
                     isHomePage={true}
                   />
                 </Grid>
@@ -148,12 +183,12 @@ export function HomePage() {
             justifyContent="center"
             alignItems="center"
           >
-            {events.length > 0 ? (
-              events.slice(0, 4).map((event, index) => (
+            {eventsOrderByDates.length > 0 ? (
+              eventsOrderByDates.slice(0, 4).map((event, index) => (
                 <Grid item xs={12} sm={3} key={index}>
                   <DateCard
                     id={event._id}
-                    // date={event.dates.date_times[0]}
+                    date={event.dates}
                     artist={event.artist}
                     imageUrl={event.image}
                   />

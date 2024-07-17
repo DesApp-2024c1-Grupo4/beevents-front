@@ -26,7 +26,7 @@ export default function MediaCard({
 
   useEffect(() => {
     if (inView) {
-      const increment = Math.floor(totalSeats / 50);
+      const increment = Math.floor(totalSeats / 10);
       const interval = setInterval(() => {
         setReservedSeats((prevSeats) =>
           prevSeats < totalSeats ? prevSeats + increment : totalSeats
@@ -91,7 +91,6 @@ export default function MediaCard({
             textAlign: "center",
           }}
         >
-          {" "}
           <Typography
             sx={{ color: iconGrey, fontWeight: "bold", fontSize: "25px" }}
           >
@@ -116,7 +115,11 @@ export default function MediaCard({
                 fontSize: "18px",
               }}
             >
-              + de {reservedSeats} asientos reservados
+              + de{" "}
+              <span style={{ color: "white", fontSize: "24px" }}>
+                {reservedSeats}
+              </span>{" "}
+              asientos reservados
             </Typography>
           )}
         </CardContent>

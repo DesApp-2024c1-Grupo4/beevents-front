@@ -60,11 +60,10 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
       </div>
       <Grid container spacing={0.1} justifyContent="center">
         {rows.map((rowBlock) => (
-          <Grid item xs={12} key={rowBlock[0]._id}>
+          <Grid item xs={12} key={rowBlock[0]._id} sx={{ width: "90%" }}>
             <Box display="flex" justifyContent="center" width="auto">
               {rowBlock &&
                 rowBlock.map((seat) => {
-                  console.log(seat);
                   const seatWithPreReserved = {
                     ...seat,
                   };
