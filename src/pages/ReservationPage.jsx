@@ -197,10 +197,17 @@ export function ReservationPage() {
       const newNotNumeredReservationUnconfirmed = [
         ...notNumeredReservationUnconfirmed,
       ];
-      if (newNotNumeredReservationUnconfirmed.length > 0) {
-        newNotNumeredReservationUnconfirmed.pop();
+      const sectorReservations = newNotNumeredReservationUnconfirmed.filter(
+        (reservation) => reservation.sectorId === sectorId
+      );
+      if (sectorReservations.length > 0) {
+        sectorReservations.pop();
+        const updatedReservations = newNotNumeredReservationUnconfirmed
+          .filter((reservation) => reservation.sectorId !== sectorId)
+          .concat(sectorReservations);
+
+        setNotNumeredReservationUnconfirmed(updatedReservations);
       }
-      setNotNumeredReservationUnconfirmed(newNotNumeredReservationUnconfirmed);
     }
   };
 
