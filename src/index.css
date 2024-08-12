@@ -1,15 +1,18 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 
-  color: #242424;
-  background-color: rgba(255, 255, 255, 0.87);
+:root {
+  font-family: 'Raleway', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  color: #ffffff;
+  /* background-color: var(--primary-color); */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --primary-color: #122940;
+  --secondary-color: #01bb89;
 }
 
 a {
@@ -25,4 +28,62 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: #13273d;
+  background: linear-gradient(90deg, #0e0e16 0%, #13273d 80%);
+  background: -webkit-linear-gradient(90deg, #0e0e16 0%, #13273d 80%);
+  background: -moz-linear-gradient(90deg, #0e0e16 0%, #13273d 80%);
+}
+
+.border-grad {
+  color: #313149;
+  padding: 10px;
+  display: inline-block;
+  margin: 75px 0;
+  position: relative;
+  z-index: 0;
+}
+.border-grad:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  padding: 2px;
+  border-radius: 10px;
+  background: linear-gradient(to bottom, #01bb89, black);
+  -webkit-mask: 
+     linear-gradient(#fff 0 0) content-box, 
+     linear-gradient(#fff 0 0);
+          mask: 
+     linear-gradient(#fff 0 0) content-box, 
+     linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+
+}
+
+.border-grad-right {
+  color: #313149;
+  padding: 10px;
+  display: inline-block;
+  margin: 75px 0;
+  position: relative;
+  z-index: 0;
+}
+.border-grad-right:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  padding: 2px;
+  border-radius: 10px;
+  background: linear-gradient(to right, #01bb89, black);
+  -webkit-mask: 
+     linear-gradient(#fff 0 0) content-box, 
+     linear-gradient(#fff 0 0);
+          mask: 
+     linear-gradient(#fff 0 0) content-box, 
+     linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+
 }
