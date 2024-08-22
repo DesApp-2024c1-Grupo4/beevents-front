@@ -224,6 +224,9 @@ export function Header() {
         minHeight: isTablet ? "5vh" : "10vh",
         backgroundColor: "var(--primary-color)",
         color: "var(--color)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <Container maxWidth="lg">

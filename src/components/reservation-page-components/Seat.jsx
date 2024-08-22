@@ -2,19 +2,19 @@ import React, { useState } from "react";
 import availableIcon from "../../assets/img/available-seat.png";
 import notAvailableIcon from "../../assets/img/notavailable-seat.png";
 import preReservedIcon from "../../assets/img/prereserved-seat.png";
+import noPermissionCursor from "../../assets/img/ReservedCursor.png"; // Añade el ícono aquí
 
 const getSeatStatus = (seat) => {
   if (seat.available) {
     return "Disponible";
-  } else if (!seat.available) {
-    return "Reservado";
-  } else if (seat.available == "pre-reserved") {
+  } else if (seat.available === "pre-reserved") {
     return "Pre-Reservado";
+  } else {
+    return "Reservado";
   }
 };
 
 const SeatCard = ({ seat }) => {
-  console.log(seat.available);
   return (
     <div
       style={{
@@ -42,20 +42,23 @@ const SeatCard = ({ seat }) => {
 };
 
 const Seat = ({ seat, onSeatClick }) => {
-  console.log(seat);
   const [hovered, setHovered] = useState(false);
 
   const handleClick = () => {
-    onSeatClick(seat);
+    if (seat.available) {
+      onSeatClick(seat);
+    }
   };
 
   const getSeatStyle = (seat) => {
     let backgroundStyle = {
-      width: "10px",
-      height: "10px",
-      margin: "3px",
+      minWidth: "6px",
+      minHeight: "6px",
+      margin: "4px",
       padding: "4px",
-      cursor: "pointer",
+      cursor: seat.available
+        ? "pointer"
+        : `url(${noPermissionCursor}), not-allowed`, // Cambia el cursor si está ocupado
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -68,7 +71,8 @@ const Seat = ({ seat, onSeatClick }) => {
         ? "0 4px 8px rgba(0, 0, 0, 0.3)"
         : "0 2px 4px rgba(0, 0, 0, 0.2)",
     };
-    if (!seat.available && seat.reservedBy == "pre-reserved") {
+
+    if (!seat.available && seat.reservedBy === "pre-reserved") {
       backgroundStyle = {
         ...backgroundStyle,
         backgroundImage: `url(${preReservedIcon})`,
@@ -82,7 +86,7 @@ const Seat = ({ seat, onSeatClick }) => {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };
-    } else if (seat.available && seat.reservedBy == "vacio") {
+    } else if (seat.available && seat.reservedBy === "vacio") {
       backgroundStyle = {
         ...backgroundStyle,
         backgroundImage: `url(${availableIcon})`,
@@ -91,15 +95,7 @@ const Seat = ({ seat, onSeatClick }) => {
       };
     }
 
-    let backgroundColor = "transparent";
-    // if (seat.preReserved) {
-    //   backgroundColor = "#51DD99";
-    // }
-
-    return {
-      ...backgroundStyle,
-      backgroundColor: backgroundColor,
-    };
+    return backgroundStyle;
   };
 
   return (

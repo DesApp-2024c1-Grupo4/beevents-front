@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
-  font-family: 'Raleway', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Raleway", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 
   color: #ffffff;
   /* background-color: var(--primary-color); */
@@ -50,15 +50,10 @@ body {
   padding: 2px;
   border-radius: 10px;
   background: linear-gradient(to bottom, #01bb89, black);
-  -webkit-mask: 
-     linear-gradient(#fff 0 0) content-box, 
-     linear-gradient(#fff 0 0);
-          mask: 
-     linear-gradient(#fff 0 0) content-box, 
-     linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
-          mask-composite: exclude;
-
+  mask-composite: exclude;
 }
 
 .border-grad-right {
@@ -77,13 +72,8 @@ body {
   padding: 2px;
   border-radius: 10px;
   background: linear-gradient(to right, #01bb89, black);
-  -webkit-mask: 
-     linear-gradient(#fff 0 0) content-box, 
-     linear-gradient(#fff 0 0);
-          mask: 
-     linear-gradient(#fff 0 0) content-box, 
-     linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
-          mask-composite: exclude;
-
+  mask-composite: exclude;
 }

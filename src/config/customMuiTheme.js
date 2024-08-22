@@ -1,19 +1,28 @@
 import { createTheme } from "@mui/material";
 import { blue, blueGrey, grey, lightBlue } from "@mui/material/colors";
 
+export const customStyles = {
+  seat: {
+    width: "15px",
+    height: "15px",
+    marginLeft: "8px",
+    marginRight: "4px",
+  },
+};
+
 export const customMuiTheme = createTheme({
   palette: {
     mode: "dark",
   },
   typography: {
-    fontFamily: 'Raleway',
+    fontFamily: "Raleway",
     h1: {
       fontSize: "1.4rem",
       fontWeight: "bold",
     },
     h2: {
       fontSize: "1.2rem",
-      fontWeight: "bold"
+      fontWeight: "bold",
     },
     info: {
       fontSize: "0.8rem",

@@ -12,7 +12,7 @@ import { getAllEvents } from "../services/EventService";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import StarIcon from "@mui/icons-material/Star";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import LoadingIndicator from "../components/LoadingIndicator";
 
@@ -119,12 +119,11 @@ export function HomePage() {
               alignItems: "center",
             }}
           >
-            <TrendingUpIcon sx={{ mr: 2, color: contrastGreen }} /> Más
-            populares
+            <StarIcon sx={{ mr: 2, color: contrastGreen }} /> Más populares
           </Typography>
           <Grid
             container
-            rowSpacing={1}
+            rowSpacing={3}
             columnSpacing={{ xs: 1, sm: 2, md: 3 }}
             justifyContent="center"
             alignItems="center"
