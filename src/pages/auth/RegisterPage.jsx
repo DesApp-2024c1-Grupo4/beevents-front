@@ -120,22 +120,24 @@ export function RegisterPage() {
       return;
     }
 
-    const email = emailValue;
-    const password = passValue;
+    const user = {
+      email: emailValue,
+      password: passValue
+    }
 
-    try {
-      const userId = userService.createUser(email, password);
-      if (userId) {
-        setMessage("Usuario creado con éxito");
-        handleOpen();
-        setTimeout(() => {
-          navigate("/auth/login");
-        }, 4500);
-      } else {
-        setMessage("Ocurrió un error al intentar crear un usuario");
-      }
-    } catch (error) {
-      window.alert("Error al crear el usuario:", error);
+    const registeredUser = await userService.createUser(user);
+    if (registeredUser) {
+      setMessage("¡Éxito al registrarte!");
+      handleOpen();
+      setTimeout(() => {
+        navigate("/auth/login");
+      }, 4500);
+    } else {
+      setMessage("Ocurrió un error al intentar registrarte");
+      handleOpen();
+      setTimeout(() => {
+        handleClose();
+      }, 3000);
     }
   };
 
@@ -279,11 +281,11 @@ export function RegisterPage() {
               mt: 2,
               textAlign: "center",
               fontWeight: 500,
-              color: "#01BB89",
+              color: message.includes("error") ? "red" : contrastGreen,
               textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
             }}
           >
-            ¡{message}!
+            {message}
           </Typography>
           <Typography
             id="modal-modal-description"
@@ -293,12 +295,18 @@ export function RegisterPage() {
               textAlign: "center",
               fontSize: "14px",
             }}
-          >
-            Te estamos redirigiendo para que inicies sesión
+          > {message.includes("error")
+            ? "Revisa tus datos y vuelve a intentarlo"
+            : "Te estamos redirigiendo para que inicies sesión"
+            }
           </Typography>
-          <Box display="flex" justifyContent="center" alignItems="center">
-            <CircularProgress size={30} />
-          </Box>
+          {!message.includes("error")
+            ? <Box display="flex" justifyContent="center" alignItems="center">
+              <CircularProgress size={30} />
+            </Box>
+            : <></>
+          }
+
           {/* 
           <Button onClick={handleClose} variant="contained" sx={{ mt: 3 }}>
             Cerrar
