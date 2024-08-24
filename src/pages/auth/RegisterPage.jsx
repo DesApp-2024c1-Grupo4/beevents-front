@@ -120,6 +120,9 @@ export function RegisterPage() {
       return;
     }
 
+    setMessage("Creando tu cuenta...");
+    handleOpen();
+
     const user = {
       email: emailValue,
       password: passValue
@@ -127,14 +130,14 @@ export function RegisterPage() {
 
     const registeredUser = await userService.createUser(user);
     if (registeredUser) {
-      setMessage("¡Éxito al registrarte!");
-      handleOpen();
+      setMessage("¡Cuenta creada con éxito!");
       setTimeout(() => {
+        handleClose();
         navigate("/auth/login");
-      }, 4500);
+      }, 1000);
+
     } else {
       setMessage("Ocurrió un error al intentar registrarte");
-      handleOpen();
       setTimeout(() => {
         handleClose();
       }, 3000);
@@ -270,8 +273,21 @@ export function RegisterPage() {
       <Modal
         open={open}
         onClose={handleClose}
+        hideBackdrop={message.includes("Creando") ? true : false}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999,
+        }}
       >
         <Box sx={style}>
           <img src={Logo} alt="Logo" style={{ width: 100, marginBottom: 5 }} />
@@ -295,22 +311,16 @@ export function RegisterPage() {
               textAlign: "center",
               fontSize: "14px",
             }}
-          > {message.includes("error")
-            ? "Revisa tus datos y vuelve a intentarlo"
-            : "Te estamos redirigiendo para que inicies sesión"
-            }
+          > {message.includes("error") && "Revisa tus datos y vuelve a intentarlo"}
+            {message.includes("Creando") && "Te redirigiremos para que inicies sesión"}
+            {message.includes("éxito") && "Ya puedes iniciar sesión"}
           </Typography>
-          {!message.includes("error")
+          {message.includes("Creando")
             ? <Box display="flex" justifyContent="center" alignItems="center">
-              <CircularProgress size={30} />
-            </Box>
+            <CircularProgress size={30} />
+          </Box>
             : <></>
           }
-
-          {/* 
-          <Button onClick={handleClose} variant="contained" sx={{ mt: 3 }}>
-            Cerrar
-          </Button> */}
         </Box>
       </Modal>
     </>

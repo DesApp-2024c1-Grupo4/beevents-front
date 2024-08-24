@@ -22,7 +22,7 @@ export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [emailValue, setEmailValue] = useState("");
   const [passValue, setPassValue] = useState("");
-  const [loading, setLoading] = useState(false);
+  //const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ email: false, password: false });
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -101,7 +101,7 @@ export function LoginPage() {
     }
     */
     const isLogged = await userService.loginUser(user);
-    setLoading(false);
+
     if (isLogged) {
       navigate("/");
       /**
@@ -121,24 +121,6 @@ export function LoginPage() {
   return (
     <>
       <Container maxWidth="xs">
-        {loading && (
-          <Box
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0, 0, 0, 0.7)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 9999,
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        )}
         <Stack alignItems="center" spacing={3} sx={{ mt: 8 }}>
           <Stack alignItems="center" spacing={{ xs: 3, sm: 5 }}>
             <Box sx={{ maxWidth: { xs: 60, sm: 100 } }}>
@@ -217,9 +199,21 @@ export function LoginPage() {
       <Modal
         open={open}
         onClose={handleClose}
-        hideBackdrop={message.includes("Iniciando")? true : false}
+        hideBackdrop={message.includes("Iniciando") ? true : false}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999,
+        }}
       >
         <Box sx={style}>
           <img src={Logo} alt="Logo" style={{ width: 100, marginBottom: 5 }} />
@@ -248,7 +242,7 @@ export function LoginPage() {
             : "Paz + ciencia = Paciencia"
             }
           </Typography>
-          {!message.includes("error")
+          {message.includes("Iniciando")
             ? <Box display="flex" justifyContent="center" alignItems="center">
               <CircularProgress size={30} />
             </Box>
