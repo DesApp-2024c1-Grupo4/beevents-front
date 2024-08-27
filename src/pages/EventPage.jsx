@@ -185,6 +185,10 @@ export function EventPage() {
                   sx={{
                     backgroundColor: contrastGreen,
                     color: "whitesmoke",
+                    textDecoration: "none",
+                    "&:hover": {
+                      color: "whitesmoke",
+                    },
                     alignSelf: "center",
                     px: 2
                   }}

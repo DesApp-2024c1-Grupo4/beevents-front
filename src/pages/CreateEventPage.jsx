@@ -89,7 +89,7 @@ export function CreateEventPage() {
       });
       setLocationId(event.location_id);
       setDates(event.dates.map((date) => date.date_time));
-      setSectors(event.dates[0].sectors);
+      event.dates[0]? setSectors(event.dates[0].sectors) : setSectors([]);
     }
   }, [event]);
 

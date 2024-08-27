@@ -111,7 +111,6 @@ export function LoginPage() {
        */
     } else {
       setMessage("Ocurrió un error al iniciar sesión");
-      handleOpen();
       setTimeout(() => {
         handleClose();
       }, 3000);
@@ -239,7 +238,7 @@ export function LoginPage() {
             }}
           > {message.includes("error")
             ? "Revisa tus datos y vuelve a intentarlo"
-            : "Paz + ciencia = Paciencia"
+            : "Solo tomará un momento"
             }
           </Typography>
           {message.includes("Iniciando")

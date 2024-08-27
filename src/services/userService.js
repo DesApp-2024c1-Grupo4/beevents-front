@@ -17,7 +17,7 @@ export default class UserService {
       //localStorage.setItem("users", JSON.stringify(existingUsers));
 
       const response = await api.post("/auth/register", userData);
-      console.log(`usuario creado: ${response.data.email}`)
+      console.log(`User created: ${response.data.email}`)
       return response.data;
     } catch (error) {
       console.error("Error creating user: ", error.message);
@@ -44,10 +44,10 @@ export default class UserService {
       if (response.status === 201) {
         localStorage.setItem("loggedUser", JSON.stringify(response.data));
       }
-      console.log(`usuario logueado con rol: ${response.data.role}`)
+      console.log(`Logged user with role: ${response.data.role}`)
       return response.data;
     } catch (error) {
-      console.error("Error logging in:", error);
+      console.error("Error logging in:", error.message);
       return null;
     }
   }
