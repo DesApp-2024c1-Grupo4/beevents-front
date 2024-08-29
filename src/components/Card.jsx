@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import { Link } from "react-router-dom";
 import { useMediaQuery } from "@mui/material";
@@ -18,6 +18,7 @@ export default function MediaCard({
   imageUrl,
   totalSeats,
   isHomePage,
+  locationName,
 }) {
   const { contrastGreen, iconGrey } = customMuiTheme.colors;
   const isMobile = useMediaQuery("(max-width:600px)");
@@ -28,7 +29,7 @@ export default function MediaCard({
 
   useEffect(() => {
     if (inView) {
-      const increment = Math.floor(totalSeats / 10);
+      const increment = Math.floor(totalSeats / 30);
       const interval = setInterval(() => {
         setReservedSeats((prevSeats) =>
           prevSeats < totalSeats ? prevSeats + increment : totalSeats
@@ -45,17 +46,11 @@ export default function MediaCard({
       sx={{
         maxWidth: isMobile ? "100%" : 300,
         width: isMobile ? "80%" : "auto",
-        // height: isMobile ? 360 : "auto",
         margin: "auto",
         mb: isMobile ? "0.5rem" : "auto",
         backgroundColor: "rgba(12, 12, 13, 0.6)",
         backgroundImage:
           "linear-gradient(0deg, #080808 20%, #273C51 60%, #01BB89 100%)",
-        // backgroundImage:
-        //   "conic-gradient(from 0deg, #01BB89 30%, #273C51 50%, #080808 100%)",
-        // backgroundImage:
-        //   "repeating-conic-gradient(#01BB89 10%, #273C51 15%, #080808 20%)",
-        // border: "2px solid #217560",
         boxShadow: "0 8px 32px rgba(0, 0, 0, 0.8)",
         color: "white",
         transition: "transform 0.3s, background-image 1s ease-in-out",
@@ -66,47 +61,23 @@ export default function MediaCard({
         },
       }}
     >
-      {/* <Button
-        component={Link}
-        to={`/event/${id}`}
-        size="medium"
-        sx={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          color: "#000",
-          backgroundColor: "#FFCA42",
-          fontWeight: "bold",
-          textDecoration: "none",
-          zIndex: 999,
-          "&:hover": {
-            color: "#000",
-          },
-        }}
-      >
-        <ConfirmationNumberIcon sx={{ mr: 1, color: "#000" }} />
-        VER
-      </Button> */}
       <Box
         sx={{
           position: "relative",
-          height: isMobile ? 260 : 360,
-          // overflow: "hidden",
           display: "flex",
           justifyContent: "center",
-          paddingBottom: "1rem",
         }}
       >
         <img
           src={imageUrl}
           alt="Event"
           style={{
-            width: "70%",
-            height: "100%",
+            width: "80%",
+            height: isMobile ? 230 : 260,
             objectFit: "cover",
             borderRadius: "5px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.6)",
-            marginTop: "1.5rem",
+            marginTop: "2rem",
           }}
         />
       </Box>
@@ -130,7 +101,6 @@ export default function MediaCard({
             variant="body2"
             color="text.secondary"
             sx={{
-              // fontWeight: "bold",
               fontSize: "17px",
             }}
           >
@@ -164,16 +134,54 @@ export default function MediaCard({
         >
           {toUpperCase(artist)}
         </Typography>
-        {/* <Typography
-          sx={{
-            color: contrastGreen,
-            fontWeight: "bold",
-            // fontSize: isHomePage ? "20px" : "18px",
-            fontSize: "14px",
-          }}
-        >
-          {title}
-        </Typography> */}
+        {!isHomePage && (
+          <>
+            <Typography
+              sx={{
+                color: contrastGreen,
+                fontSize: "12px",
+                marginTop: isMobile ? "0.3rem" : "0.3rem",
+              }}
+            >
+              PRESENTA
+            </Typography>
+            <Typography
+              sx={{
+                color: contrastGreen,
+                fontWeight: "bold",
+                fontSize: "14px",
+                marginTop: "0.3rem",
+              }}
+            >
+              {title}
+            </Typography>
+            <Typography
+              component="div"
+              sx={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: "14px",
+                marginTop: "0.1rem",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <LocationOnIcon
+                  sx={{
+                    mr: "3px",
+                    color: contrastGreen,
+                    fontSize: "15px",
+                  }}
+                />
+                {locationName}
+              </Box>
+            </Typography>
+          </>
+        )}
         <Button
           component={Link}
           to={`/event/${id}`}
@@ -181,11 +189,10 @@ export default function MediaCard({
           sx={{
             width: isMobile ? "80%" : "60%",
             color: contrastGreen,
-            // backgroundColor: "#FFCA42",
             fontWeight: "bold",
             border: `1px solid ${contrastGreen}`,
             textDecoration: "none",
-            marginTop: "0.5rem",
+            marginTop: "1rem",
             zIndex: 999,
             "&:hover": {
               color: contrastGreen,

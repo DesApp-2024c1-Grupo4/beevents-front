@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import availableIcon from "../../assets/img/available-seat.png";
 import notAvailableIcon from "../../assets/img/notavailable-seat.png";
 import preReservedIcon from "../../assets/img/prereserved-seat.png";
-import noPermissionCursor from "../../assets/img/ReservedCursor.png"; // Añade el ícono aquí
+import noPermissionCursor from "../../assets/img/ReservedCursor.png";
 
 const getSeatStatus = (seat) => {
   if (seat.available) {
     return "Disponible";
-  } else if (seat.available === "pre-reserved") {
-    return "Pre-Reservado";
-  } else {
+  } else if (!seat.available) {
     return "Reservado";
+  } else if (seat.available == "pre-reserved") {
+    return "Pre-Reservado";
   }
 };
 
@@ -45,9 +45,7 @@ const Seat = ({ seat, onSeatClick }) => {
   const [hovered, setHovered] = useState(false);
 
   const handleClick = () => {
-    if (seat.available) {
-      onSeatClick(seat);
-    }
+    onSeatClick(seat);
   };
 
   const getSeatStyle = (seat) => {
@@ -56,9 +54,10 @@ const Seat = ({ seat, onSeatClick }) => {
       minHeight: "6px",
       margin: "4px",
       padding: "4px",
-      cursor: seat.available
-        ? "pointer"
-        : `url(${noPermissionCursor}), not-allowed`, // Cambia el cursor si está ocupado
+      cursor:
+        seat.available || seat.reservedBy === "pre-reserved"
+          ? "pointer"
+          : `url(${noPermissionCursor}), not-allowed`,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -66,13 +65,12 @@ const Seat = ({ seat, onSeatClick }) => {
       textShadow: "1px 1px 2px rgba(0,0,0,0.7)",
       borderRadius: "5px",
       transition: "all 0.3s ease-in-out",
-      transform: hovered ? "scale(1.2)" : "scale(1)",
+      transform: hovered ? "scale(1.1)" : "scale(1)",
       boxShadow: hovered
         ? "0 4px 8px rgba(0, 0, 0, 0.3)"
         : "0 2px 4px rgba(0, 0, 0, 0.2)",
     };
-
-    if (!seat.available && seat.reservedBy === "pre-reserved") {
+    if (!seat.available && seat.reservedBy == "pre-reserved") {
       backgroundStyle = {
         ...backgroundStyle,
         backgroundImage: `url(${preReservedIcon})`,
@@ -86,7 +84,7 @@ const Seat = ({ seat, onSeatClick }) => {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };
-    } else if (seat.available && seat.reservedBy === "vacio") {
+    } else if (seat.available && seat.reservedBy == "vacio") {
       backgroundStyle = {
         ...backgroundStyle,
         backgroundImage: `url(${availableIcon})`,
@@ -95,7 +93,15 @@ const Seat = ({ seat, onSeatClick }) => {
       };
     }
 
-    return backgroundStyle;
+    let backgroundColor = "transparent";
+    // if (seat.preReserved) {
+    //   backgroundColor = "#51DD99";
+    // }
+
+    return {
+      ...backgroundStyle,
+      backgroundColor: backgroundColor,
+    };
   };
 
   return (
@@ -114,3 +120,11 @@ const Seat = ({ seat, onSeatClick }) => {
 };
 
 export default Seat;
+// minWidth: "6px",
+// minHeight: "6px",
+// margin: "4px",
+// padding: "4px",
+// // cursor:
+// //   seat.available || seat.reservedBy === "pre-reserved"
+// //     ? "pointer"
+// //     : `url(${noPermissionCursor}), not-allowed`,

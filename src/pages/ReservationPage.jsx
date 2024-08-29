@@ -664,7 +664,7 @@ export function ReservationPage() {
             transform: "translate(-50%, -50%)",
             // maxWidth: "90%",
             width: "auto",
-            maxWidth: "95vw",
+            maxWidth: "90vw",
             maxHeight: "95vh",
             flexWrap: "wrap",
             bgcolor: "#142539",
@@ -675,6 +675,7 @@ export function ReservationPage() {
             p: 2,
             display: "flex",
             flexDirection: "column",
+            justifyContent: "center",
             alignItems: "center",
           }}
         >

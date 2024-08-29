@@ -62,8 +62,7 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
         UBICACIÓN ESCENARIO
       </div>
       <Grid
-        container
-        spacing={0.1}
+        alignItems="center"
         justifyContent="center"
         sx={{
           overflowX: "auto",
@@ -71,12 +70,27 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
           maxWidth: "90vw",
           maxHeight: "50vh",
           padding: "1rem",
-          paddingTop: "3rem",
+          paddingTop: "2.5rem",
         }}
       >
         {rows.map((rowBlock) => (
-          <Grid item xs={12} key={rowBlock[0]._id} sx={{ width: "90%" }}>
-            <Box display="flex" justifyContent="center" width="auto">
+          <Grid
+            item
+            xs={12}
+            key={rowBlock[0]._id}
+            sx={{ minWidth: "max-content" }}
+          >
+            <Box
+              display="flex"
+              justifyContent="center"
+              width="auto"
+              sx={{
+                marginLeft: "1rem",
+                marginRight: "1rem",
+                paddingLeft: "1rem",
+                paddingRight: "1rem",
+              }}
+            >
               {rowBlock &&
                 rowBlock.map((seat) => {
                   const seatWithPreReserved = {
@@ -98,7 +112,7 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
       <div
         style={{
           color: "#fff",
-          fontSize: "12px",
+          fontSize: isMobile ? "10px" : "12px",
           letterSpacing: "2px",
           marginTop: "1rem",
           display: "flex",
