@@ -42,7 +42,11 @@ export default class UserService {
      */
       const response = await api.post("/auth/login", userData);
       if (response.status === 201) {
-        localStorage.setItem("loggedUser", JSON.stringify(response.data));
+        localStorage.setItem("loggedUser", JSON.stringify({
+          id: userData.email,
+          access_token: response.data.access_token,
+          role: response.data.role
+        }));
       }
       console.log(`Logged user with role: ${response.data.role}`)
       return response.data;
