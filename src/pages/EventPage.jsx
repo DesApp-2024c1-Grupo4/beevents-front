@@ -196,7 +196,7 @@ export function EventPage() {
                   <Typography
                     variant="h2"
                   >
-                    Reservar entradas
+                    Reservar tickets
                   </Typography>
                 </Button>
               </Stack>

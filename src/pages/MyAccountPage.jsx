@@ -257,8 +257,8 @@ export function TicketsTable() {
               </TableHead>
               <TableBody>
                 {(rowsPerPage > 0
-                  ? reservations.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  : reservations
+                  ? reservations.toReversed().slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : reservations.toReversed()
                 ).map((r) => (
                   <TableRow
                     key={r.idTicket}

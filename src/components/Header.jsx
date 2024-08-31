@@ -129,6 +129,66 @@ export function Header() {
         Ingresar
       </Button>
     );
+  } else if (user.role === 'user') {
+    menuItems.push(
+      <Button
+        key="MiPerfil"
+        component={Link}
+        to="/account"
+        sx={{
+          display: "flex",
+          whiteSpace: "nowrap",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "8rem",
+          my: 2,
+          mx: 1,
+          px: 4,
+          color: "white",
+          textDecoration: "none",
+          "&:hover .MuiSvgIcon-root": {
+            color: contrastGreen,
+          },
+          "&:hover": {
+            backgroundColor: "transparent",
+          },
+          "&:visited": {
+            color: "white",
+          },
+        }}
+      >
+        <PersonOutlineRoundedIcon sx={{ mr: 1 }} />
+        Mi perfil
+      </Button>,
+      <Button
+        key="CerrarSesion"
+        onClick={handleLogout}
+        sx={{
+          display: "flex",
+          whiteSpace: "nowrap",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "8rem",
+          my: 2,
+          mx: 1,
+          px: 4,
+          color: "white",
+          textDecoration: "none",
+          "&:hover .MuiSvgIcon-root": {
+            color: contrastGreen,
+          },
+          "&:hover": {
+            backgroundColor: "transparent",
+          },
+          "&:visited": {
+            color: "white",
+          },
+        }}
+      >
+        <LogoutIcon sx={{ mr: 1 }} />
+        Cerrar sesión
+      </Button>
+    );
   } else {
     menuItems.push(
       <Button
@@ -322,7 +382,7 @@ export function Header() {
             >
               Eventos
             </Button>
-            {user === null ? (
+            {user === null &&
               <Button
                 component={Link}
                 to="/auth/login"
@@ -348,30 +408,33 @@ export function Header() {
               >
                 Ingresar
               </Button>
-            ) : (
-              <>
-                <Button
-                  component={Link}
-                  to="/create_event"
-                  onClick={handleCloseNavMenu}
-                  sx={{
-                    my: 2,
-                    mx: 1,
-                    px: 2,
+            }
+            {user !== null && user.role === "admin" &&
+              <Button
+                component={Link}
+                to="/create_event"
+                onClick={handleCloseNavMenu}
+                sx={{
+                  my: 2,
+                  mx: 1,
+                  px: 2,
+                  color: "white",
+                  display: "block",
+                  border: `1px solid ${contrastGreen}`,
+                  textDecoration: "none",
+                  "&:hover": {
+                    backgroundColor: contrastGreen,
+                  },
+                  "&:visited": {
                     color: "white",
-                    display: "block",
-                    border: `1px solid ${contrastGreen}`,
-                    textDecoration: "none",
-                    "&:hover": {
-                      backgroundColor: contrastGreen,
-                    },
-                    "&:visited": {
-                      color: "white",
-                    },
-                  }}
-                >
-                  Crear evento
-                </Button>
+                  },
+                }}
+              >
+                Crear evento
+              </Button>
+            }
+            {user !== null &&
+              <>
                 <Button
                   component={Link}
                   to="/account"
@@ -425,7 +488,7 @@ export function Header() {
                   <LogoutIcon />
                 </Button>
               </>
-            )}
+            }
           </Box>
         </Toolbar>
       </Container>
