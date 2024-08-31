@@ -4,7 +4,7 @@ import { ConfirmationNumberOutlined, DeleteOutlineOutlined, Edit, FirstPageOutli
 import { useEffect, useState } from "react";
 import validator from "validator";
 import { getLocationById } from "../services/LocationService"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import InputSearch from "../components/InputSearch";
 import { deleteEvent, getAllEvents } from "../services/EventService";
 import UserService from "../services/userService";
@@ -316,6 +316,7 @@ export function MyAccountPage() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const userService = new UserService();
+  const navigate = useNavigate();
 
   useEffect(() => { fetchEvents(); }, []);
 
@@ -380,9 +381,15 @@ export function MyAccountPage() {
     !validator.isEmpty(searchValue) ? setShownEvents(filteredData) : setShownEvents(previousShown)
   };
 
-  const handleLogout = () => { userService.removeUserFromLocalStorage(); };
+  const handleLogout = () => { 
+    userService.removeUserFromLocalStorage();
+    navigate("/");
+    window.scrollTo(0, 0);
+  };
 
   const handleSnackbarClose = () => { setSnackbarOpen(false); };
+
+  const loggedUserRole = userService.getUserFromLocalStorage().role;
 
   return (
     <Container maxWidth="md">
@@ -409,10 +416,11 @@ export function MyAccountPage() {
             ¡Hola!
           </Typography>
           <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}>
-            Acá podés ver tus eventos, tus datos, y cambiar tu contraseña.
+            Acá podés ver {loggedUserRole === "admin"? "los eventos que creaste,":""} tus reservas, tus datos, y cambiar tu contraseña.
           </Typography>
         </Stack>
-        {/* Event cards */}
+        {/* Event cards */
+        loggedUserRole === "admin" &&
         <Stack spacing={5}>
           <Stack
             direction="row"
@@ -451,6 +459,7 @@ export function MyAccountPage() {
               : <LoadingIndicator />}
           </Stack>
         </Stack>
+        }
         {/* Reserved tickets */}
         <Stack spacing={5}>
           <Stack
