@@ -4,7 +4,7 @@ import axios from "axios";
 const API_URL = "https://beevents-back-test.onrender.com";
 
 const api = axios.create({
-  baseURL: API_URL
+  baseURL: API_URL,
 });
 
 export default class UserService {
@@ -15,11 +15,11 @@ export default class UserService {
       //const newUser = { id, email, password };
       //existingUsers.push(newUser);
       //localStorage.setItem("users", JSON.stringify(existingUsers));
-
       const response = await api.post("/auth/register", userData);
-      console.log(`User created: ${response.data.email}`)
+      console.log(`User created: ${response.data.email}`);
       return response.data;
     } catch (error) {
+      console.log(error);
       console.error("Error creating user: ", error.message);
       return null;
     }
@@ -44,7 +44,7 @@ export default class UserService {
       if (response.status === 201) {
         localStorage.setItem("loggedUser", JSON.stringify(response.data));
       }
-      console.log(`Logged user with role: ${response.data.role}`)
+      console.log(`Logged user with role: ${response.data.role}`);
       return response.data;
     } catch (error) {
       console.error("Error logging in:", error.message);

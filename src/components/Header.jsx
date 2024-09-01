@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
@@ -29,6 +30,7 @@ export function Header() {
 
   useEffect(() => {
     const currentUser = userService.getUserFromLocalStorage();
+    console.log(currentUser);
     setUser(currentUser);
   }, [location]);
 
@@ -132,7 +134,7 @@ export function Header() {
         Ingresar
       </Button>
     );
-  } else if (user.role === 'user') {
+  } else if (user.role === "user") {
     menuItems.push(
       <Button
         key="MiPerfil"
@@ -220,6 +222,7 @@ export function Header() {
       >
         Crear evento
       </Button>,
+      <Typography>Hola</Typography>,
       <Button
         key="MiPerfil"
         component={Link}
@@ -388,7 +391,7 @@ export function Header() {
             >
               Eventos
             </Button>
-            {user === null &&
+            {user === null && (
               <Button
                 component={Link}
                 to="/auth/login"
@@ -414,8 +417,8 @@ export function Header() {
               >
                 Ingresar
               </Button>
-            }
-            {user !== null && user.role === "admin" &&
+            )}
+            {user !== null && user.role === "admin" && (
               <Button
                 component={Link}
                 to="/create_event"
@@ -438,8 +441,8 @@ export function Header() {
               >
                 Crear evento
               </Button>
-            }
-            {user !== null &&
+            )}
+            {user !== null && (
               <>
                 <Button
                   component={Link}
@@ -494,7 +497,7 @@ export function Header() {
                   <LogoutIcon />
                 </Button>
               </>
-            }
+            )}
           </Box>
         </Toolbar>
       </Container>

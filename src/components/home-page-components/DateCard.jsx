@@ -113,7 +113,7 @@ export default function DateCard({ id, date, artist, imageUrl }) {
           sx={{
             color: contrastGreen,
             fontWeight: "bold",
-            fontSize: "25px",
+            fontSize: "22px",
             mb: "0.5rem",
           }}
         >

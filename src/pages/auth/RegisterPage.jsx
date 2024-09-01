@@ -22,6 +22,8 @@ import UserService from "../../services/userService";
 export function RegisterPage() {
   const { contrastGreen } = customMuiTheme.colors;
   const userService = new UserService();
+  const [namesValue, setNamesValue] = useState("");
+  const [surenameValue, setSurenameValue] = useState("");
   const [emailValue, setEmailValue] = useState("");
   const [passValue, setPassValue] = useState("");
   const [repeatPassValue, setRepeatPassValue] = useState("");
@@ -31,6 +33,8 @@ export function RegisterPage() {
   const navigate = useNavigate();
   const [showRepeatPassword, setRepeatPassword] = useState(false);
   const [errors, setErrors] = useState({
+    names: false,
+    surename: false,
     email: false,
     password: false,
     repeatPassword: false,
@@ -69,6 +73,22 @@ export function RegisterPage() {
     ? "Las contraseñas no coinciden."
     : "";
 
+  const handleNamesChange = (event) => {
+    setNamesValue(event.target.value);
+    setErrors({
+      ...errors,
+      names: false,
+    });
+  };
+
+  const handleSurenameChange = (event) => {
+    setSurenameValue(event.target.value);
+    setErrors({
+      ...errors,
+      surename: false,
+    });
+  };
+
   const handleEmailChange = (event) => {
     setEmailValue(event.target.value);
     setErrors({
@@ -102,12 +122,22 @@ export function RegisterPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const namesError = validator.isEmpty(namesValue);
+    const surenameError = validator.isEmpty(surenameValue);
     const emailError = validator.isEmpty(emailValue);
     const passwordError = validator.isEmpty(passValue);
     const repeatPasswordError = validator.isEmpty(repeatPassValue);
 
-    if (emailError || passwordError || repeatPasswordError) {
+    if (
+      namesError ||
+      surenameError ||
+      emailError ||
+      passwordError ||
+      repeatPasswordError
+    ) {
       setErrors({
+        names: namesError,
+        surename: surenameError,
         email: emailError,
         password: passwordError,
         repeatPassword: repeatPasswordError,
@@ -124,9 +154,11 @@ export function RegisterPage() {
     handleOpen();
 
     const user = {
+      names: namesValue,
+
       email: emailValue,
-      password: passValue
-    }
+      password: passValue,
+    };
 
     const registeredUser = await userService.createUser(user);
     if (registeredUser) {
@@ -135,7 +167,6 @@ export function RegisterPage() {
         handleClose();
         navigate("/auth/login");
       }, 1000);
-
     } else {
       setMessage("Ocurrió un error al intentar registrarte");
       setTimeout(() => {
@@ -169,7 +200,7 @@ export function RegisterPage() {
   return (
     <>
       <Container maxWidth="xs">
-        <Stack alignItems="center" spacing={3} sx={{ mt: 8 }}>
+        <Stack alignItems="center" spacing={3} sx={{ mt: 8, mb: 4 }}>
           <Stack alignItems="center" spacing={{ xs: 3, sm: 5 }}>
             <Box sx={{ maxWidth: { xs: 60, sm: 100 } }}>
               <img src={logo} alt="brandLogo" style={{ maxWidth: "100%" }} />
@@ -182,6 +213,30 @@ export function RegisterPage() {
             className="border-grad"
             sx={{ p: 3 }}
           >
+            <TextField
+              id="names"
+              label="Nombres"
+              variant="outlined"
+              value={namesValue}
+              helperText={
+                errors.names ? "El campo de nombres es obligatorio" : ""
+              }
+              onChange={handleNamesChange}
+              error={errors.names}
+              sx={{ width: { xs: "225px", sm: "300px" } }}
+            />
+            <TextField
+              id="surename"
+              label="Apellido"
+              variant="outlined"
+              value={surenameValue}
+              helperText={
+                errors.surename ? "El campo de apellido es obligatorio" : ""
+              }
+              onChange={handleSurenameChange}
+              error={errors.surename}
+              sx={{ width: { xs: "225px", sm: "300px" } }}
+            />
             <TextField
               id="email"
               label="Email"
@@ -311,16 +366,21 @@ export function RegisterPage() {
               textAlign: "center",
               fontSize: "14px",
             }}
-          > {message.includes("error") && "Revisa tus datos y vuelve a intentarlo"}
-            {message.includes("Creando") && "Te redirigiremos para que inicies sesión"}
+          >
+            {" "}
+            {message.includes("error") &&
+              "Revisa tus datos y vuelve a intentarlo"}
+            {message.includes("Creando") &&
+              "Te redirigiremos para que inicies sesión"}
             {message.includes("éxito") && "Ya puedes iniciar sesión"}
           </Typography>
-          {message.includes("Creando")
-            ? <Box display="flex" justifyContent="center" alignItems="center">
-            <CircularProgress size={30} />
-          </Box>
-            : <></>
-          }
+          {message.includes("Creando") ? (
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <CircularProgress size={30} />
+            </Box>
+          ) : (
+            <></>
+          )}
         </Box>
       </Modal>
     </>
