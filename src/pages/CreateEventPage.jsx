@@ -138,7 +138,7 @@ export function CreateEventPage() {
   const loggedUser = userService.getUserFromLocalStorage();
 
   return (
-    loggedUser
+    loggedUser && loggedUser.role === "admin"
       ? <Container maxWidth="md" sx={{ mb: 5 }}>
         <SnackBar
           open={snackbarOpen}

@@ -216,11 +216,11 @@ export default function CardHorizontalWBorder({
   )
 }
 
-export function TicketsTable() {
+export function TicketsTable({ userId }) {
   const [reservations, setReservations] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(3);
-
+  const [isLoading, setIsLoading] = useState(true)
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - reservations.length) : 0;
 
@@ -232,79 +232,77 @@ export function TicketsTable() {
   };
 
   const fetchReservations = async () => {
-    const us = new UserService()
-    const loggedUserId = us.getUserFromLocalStorage().id
     //const reservationsById = await getReservationsByUserId(1717478725800);
-    const reservationsById = await getReservationsByUserId(loggedUserId);
+    const reservationsById = await getReservationsByUserId(userId);
     setReservations(reservationsById);
+    setIsLoading(false)
   }
 
   useEffect(() => { fetchReservations(); }, []);
 
   return (
     <Stack px={2}>
-      {reservations.length > 0
-        ? <>
-          <TableContainer >
-            <Table size="small">
-              <TableHead>
-                <TableRow sx={{ height: 105 }}>
-                  <TableCell sx={{ color: "whitesmoke" }} align="center">Afiche</TableCell>
-                  <TableCell sx={{ color: "whitesmoke" }} align="center">Evento</TableCell>
-                  <TableCell sx={{ color: "whitesmoke" }} align="left">Lugar y fecha</TableCell>
-                  <TableCell sx={{ color: "whitesmoke" }} align="right">Sector</TableCell>
-                  <TableCell sx={{ color: "whitesmoke" }} align="center">Asiento/Cantidad</TableCell>
+      {isLoading && <CircularProgress sx={{ alignSelf: "center" }} />}
+      {!isLoading && reservations.length > 0 && <>
+        <TableContainer >
+          <Table size="small">
+            <TableHead>
+              <TableRow sx={{ height: 105 }}>
+                <TableCell sx={{ color: "whitesmoke" }} align="center">Afiche</TableCell>
+                <TableCell sx={{ color: "whitesmoke" }} align="center">Evento</TableCell>
+                <TableCell sx={{ color: "whitesmoke" }} align="left">Lugar y fecha</TableCell>
+                <TableCell sx={{ color: "whitesmoke" }} align="right">Sector</TableCell>
+                <TableCell sx={{ color: "whitesmoke" }} align="center">Asiento/Cantidad</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {(rowsPerPage > 0
+                ? reservations.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                : reservations
+              ).map((r) => (
+                <TableRow
+                  key={r.idTicket}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell align="center">
+                    <img src={r.image} style={{ maxHeight: 100 }} />
+                  </TableCell>
+                  <TableCell align="center">{r.eventName}</TableCell>
+                  <TableCell align="left">
+                    <p>{r.locationName}</p>
+                    {getFormatedDate(r.date_time)}
+                  </TableCell>
+                  <TableCell align="right">{r.sectorName}</TableCell>
+                  <TableCell align="center">{r.numbered ? r.displayId : r.cantidad}</TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {(rowsPerPage > 0
-                  ? reservations.toReversed().slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  : reservations.toReversed()
-                ).map((r) => (
-                  <TableRow
-                    key={r.idTicket}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell align="center">
-                      <img src={r.image} style={{ maxHeight: 100 }} />
-                    </TableCell>
-                    <TableCell align="center">{r.eventName}</TableCell>
-                    <TableCell align="left">
-                      <p>{r.locationName}</p>
-                      {getFormatedDate(r.date_time)}
-                    </TableCell>
-                    <TableCell align="right">{r.sectorName}</TableCell>
-                    <TableCell align="center">{r.numbered ? r.displayId : r.cantidad}</TableCell>
-                  </TableRow>
-                ))}
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 117 * emptyRows }}>
-                    <TableCell colSpan={5} />
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[3, 6, 9, { label: 'All', value: -1 }]}
-            component="div"
-            count={reservations.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            slotProps={{
-              select: {
-                inputProps: {
-                  'aria-label': 'rows per page',
-                }
-              },
-            }}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            ActionsComponent={TablePaginationActions}
-          />
-        </>
-        : <Typography textAlign="center">Parece que no reservaste nada aún...</Typography>
-      }
+              ))}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 117 * emptyRows }}>
+                  <TableCell colSpan={5} />
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[3, 6, 9, { label: 'All', value: -1 }]}
+          component="div"
+          count={reservations.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          slotProps={{
+            select: {
+              inputProps: {
+                'aria-label': 'rows per page',
+              }
+            },
+          }}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          ActionsComponent={TablePaginationActions}
+        />
+      </>}
+      {!isLoading && reservations.length === 0 && <Typography textAlign="center">Parece que no reservaste nada aún...</Typography>}
     </Stack>
   )
 }
@@ -475,7 +473,7 @@ export function MyAccountPage() {
               </Typography>
               <ConfirmationNumberOutlined sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
             </Stack>
-            <TicketsTable />
+            <TicketsTable userId={loggedUser.id} />
           </Stack>
           {/* Personal data */}
           <Stack spacing={5}>
