@@ -12,6 +12,7 @@ import SnackBar from "../components/SnackBar";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { getReservationsByUserId } from "../services/ReservationService";
 import { useTheme } from "@emotion/react";
+import NotFound from "../components/NotFound";
 
 function getFormatedDate(date) {
   const thisDate = new Date(date);
@@ -247,7 +248,7 @@ export function TicketsTable() {
           <TableContainer >
             <Table size="small">
               <TableHead>
-                <TableRow sx={{ height: 105}}>
+                <TableRow sx={{ height: 105 }}>
                   <TableCell sx={{ color: "whitesmoke" }} align="center">Afiche</TableCell>
                   <TableCell sx={{ color: "whitesmoke" }} align="center">Evento</TableCell>
                   <TableCell sx={{ color: "whitesmoke" }} align="left">Lugar y fecha</TableCell>
@@ -381,262 +382,263 @@ export function MyAccountPage() {
     !validator.isEmpty(searchValue) ? setShownEvents(filteredData) : setShownEvents(previousShown)
   };
 
-  const handleLogout = () => { 
+  const handleLogout = () => {
     userService.removeUserFromLocalStorage();
     navigate("/");
     window.scrollTo(0, 0);
   };
 
   const handleSnackbarClose = () => { setSnackbarOpen(false); };
-
-  const loggedUserRole = userService.getUserFromLocalStorage().role;
+  const loggedUser = userService.getUserFromLocalStorage()
 
   return (
-    <Container maxWidth="md">
-      <SnackBar
-        open={snackbarOpen}
-        message={snackbarMessage}
-        severity="success"
-        handleClose={handleSnackbarClose}
-      />
-      <Stack spacing={10} my={4}>
-        {/* Title and subtitle */}
-        <Stack>
-          <Typography
-            variant="h2"
-            gutterBottom
-            sx={{
-              fontSize: {
-                xs: "1.5rem",
-                md: "2rem",
-              },
-              alignSelf: "flex-start",
-            }}
-          >
-            ¡Hola!
-          </Typography>
-          <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}>
-            Acá podés ver {loggedUserRole === "admin"? "los eventos que creaste,":""} tus reservas, tus datos, y cambiar tu contraseña.
-          </Typography>
-        </Stack>
-        {/* Event cards */
-        loggedUserRole === "admin" &&
-        <Stack spacing={5}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center">
+    loggedUser
+      ? <Container maxWidth="md">
+        <SnackBar
+          open={snackbarOpen}
+          message={snackbarMessage}
+          severity="success"
+          handleClose={handleSnackbarClose}
+        />
+        <Stack spacing={10} my={4}>
+          {/* Title and subtitle */}
+          <Stack>
             <Typography
               variant="h2"
-              sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
+              gutterBottom
+              sx={{
+                fontSize: {
+                  xs: "1.5rem",
+                  md: "2rem",
+                },
+                alignSelf: "flex-start",
+              }}
             >
-              Últimos eventos creados
+              ¡Hola!
             </Typography>
-            <StadiumOutlined sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
+            <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}>
+              Acá podés ver {loggedUser.role === "admin" ? "los eventos que creaste," : ""} tus reservas, tus datos, y cambiar tu contraseña.
+            </Typography>
           </Stack>
-          <Stack spacing={3} px={1}>
-            <Stack alignItems={{ xs: "center", sm: "end" }} pb={1}>
-              <InputSearch
-                options={events.map((event) => event.name)}
-                onSearch={handleSearch}
-              />
+          {/* Event cards */
+            loggedUser.role === "admin" &&
+            <Stack spacing={5}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center">
+                <Typography
+                  variant="h2"
+                  sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
+                >
+                  Últimos eventos creados
+                </Typography>
+                <StadiumOutlined sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
+              </Stack>
+              <Stack spacing={3} px={1}>
+                <Stack alignItems={{ xs: "center", sm: "end" }} pb={1}>
+                  <InputSearch
+                    options={events.map((event) => event.name)}
+                    onSearch={handleSearch}
+                  />
+                </Stack>
+                {!isLoading
+                  ? shownEvents.map((event) => (
+                    <CardHorizontalWBorder
+                      key={event._id}
+                      fetchEvents={fetchEvents}
+                      setSnackbarMessage={setSnackbarMessage}
+                      setSnackbarOpen={setSnackbarOpen}
+                      id={event._id}
+                      artist={event.artist}
+                      title={event.name}
+                      location={event.location_id}
+                      dates={event.dates.map(date => date.date_time)}
+                      sectors={event.dates[0].sectors}
+                    />
+                  ))
+                  : <LoadingIndicator />}
+              </Stack>
             </Stack>
-            {!isLoading
-              ? shownEvents.map((event) => (
-                <CardHorizontalWBorder
-                  key={event._id}
-                  fetchEvents={fetchEvents}
-                  setSnackbarMessage={setSnackbarMessage}
-                  setSnackbarOpen={setSnackbarOpen}
-                  id={event._id}
-                  artist={event.artist}
-                  title={event.name}
-                  location={event.location_id}
-                  dates={event.dates.map(date => date.date_time)}
-                  sectors={event.dates[0].sectors}
-                />
-              ))
-              : <LoadingIndicator />}
+          }
+          {/* Reserved tickets */}
+          <Stack spacing={5}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center">
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
+              >
+                Tickets reservados
+              </Typography>
+              <ConfirmationNumberOutlined sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
+            </Stack>
+            <TicketsTable />
           </Stack>
-        </Stack>
-        }
-        {/* Reserved tickets */}
-        <Stack spacing={5}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center">
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
+          {/* Personal data */}
+          <Stack spacing={5}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center">
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
+              >
+                Datos personales
+              </Typography>
+              <ManageAccounts sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
+            </Stack>
+            {/* Data form */}
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              justifyContent="space-between"
+              px={1}
+              spacing={{ xs: 3, sm: 0 }}
             >
-              Tickets reservados
-            </Typography>
-            <ConfirmationNumberOutlined sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
-          </Stack>
-          <TicketsTable />
-        </Stack>
-        {/* Personal data */}
-        <Stack spacing={5}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center">
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
-            >
-              Datos personales
-            </Typography>
-            <ManageAccounts sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
-          </Stack>
-          {/* Data form */}
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            justifyContent="space-between"
-            px={1}
-            spacing={{ xs: 3, sm: 0 }}
-          >
-            <Stack spacing={3} sx={{ width: { sm: "275px" } }}>
-              <TextField
-                label="Email"
-                variant="outlined"
-                value={emailValue}
-                helperText={getEmailHelperText}
-                onChange={handleEmailChange}
-                error={isNotAnEmail}
+              <Stack spacing={3} sx={{ width: { sm: "275px" } }}>
+                <TextField
+                  label="Email"
+                  variant="outlined"
+                  value={emailValue}
+                  helperText={getEmailHelperText}
+                  onChange={handleEmailChange}
+                  error={isNotAnEmail}
 
-              />
-              <TextField
-                label="Nombre"
-                variant="outlined"
-                value={nameValue}
-                helperText={validator.isEmpty(nameValue) ? "Introduce tu nombre" : ""}
-                onChange={handleNameChange}
-                error={validator.isEmpty(nameValue)}
-              />
-              <TextField
-                label="Teléfono"
-                variant="outlined"
-                value={phoneValue}
-                helperText={getPhoneHelperText}
-                onChange={handlePhoneChange}
-                error={isNotAPhone}
-              />
+                />
+                <TextField
+                  label="Nombre"
+                  variant="outlined"
+                  value={nameValue}
+                  helperText={validator.isEmpty(nameValue) ? "Introduce tu nombre" : ""}
+                  onChange={handleNameChange}
+                  error={validator.isEmpty(nameValue)}
+                />
+                <TextField
+                  label="Teléfono"
+                  variant="outlined"
+                  value={phoneValue}
+                  helperText={getPhoneHelperText}
+                  onChange={handlePhoneChange}
+                  error={isNotAPhone}
+                />
+              </Stack>
+              <Button
+                size="large"
+                sx={{ color: "white", bgcolor: contrastGreen, alignSelf: "end" }}
+              >
+                <Typography
+                  variant="h2"
+                  sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
+                >
+                  Actualizar
+                </Typography>
+              </Button>
             </Stack>
-            <Button
-              size="large"
-              sx={{ color: "white", bgcolor: contrastGreen, alignSelf: "end" }}
-            >
+          </Stack>
+          {/* Password change */}
+          <Stack spacing={5}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center">
               <Typography
                 variant="h2"
-                sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
+                sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
               >
-                Actualizar
+                Cambiar contraseña
               </Typography>
-            </Button>
+              <Key sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
+            </Stack>
+            {/* Passes form */}
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              justifyContent="space-between"
+              px={1}
+              spacing={{ xs: 3, sm: 0 }}
+            >
+              <Stack spacing={3} >
+                <TextField
+                  label='Contraseña actual'
+                  value={currentPassValue}
+                  helperText={getCurrentPassHelperText}
+                  onChange={handleCurrentPassChange}
+                  error={currentPassError}
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleShowCurrentPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <TextField
+                  label='Contraseña nueva'
+                  value={newPassValue}
+                  helperText={getNewPassHelperText}
+                  onChange={handleNewPassChange}
+                  error={newPassError}
+                  type={showNewPassword ? 'text' : 'password'}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleShowNewPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Stack>
+              <Button
+                size="large"
+                sx={{ color: "white", bgcolor: contrastGreen, alignSelf: "end" }}
+              >
+                <Typography
+                  variant="h2"
+                  sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
+                >
+                  Actualizar
+                </Typography>
+              </Button>
+            </Stack>
           </Stack>
-        </Stack>
-        {/* Password change */}
-        <Stack spacing={5}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center">
+          <Stack spacing={1} alignItems="center">
             <Typography
               variant="h2"
               sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
             >
-              Cambiar contraseña
+              Cerrar sesión
             </Typography>
-            <Key sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }} />
-          </Stack>
-          {/* Passes form */}
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            justifyContent="space-between"
-            px={1}
-            spacing={{ xs: 3, sm: 0 }}
-          >
-            <Stack spacing={3} >
-              <TextField
-                label='Contraseña actual'
-                value={currentPassValue}
-                helperText={getCurrentPassHelperText}
-                onChange={handleCurrentPassChange}
-                error={currentPassError}
-                type={showCurrentPassword ? 'text' : 'password'}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleShowCurrentPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                label='Contraseña nueva'
-                value={newPassValue}
-                helperText={getNewPassHelperText}
-                onChange={handleNewPassChange}
-                error={newPassError}
-                type={showNewPassword ? 'text' : 'password'}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleShowNewPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showNewPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Stack>
-            <Button
-              size="large"
-              sx={{ color: "white", bgcolor: contrastGreen, alignSelf: "end" }}
+            <IconButton
+              component={Link}
+              to="/"
+              onClick={() => handleLogout()}
+              title="Cerrar sesión"
+              sx={{
+                "&:hover": { color: "white" }
+              }}
             >
-              <Typography
-                variant="h2"
-                sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
-              >
-                Actualizar
-              </Typography>
-            </Button>
+              <Logout fontSize="large" />
+            </IconButton>
           </Stack>
         </Stack>
-        <Stack spacing={1} alignItems="center">
-          <Typography
-            variant="h2"
-            sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
-          >
-            Cerrar sesión
-          </Typography>
-          <IconButton
-            component={Link}
-            to="/"
-            onClick={() => handleLogout()}
-            title="Cerrar sesión"
-            sx={{
-              "&:hover": { color: "white" }
-            }}
-          >
-            <Logout fontSize="large" />
-          </IconButton>
-        </Stack>
-      </Stack>
-    </Container>
+      </Container>
+      : <NotFound />
   )
 }
