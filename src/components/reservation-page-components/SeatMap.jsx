@@ -3,8 +3,12 @@ import Seat from "./Seat";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
+import { customStyles } from "../../config/customMuiTheme";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import escenario from "../../assets/img/escenario.png";
+import availableIcon from "../../assets/img/available-seat.png";
+import notAvailableIcon from "../../assets/img/notavailable-seat.png";
+import preReservedIcon from "../../assets/img/prereserved-seat.png";
 
 const SeatMap = ({ rows, sectorName, onSeatClick }) => {
   const theme = useTheme();
@@ -42,13 +46,12 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
       <img
         src={escenario}
         alt="Escenario"
-        style={{ width: "15%", maxWidth: "50px", marginBottom: 5 }}
+        style={{ width: "15%", maxWidth: "40px", marginBottom: 3 }}
       />
       <div
         style={{
           fontSize: "12px",
           letterSpacing: "2px",
-          marginBottom: "1rem",
           paddingRight: "1rem",
           paddingLeft: "1rem",
           paddingBottom: "0.5rem",
@@ -58,10 +61,36 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
       >
         UBICACIÓN ESCENARIO
       </div>
-      <Grid container spacing={0.1} justifyContent="center">
+      <Grid
+        alignItems="center"
+        justifyContent="center"
+        sx={{
+          overflowX: "auto",
+          overflowY: "auto",
+          maxWidth: "90vw",
+          maxHeight: "50vh",
+          padding: "1rem",
+          paddingTop: "2.5rem",
+        }}
+      >
         {rows.map((rowBlock) => (
-          <Grid item xs={12} key={rowBlock[0]._id} sx={{ width: "90%" }}>
-            <Box display="flex" justifyContent="center" width="auto">
+          <Grid
+            item
+            xs={12}
+            key={rowBlock[0]._id}
+            sx={{ minWidth: "max-content" }}
+          >
+            <Box
+              display="flex"
+              justifyContent="center"
+              width="auto"
+              sx={{
+                marginLeft: "1rem",
+                marginRight: "1rem",
+                paddingLeft: "1rem",
+                paddingRight: "1rem",
+              }}
+            >
               {rowBlock &&
                 rowBlock.map((seat) => {
                   const seatWithPreReserved = {
@@ -83,43 +112,24 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
       <div
         style={{
           color: "#fff",
-          fontSize: "12px",
+          fontSize: isMobile ? "10px" : "12px",
           letterSpacing: "2px",
           marginTop: "1rem",
+          display: "flex",
+          flexDirection: "row",
         }}
       >
-        <Box display="flex" alignItems="center" mb={1.5}>
-          <div
-            style={{
-              width: "15px",
-              height: "15px",
-              backgroundColor: "#B9B9B9",
-              marginRight: "8px",
-            }}
-          ></div>
-          <p style={{ margin: 0 }}>Asiento disponible</p>
-        </Box>
-        <Box display="flex" alignItems="center" mb={1.5}>
-          <div
-            style={{
-              width: "15px",
-              height: "15px",
-              backgroundColor: "#E067B8",
-              marginRight: "8px",
-            }}
-          ></div>
-          <p style={{ margin: 0 }}>Asiento reservado</p>
+        <Box display="flex" alignItems="center">
+          <img src={availableIcon} style={customStyles.seat}></img>
+          <p style={{ margin: 0, marginRight: 2 }}>Disponible</p>
         </Box>
         <Box display="flex" alignItems="center">
-          <div
-            style={{
-              width: "15px",
-              height: "15px",
-              backgroundColor: "#51DD99",
-              marginRight: "8px",
-            }}
-          ></div>
-          <p style={{ margin: 0 }}>Asiento pre-reservado</p>
+          <img src={notAvailableIcon} style={customStyles.seat}></img>
+          <p style={{ margin: 0, marginRight: 2 }}>Reservado</p>
+        </Box>
+        <Box display="flex" alignItems="center">
+          <img src={preReservedIcon} style={customStyles.seat}></img>
+          <p style={{ margin: 0, marginRight: 2 }}>Pre-reservado</p>
         </Box>
       </div>
     </Box>

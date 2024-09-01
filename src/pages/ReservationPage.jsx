@@ -563,154 +563,156 @@ export function ReservationPage() {
                       0
                     );
 
-                    return (
-                      <TableRow key={index}>
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          sx={{ color: "lightgray", borderColor: "lightgray" }}
-                        >
-                          {sector.name}
-                        </TableCell>
-                        <TableCell
-                          align="right"
-                          sx={{ color: "lightgray", borderColor: "lightgray" }}
-                        >
-                          {totalSeats}
-                        </TableCell>
-                        <TableCell
-                          align="right"
-                          sx={{ color: "lightgray", borderColor: "lightgray" }}
-                        >
-                          {occupiedSeats}/{totalSeats}
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          sx={{ color: "lightgray", borderColor: "lightgray" }}
-                        >
-                          {sector.numbered ? (
-                            <Button
-                              variant="contained"
+                  return (
+                    <TableRow key={index}>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {sector.name}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {totalSeats}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {occupiedSeats}/{totalSeats}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {sector.numbered ? (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleOpenModal(sector)}
+                          >
+                            Seleccionar Asientos
+                          </Button>
+                        ) : (
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <IconButton
                               color="primary"
-                              onClick={() => handleOpenModal(sector)}
+                              onClick={() =>
+                                handleNonNumberedReservation(
+                                  sector._id,
+                                  "remove"
+                                )
+                              }
                             >
-                              Seleccionar Asientos
-                            </Button>
-                          ) : (
-                            <Box
-                              display="flex"
-                              alignItems="center"
-                              justifyContent="center"
+                              <RemoveIcon />
+                            </IconButton>
+                            <Typography>
+                              {countReservationsBySectorId(
+                                notNumeredReservationUnconfirmed,
+                                sector._id
+                              )}
+                            </Typography>
+                            <IconButton
+                              color="primary"
+                              onClick={() =>
+                                handleNonNumberedReservation(sector._id, "add")
+                              }
                             >
-                              <IconButton
-                                color="primary"
-                                onClick={() =>
-                                  handleNonNumberedReservation(
-                                    sector._id,
-                                    "remove"
-                                  )
-                                }
-                              >
-                                <RemoveIcon />
-                              </IconButton>
-                              <Typography>
-                                {countReservationsBySectorId(
-                                  notNumeredReservationUnconfirmed,
-                                  sector._id
-                                )}
-                              </Typography>
-                              <IconButton
-                                color="primary"
-                                onClick={() =>
-                                  handleNonNumberedReservation(sector._id, "add")
-                                }
-                              >
-                                <AddIcon />
-                              </IconButton>
-                            </Box>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-          <Box sx={{ mt: 2, textAlign: "center" }}>
-            <Button
-              variant="contained"
-              onClick={handleConfirmReservations}
-              sx={{
-                mt: 2,
-                mb: 6,
-                backgroundColor: "#01BB89",
-                border: "1px solid #01BB89",
-                color: "white",
-              }}
-            >
-              Confirmar Reservas
-            </Button>
-          </Box>
-        </Container>
-        <Modal
-          open={modalOpen}
-          onClose={handleCloseModal}
-          aria-labelledby="modal-title"
-          aria-describedby="modal-description"
-        >
-          <Box
+                              <AddIcon />
+                            </IconButton>
+                          </Box>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+        <Box sx={{ mt: 2, textAlign: "center" }}>
+          <Button
+            variant="contained"
+            onClick={handleConfirmReservations}
             sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              // maxWidth: "90%",
-              width: "auto",
-              flexWrap: "wrap",
-              bgcolor: "#142539",
-              color: "lightgray",
-              border: "1px solid lightgray",
-              borderRadius: "5px",
-              boxShadow: 24,
-              p: 2,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
+              mt: 2,
+              mb: 6,
+              backgroundColor: "#01BB89",
+              border: "1px solid #01BB89",
+              color: "white",
             }}
           >
-            {selectedSeatMap && (
-              <SeatMap
-                rows={selectedSeatMap.rows}
-                sectorName={selectedSeatMap.name}
-                onSeatClick={handleSeatClick}
-              />
-            )}
-            <Button onClick={handleCloseModal} variant="contained" sx={{ mt: 2 }}>
-              Cerrar
-            </Button>
-          </Box>
-        </Modal>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
+            Confirmar Reservas
+          </Button>
+        </Box>
+      </Container>
+      <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            // maxWidth: "90%",
+            width: "auto",
+            maxWidth: "90vw",
+            maxHeight: "95vh",
+            flexWrap: "wrap",
+            bgcolor: "#142539",
+            color: "lightgray",
+            border: "1px solid lightgray",
+            borderRadius: "5px",
+            boxShadow: 24,
+            p: 2,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          <Box sx={style}>
-            <img src={Logo} alt="Logo" style={{ width: 100, marginBottom: 5 }} />
-            <Typography
-              id="modal-modal-description"
-              sx={{ mt: 2, textAlign: "center" }}
-            >
-              ¡{apiMessage}!
-            </Typography>
-            <Button onClick={handleClose} variant="contained" sx={{ mt: 3 }}>
-              Cerrar
-            </Button>
-          </Box>
-        </Modal>
-      </>
-      : <NotFound />
+          {selectedSeatMap && (
+            <SeatMap
+              rows={selectedSeatMap.rows}
+              sectorName={selectedSeatMap.name}
+              onSeatClick={handleSeatClick}
+            />
+          )}
+          <Button onClick={handleCloseModal} variant="contained" sx={{ mt: 2 }}>
+            Cerrar
+          </Button>
+        </Box>
+      </Modal>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <img src={Logo} alt="Logo" style={{ width: 100, marginBottom: 5 }} />
+          <Typography
+            id="modal-modal-description"
+            sx={{ mt: 2, textAlign: "center" }}
+          >
+            ¡{apiMessage}!
+          </Typography>
+          <Button onClick={handleClose} variant="contained" sx={{ mt: 3 }}>
+            Cerrar
+          </Button>
+        </Box>
+      </Modal>
+    </>
   );
 }

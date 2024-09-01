@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import availableIcon from "../../assets/img/available-seat.png";
 import notAvailableIcon from "../../assets/img/notavailable-seat.png";
 import preReservedIcon from "../../assets/img/prereserved-seat.png";
+import noPermissionCursor from "../../assets/img/ReservedCursor.png";
 
 const getSeatStatus = (seat) => {
   if (seat.available) {
@@ -14,7 +15,6 @@ const getSeatStatus = (seat) => {
 };
 
 const SeatCard = ({ seat }) => {
-  console.log(seat.available);
   return (
     <div
       style={{
@@ -42,7 +42,6 @@ const SeatCard = ({ seat }) => {
 };
 
 const Seat = ({ seat, onSeatClick }) => {
-  console.log(seat);
   const [hovered, setHovered] = useState(false);
 
   const handleClick = () => {
@@ -51,11 +50,14 @@ const Seat = ({ seat, onSeatClick }) => {
 
   const getSeatStyle = (seat) => {
     let backgroundStyle = {
-      width: "10px",
-      height: "10px",
-      margin: "3px",
+      minWidth: "6px",
+      minHeight: "6px",
+      margin: "4px",
       padding: "4px",
-      cursor: "pointer",
+      cursor:
+        seat.available || seat.reservedBy === "pre-reserved"
+          ? "pointer"
+          : `url(${noPermissionCursor}), not-allowed`,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -63,7 +65,7 @@ const Seat = ({ seat, onSeatClick }) => {
       textShadow: "1px 1px 2px rgba(0,0,0,0.7)",
       borderRadius: "5px",
       transition: "all 0.3s ease-in-out",
-      transform: hovered ? "scale(1.2)" : "scale(1)",
+      transform: hovered ? "scale(1.1)" : "scale(1)",
       boxShadow: hovered
         ? "0 4px 8px rgba(0, 0, 0, 0.3)"
         : "0 2px 4px rgba(0, 0, 0, 0.2)",
@@ -118,3 +120,11 @@ const Seat = ({ seat, onSeatClick }) => {
 };
 
 export default Seat;
+// minWidth: "6px",
+// minHeight: "6px",
+// margin: "4px",
+// padding: "4px",
+// // cursor:
+// //   seat.available || seat.reservedBy === "pre-reserved"
+// //     ? "pointer"
+// //     : `url(${noPermissionCursor}), not-allowed`,

@@ -5,12 +5,16 @@ import InputSearch from "../components/InputSearch";
 import MediaCard from "../components/Card";
 import Typography from "@mui/material/Typography";
 import { customMuiTheme } from "../config/customMuiTheme";
+import { useMediaQuery } from "@mui/material";
 import LoadingIndicator from "../components/LoadingIndicator";
+import { getAllLocations } from "../services/LocationService";
 
 export function EventsPage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -21,12 +25,26 @@ export function EventsPage() {
     fetchEvents();
   }, []);
 
+  useEffect(() => {
+    const fetchLocations = async () => {
+      const allLocations = await getAllLocations();
+      setLocations(allLocations);
+      console.log(locations);
+    };
+    fetchLocations();
+  }, []);
+
   const handleSearch = (searchValue) => {
     const lowercasedFilter = searchValue.toLowerCase();
     const filteredData = events.filter((item) =>
       item.artist.toLowerCase().includes(lowercasedFilter)
     );
     setFilteredEvents(filteredData);
+  };
+
+  const findLocationName = (locationId) => {
+    const location = locations.find((location) => location._id === locationId);
+    return location ? location.name : null;
   };
 
   return (
@@ -39,9 +57,11 @@ export function EventsPage() {
         <Box
           sx={{
             display: "flex",
+            width: isMobile ? "85%" : "100%",
             flexDirection: { xs: "column", md: "row" },
-            justifyContent: "space-between",
+            justifyContent: isMobile ? "center" : "space-between",
             alignItems: "center",
+            margin: "auto",
           }}
         >
           <Typography
@@ -58,7 +78,7 @@ export function EventsPage() {
                 xs: "1.5rem",
                 md: "2rem",
               },
-              alignSelf: "flex-start",
+              textAlign: isMobile ? "center" : "flex-start",
             }}
           >
             Todos los eventos
@@ -84,6 +104,7 @@ export function EventsPage() {
                   artist={event.artist}
                   imageUrl={event.image}
                   isHomePage={false}
+                  locationName={findLocationName(event.location_id)}
                 />
               </Grid>
             ))
