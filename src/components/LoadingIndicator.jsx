@@ -20,6 +20,8 @@ export default function LoadingIndicator() {
         justifyContent: "center",
         color: "white",
         textShadow: "2px 2px 4px rgba(0, 0, 0, 1.5)",
+        mt: "2rem",
+        mb: "2rem",
       }}
     >
       <CircularProgress sx={{ marginBottom: "15px", color: contrastGreen }} />
