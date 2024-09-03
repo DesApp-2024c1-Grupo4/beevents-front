@@ -1,8 +1,8 @@
 import axios from "axios";
 import UserService from "./userService";
 
-//const API_URL = "https://beevents-back-dev.onrender.com/event";
-const API_URL = "https://beevents-back-test.onrender.com/event";
+const API_URL = "https://beevents-back-dev.onrender.com/event";
+//const API_URL = "https://beevents-back-test.onrender.com/event";
 
 const api = axios.create({
   baseURL: API_URL,
