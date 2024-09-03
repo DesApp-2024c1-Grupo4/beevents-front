@@ -222,7 +222,6 @@ export function Header() {
       >
         Crear evento
       </Button>,
-      <Typography>Hola</Typography>,
       <Button
         key="MiPerfil"
         component={Link}
