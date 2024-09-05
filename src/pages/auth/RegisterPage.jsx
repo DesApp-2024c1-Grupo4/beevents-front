@@ -155,9 +155,10 @@ export function RegisterPage() {
 
     const user = {
       names: namesValue,
-
+      surname: surenameValue,
       email: emailValue,
       password: passValue,
+      repeatPassword: repeatPassValue,
     };
 
     const registeredUser = await userService.createUser(user);

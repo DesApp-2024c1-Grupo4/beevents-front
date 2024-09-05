@@ -15,6 +15,7 @@ export default class UserService {
       //const newUser = { id, email, password };
       //existingUsers.push(newUser);
       //localStorage.setItem("users", JSON.stringify(existingUsers));
+      console.log(userData);
       const response = await api.post("/auth/register", userData);
       console.log(`User created: ${response.data.email}`);
       return response.data;
