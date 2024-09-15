@@ -202,7 +202,7 @@ export default function LocationSection({
             configurationsTemplates={configurationsTemplates}
             eventId={eventId}
           />
-          {sectors?.length > 0 && (
+          {!eventId && sectors?.length > 0 && (
             <Typography
               variant="body1"
               sx={{
