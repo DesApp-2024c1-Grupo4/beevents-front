@@ -21,7 +21,9 @@ export async function getAllLocations() {
 
 export async function getLocationById(id) {
   try {
+    console.log(id);
     const response = await api.get(`/location/${id}`);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -39,6 +41,25 @@ export async function createLocation(location) {
     return response.data;
   } catch (error) {
     console.log(error);
+  }
+}
+
+export async function patchLocation(locationData) {
+  console.log(locationData);
+  try {
+    const response = await api.patch(
+      `/location/${locationData._id}`,
+      locationData,
+      {
+        headers: {
+          Authorization: `Bearer ${us.getUserFromLocalStorage().access_token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error.message);
+    return null;
   }
 }
 
