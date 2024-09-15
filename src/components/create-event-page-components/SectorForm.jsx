@@ -3,7 +3,6 @@ import { Box, Button, FormControlLabel, FormGroup, Input, Modal, Slider, Stack, 
 import { useEffect, useState } from "react";
 import validator from "validator";
 import { customMuiTheme } from "../../config/customMuiTheme";
-import SeatMap from "../reservation-page-components/SeatMap";
 import SectorDistributionMap from "./SectorDistributionMap";
 
 export default function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
@@ -99,9 +98,9 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
   };
 
   const handleOpen = () => {
-    rows < 1 || seats < 1 
-    ? alert("El sector debe tener al menos un asiento") 
-    : setOpen(true);
+    rows < 1 || seats < 1
+      ? alert("El sector debe tener al menos un asiento")
+      : setOpen(true);
   }
 
   const handleClose = () => {
@@ -174,76 +173,89 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
           />
         </FormGroup>
         {isNumbered && (
-          <Stack spacing={3}>
-            <Stack>
-              <Typography id="rows" gutterBottom>
-                Cant. de filas
-              </Typography>
-              <Stack direction="row" spacing={3} justifyContent="space-around">
-                <Slider
-                  value={typeof rows === "number" ? rows : 1}
-                  onChange={handleRowSliderChange}
-                  aria-labelledby="rows"
-                  valueLabelDisplay="auto"
-                  step={20}
-                  marks
-                  min={0}
-                  max={500}
-                  sx={{ width: "75%" }}
-                />
-                <Input
-                  value={rows}
-                  onChange={handleRowInputChange}
-                  size="small"
-                  inputProps={{
-                    step: 1,
-                    min: 0,
-                    max: 500,
-                    type: "number",
-                    "aria-labelledby": "rows",
-                  }}
-                  sx={{ width: "55px", alignSelf: "flex-start" }}
-                />
-              </Stack>
-            </Stack>
-            <Stack>
-              <Typography id="seats" gutterBottom>
-                Cant. de asientos por fila
-              </Typography>
-              <Stack direction="row" spacing={3} justifyContent="space-around">
-                <Slider
-                  value={typeof seats === "number" ? seats : 1}
-                  onChange={handleSeatSliderChange}
-                  aria-labelledby="seats"
-                  valueLabelDisplay="auto"
-                  step={20}
-                  marks
-                  min={0}
-                  max={500}
-                  sx={{ width: "75%" }}
-                />
-                <Input
-                  value={seats}
-                  onChange={handleSeatInputChange}
-                  size="small"
-                  inputProps={{
-                    step: 1,
-                    min: 0,
-                    max: 500,
-                    type: "number",
-                    "aria-labelledby": "seats",
-                  }}
-                  sx={{ width: "55px", alignSelf: "flex-start" }}
-                />
-              </Stack>
-            </Stack>
-            <Typography>Capacidad: {rows * seats}</Typography>
-            <Button
-              sx={{ alignSelf: "flex-start", color: contrastGreen }}
-              onClick={handleOpen}
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            justifyContent="space-between"
+            spacing={{ xs: 4, md: 8 }}
+          >
+            <Stack
+              spacing={3}
+              sx={{ width: { xs: "100%", md: "80%" } }}
             >
-              Personalizar distribución del sector
-            </Button>
+              <Stack>
+                <Typography id="rows" gutterBottom>
+                  Cant. de filas
+                </Typography>
+                <Stack direction="row" spacing={3} justifyContent="space-around">
+                  <Slider
+                    value={typeof rows === "number" ? rows : 1}
+                    onChange={handleRowSliderChange}
+                    aria-labelledby="rows"
+                    valueLabelDisplay="auto"
+                    step={10}
+                    marks
+                    min={0}
+                    max={250}
+                    sx={{ width: "75%" }}
+                  />
+                  <Input
+                    value={rows}
+                    onChange={handleRowInputChange}
+                    size="small"
+                    inputProps={{
+                      step: 1,
+                      min: 0,
+                      max: 250,
+                      type: "number",
+                      "aria-labelledby": "rows",
+                    }}
+                    sx={{ width: "55px", alignSelf: "flex-start" }}
+                  />
+                </Stack>
+              </Stack>
+              <Stack>
+                <Typography id="seats" gutterBottom>
+                  Cant. de asientos por fila
+                </Typography>
+                <Stack direction="row" spacing={3} justifyContent="space-around">
+                  <Slider
+                    value={typeof seats === "number" ? seats : 1}
+                    onChange={handleSeatSliderChange}
+                    aria-labelledby="seats"
+                    valueLabelDisplay="auto"
+                    step={10}
+                    marks
+                    min={0}
+                    max={250}
+                    sx={{ width: "75%" }}
+                  />
+                  <Input
+                    value={seats}
+                    onChange={handleSeatInputChange}
+                    size="small"
+                    inputProps={{
+                      step: 1,
+                      min: 0,
+                      max: 250,
+                      type: "number",
+                      "aria-labelledby": "seats",
+                    }}
+                    sx={{ width: "55px", alignSelf: "flex-start" }}
+                  />
+                </Stack>
+              </Stack>
+            </Stack>
+            <Stack alignItems="center" justifyContent="end" spacing={3}>
+              <Stack alignItems="center">
+                <Typography>Capacidad: </Typography>
+                <Typography variant="h1">{rows * seats}</Typography>
+              </Stack>
+              <Button
+                onClick={handleOpen}
+              >
+                Personalizar distribución del sector
+              </Button>
+            </Stack>
           </Stack>
         )}
         <Stack
@@ -251,6 +263,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
           justifyContent="flex-end"
           alignItems="flex-end"
           direction="row"
+          sx={{ py: { xs: 1, sm: 3 } }}
         >
           <Button
             size="medium"

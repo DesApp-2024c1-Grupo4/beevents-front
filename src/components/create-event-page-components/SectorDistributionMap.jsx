@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
@@ -34,18 +34,16 @@ export const useIsOverflow = (ref, callback) => {
   return isOverflow;
 };
 
-export function HelpTips({isMobile}) {
+export function HelpTips({ isMobile }) {
   return <Stack
     sx={{
       position: "absolute",
-      top: "-25px",
-      left: "50%",
-      transform: "translateX(-53%) translateY(49%)",
+      top: "3px",
+      right: "20px",
       backgroundColor: "#145362",
       padding: "5px",
       borderRadius: "5px",
       boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.8)",
-      zIndex: 999,
       pointerEvents: "none",
       whiteSpace: "nowrap"
     }}
@@ -113,7 +111,7 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
           }}>
           <HelpCenter fontSize="small" />
         </IconButton>
-        {askedForHelp && <HelpTips isMobile={isMobile}/>}
+        {askedForHelp && <HelpTips isMobile={isMobile} />}
       </Stack>
       <Grid
         alignItems="center"
@@ -163,7 +161,7 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
           </Grid>
         ))}
       </Grid>
-      {isOverflow && <Stack justifyContent="center" alignItems="center">
+      {isOverflow && <Stack justifyContent="center" alignItems="center" pb={2}>
         <ArrowDropUp />
         <Typography sx={{ fontSize: isMobile ? "10px" : "12px", }} >
           Usa la barra para ver más
