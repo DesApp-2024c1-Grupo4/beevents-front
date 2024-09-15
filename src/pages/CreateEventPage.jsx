@@ -14,7 +14,6 @@ import {
 } from "react-hook-form-mui";
 import LocationSection from "../components/create-event-page-components/LocationSection";
 import DatesSection from "../components/create-event-page-components/DatesSection";
-import SectorsSection from "../components/create-event-page-components/SectorsSection";
 import SnackBar from "../components/SnackBar";
 import {
   createEvent,
@@ -137,101 +136,102 @@ export function CreateEventPage() {
 
   const loggedUser = userService.getUserFromLocalStorage();
 
-  return (
-    loggedUser && loggedUser.role === "admin"
-      ? <Container maxWidth="md" sx={{ mb: 5 }}>
-        <SnackBar
-          open={snackbarOpen}
-          message={snackbarMessage}
-          severity="success"
-          handleClose={handleSnackbarClose}
-        />
-        <Typography
-          variant="h2"
-          component="h2"
-          gutterBottom
-          sx={{
-            color: contrastGreen,
-            my: 4,
-            fontSize: {
-              xs: "1.5rem",
-              md: "2rem",
-            },
-            textAlign: { xs: "center", sm: "left" },
-          }}
-        >
-          {eventId ? "Editar evento" : "Crear un evento nuevo"}
-        </Typography>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Stack spacing={5}>
-            <Stack spacing={3} px={3}>
-              <Typography
-                variant="h1"
-                gutterBottom
-                sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
-              >
-                Datos principales
-              </Typography>
-              <TextFieldElement
-                name={"name"}
-                label={"Nombre del evento"}
-                control={control}
-                required
-              />
-              <TextFieldElement
-                name={"artist"}
-                label={"Artista"}
-                control={control}
-                required
-              />
-              <TextFieldElement
-                name={"image"}
-                label={"Imagen"}
-                control={control}
-                required
-              />
-              <TextareaAutosizeElement
-                name={"description"}
-                label={"Descripción"}
-                control={control}
-                required
-              />
-            </Stack>
-            <LocationSection
-              locationId={locationId}
-              setLocationId={setLocationId}
+  return loggedUser && loggedUser.role === "admin" ? (
+    <Container maxWidth="md" sx={{ mb: 5 }}>
+      <SnackBar
+        open={snackbarOpen}
+        message={snackbarMessage}
+        severity="success"
+        handleClose={handleSnackbarClose}
+      />
+      <Typography
+        variant="h2"
+        component="h2"
+        gutterBottom
+        sx={{
+          color: contrastGreen,
+          my: 4,
+          fontSize: {
+            xs: "1.5rem",
+            md: "2rem",
+          },
+          textAlign: { xs: "center", sm: "left" },
+        }}
+      >
+        {eventId ? "Editar evento" : "Crear un evento nuevo"}
+      </Typography>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Stack spacing={5}>
+          <Stack spacing={3} px={3}>
+            <Typography
+              variant="h1"
+              gutterBottom
+              sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
+            >
+              Datos principales
+            </Typography>
+            <TextFieldElement
+              name={"name"}
+              label={"Nombre del evento"}
+              control={control}
+              required
             />
-            <DatesSection dates={dates} setDates={setDates} />
-            <SectorsSection sectors={sectors} setSectors={setSectors} />
-            <Button
-              size="large"
-              type="submit"
-              disabled={loading}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+            <TextFieldElement
+              name={"artist"}
+              label={"Artista"}
+              control={control}
+              required
+            />
+            <TextFieldElement
+              name={"image"}
+              label={"Imagen"}
+              control={control}
+              required
+            />
+            <TextareaAutosizeElement
+              name={"description"}
+              label={"Descripción"}
+              control={control}
+              required
+            />
+          </Stack>
+          <DatesSection dates={dates} setDates={setDates} />
+          <LocationSection
+            locationId={locationId}
+            setLocationId={setLocationId}
+            sectors={sectors}
+            setSectors={setSectors}
+          />
+          <Button
+            size="large"
+            type="submit"
+            disabled={loading}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: contrastGreen,
+              color: "whitesmoke",
+              alignSelf: { xs: "center", sm: "flex-end" },
+              "&.Mui-disabled": {
                 backgroundColor: contrastGreen,
                 color: "whitesmoke",
-                alignSelf: { xs: "center", sm: "flex-end" },
-                "&.Mui-disabled": {
-                  backgroundColor: contrastGreen,
-                  color: "whitesmoke",
-                },
-                width: "120px",
-              }}
-            >
-              {loading ? (
-                <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
-              ) : (
-                <Typography variant="h2">
-                  {eventId ? "Confirmar" : "Crear"}
-                </Typography>
-              )}
-            </Button>
-          </Stack>
-        </form>
-      </Container>
-      : <NotFound />
+              },
+              width: "120px",
+            }}
+          >
+            {loading ? (
+              <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+            ) : (
+              <Typography variant="h2">
+                {eventId ? "Confirmar" : "Crear"}
+              </Typography>
+            )}
+          </Button>
+        </Stack>
+      </form>
+    </Container>
+  ) : (
+    <NotFound />
   );
 }

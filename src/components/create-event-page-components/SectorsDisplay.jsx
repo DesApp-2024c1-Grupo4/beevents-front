@@ -2,6 +2,7 @@ import { DeleteOutlineOutlined } from "@mui/icons-material";
 import { Button, Stack, Typography } from "@mui/material";
 
 export default function SectorsDisplay({ sectors, setSectors }) {
+  console.log(sectors);
   const deleteSector = (sector) => {
     setSectors((current) =>
       current.filter((storedSector) => storedSector !== sector)
@@ -18,7 +19,9 @@ export default function SectorsDisplay({ sectors, setSectors }) {
           spacing={1}
         >
           <Typography sx={{ alignSelf: "center" }}>
-            {`${sector.name}, capacidad: ${sector.rowsNumber * sector.seatsNumber}`}
+            {`${sector.name}, capacidad: ${
+              sector.rowsNumber * sector.seatsNumber
+            }`}
           </Typography>
           <Button onClick={() => deleteSector(sector)}>
             <DeleteOutlineOutlined />

@@ -37,7 +37,7 @@ export function HomePage() {
   }, []);
 
   const orderEventsByDate = (events) => {
-    const orderEvents = events.sort((a, b) => {
+    const orderEvents = events?.sort((a, b) => {
       const dateA = new Date(a.dates[0].date_time);
       const dateB = new Date(b.dates[0].date_time);
       return dateA - dateB;
@@ -46,7 +46,7 @@ export function HomePage() {
   };
 
   const countReservedTickets = (events) => {
-    const countedEvents = events.map((event) => {
+    const countedEvents = events?.map((event) => {
       let reservedTicketsCount = 0;
       event.dates.forEach((date) => {
         date.sectors.forEach((sector) => {
