@@ -74,7 +74,7 @@ export default function SectorsSection({
                           color: "white",
                           fontSize: "14px",
                           borderRadius: "4px",
-                          p: 1,
+                          p: 2,
                         },
                       },
                       arrow: {
