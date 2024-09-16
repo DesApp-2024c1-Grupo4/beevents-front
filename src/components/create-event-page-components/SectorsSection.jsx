@@ -64,31 +64,33 @@ export default function SectorsSection({
               <MenuItem key={index} value={config.name}>
                 <Stack direction="row" alignItems="center">
                   <Typography>{config.name}</Typography>
-                  <Tooltip
-                    title={config.description}
-                    placement="bottom"
-                    componentsProps={{
-                      tooltip: {
-                        sx: {
-                          bgcolor: "#000000",
-                          color: "white",
-                          fontSize: "14px",
-                          borderRadius: "4px",
-                          p: 2,
+                  {config.description && (
+                    <Tooltip
+                      title={config.description}
+                      placement="bottom"
+                      componentsProps={{
+                        tooltip: {
+                          sx: {
+                            bgcolor: "#000000",
+                            color: "white",
+                            fontSize: "14px",
+                            borderRadius: "4px",
+                            p: 2,
+                          },
                         },
-                      },
-                      arrow: {
-                        sx: {
-                          color: "#000000",
+                        arrow: {
+                          sx: {
+                            color: "#000000",
+                          },
                         },
-                      },
-                    }}
-                    arrow
-                  >
-                    <IconButton size="small">
-                      <InfoOutlined fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
+                      }}
+                      arrow
+                    >
+                      <IconButton size="small">
+                        <InfoOutlined fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </Stack>
               </MenuItem>
             ))}
