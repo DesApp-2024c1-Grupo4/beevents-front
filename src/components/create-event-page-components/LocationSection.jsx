@@ -173,10 +173,11 @@ export default function LocationSection({
               px: 2,
               display: "block",
               alignSelf: "center",
+              width: "160px",
             }}
           >
             <Stack spacing={1} direction="row" justifyContent="center">
-              <Typography variant="info">Agregar nuevo</Typography>
+              <Typography variant="info">Agregar predio</Typography>
               <AddCircleOutlineOutlined />
             </Stack>
           </Button>

@@ -52,19 +52,39 @@ export default function SectorsSection({
       {!eventId && configurationsTemplates?.length > 0 && (
         <FormControl fullWidth>
           <InputLabel id="config-label">
-            Configuraciones predeterminadas de sectores
+            Configuraciones predeterminadas
           </InputLabel>
           <Select
             labelId="config-label"
             value={selectedConfiguration}
             onChange={(e) => setSelectedConfiguration(e.target.value)}
-            label="Configuraciones predeterminadas de sectores"
+            label="Configuraciones predeterminadas"
           >
             {configurationsTemplates?.map((config, index) => (
               <MenuItem key={index} value={config.name}>
                 <Stack direction="row" alignItems="center">
                   <Typography>{config.name}</Typography>
-                  <Tooltip title={config.description} placement="right">
+                  <Tooltip
+                    title={config.description}
+                    placement="bottom"
+                    componentsProps={{
+                      tooltip: {
+                        sx: {
+                          bgcolor: "#000000",
+                          color: "white",
+                          fontSize: "14px",
+                          borderRadius: "4px",
+                          p: 1,
+                        },
+                      },
+                      arrow: {
+                        sx: {
+                          color: "#000000",
+                        },
+                      },
+                    }}
+                    arrow
+                  >
                     <IconButton size="small">
                       <InfoOutlined fontSize="small" />
                     </IconButton>
@@ -85,10 +105,11 @@ export default function SectorsSection({
             px: 2,
             display: "block",
             alignSelf: "center",
+            width: "160px",
           }}
         >
           <Stack spacing={1} direction="row" justifyContent="center">
-            <Typography variant="info">Agregar nuevo</Typography>
+            <Typography variant="info">Agregar sector</Typography>
             <AddCircleOutlineOutlined />
           </Stack>
         </Button>

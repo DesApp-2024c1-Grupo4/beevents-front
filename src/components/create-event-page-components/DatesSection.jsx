@@ -1,7 +1,7 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { useState } from "react";
-import DatesDisplay from "./DatesDisplay"
-import ResponsiveDateTimePicker from "./ResponsiveDateTimePicker"
+import DatesDisplay from "./DatesDisplay";
+import ResponsiveDateTimePicker from "./ResponsiveDateTimePicker";
 import { AddCircleOutlineOutlined } from "@mui/icons-material";
 
 export default function DatesSection({ dates, setDates }) {
@@ -26,10 +26,11 @@ export default function DatesSection({ dates, setDates }) {
             px: 2,
             display: "block",
             alignSelf: "center",
+            width: "160px",
           }}
         >
           <Stack spacing={1} direction="row" justifyContent="center">
-            <Typography variant="info">Agregar nueva</Typography>
+            <Typography variant="info">Agregar fecha</Typography>
             <AddCircleOutlineOutlined />
           </Stack>
         </Button>
