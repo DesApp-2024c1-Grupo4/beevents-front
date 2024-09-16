@@ -27,6 +27,7 @@ export default function DatesSection({ dates, setDates }) {
             display: "block",
             alignSelf: "center",
             width: "160px",
+            whiteSpace: "nowrap",
           }}
         >
           <Stack spacing={1} direction="row" justifyContent="center">
