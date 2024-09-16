@@ -24,7 +24,7 @@ export const useIsOverflow = (ref, callback) => {
     };
 
     if (current) {
-      if ('ResizeObserver' in window) {
+      if ("ResizeObserver" in window) {
         new ResizeObserver(trigger).observe(current);
       }
       trigger();
@@ -35,30 +35,32 @@ export const useIsOverflow = (ref, callback) => {
 };
 
 export function HelpTips({ isMobile }) {
-  return <Stack
-    sx={{
-      position: "absolute",
-      top: "3px",
-      right: "20px",
-      backgroundColor: "#145362",
-      padding: "5px",
-      borderRadius: "5px",
-      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.8)",
-      pointerEvents: "none",
-      whiteSpace: "nowrap"
-    }}
-    alignItems="end"
-  >
-    <Typography sx={{ fontSize: isMobile ? "10px" : "12px", }} >
-      Toca una vez para reservar el asiento
-    </Typography>
-    <Typography sx={{ fontSize: isMobile ? "10px" : "12px", }} >
-      Toca dos veces para eliminar el asiento
-    </Typography>
-    <Typography sx={{ fontSize: isMobile ? "10px" : "12px", }} >
-      Toca otra vez para resetear el asiento
-    </Typography>
-  </Stack>
+  return (
+    <Stack
+      sx={{
+        position: "absolute",
+        top: "3px",
+        right: "20px",
+        backgroundColor: "#145362",
+        padding: "5px",
+        borderRadius: "5px",
+        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.8)",
+        pointerEvents: "none",
+        whiteSpace: "nowrap",
+      }}
+      alignItems="end"
+    >
+      <Typography sx={{ fontSize: isMobile ? "10px" : "12px" }}>
+        Toca una vez para reservar el asiento
+      </Typography>
+      <Typography sx={{ fontSize: isMobile ? "10px" : "12px" }}>
+        Toca dos veces para eliminar el asiento
+      </Typography>
+      <Typography sx={{ fontSize: isMobile ? "10px" : "12px" }}>
+        Toca otra vez para resetear el asiento
+      </Typography>
+    </Stack>
+  );
 }
 
 const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
@@ -66,9 +68,11 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const ref = useRef();
   const isOverflow = useIsOverflow(ref);
-  const [askedForHelp, setAskedForHelp] = useState(false)
+  const [askedForHelp, setAskedForHelp] = useState(false);
 
-  const handleHelp = () => { setAskedForHelp(!askedForHelp) }
+  const handleHelp = () => {
+    setAskedForHelp(!askedForHelp);
+  };
 
   return (
     <Box
@@ -95,7 +99,7 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
         <Typography
           sx={{
             color: "#01BB89",
-            fontWeight: 600
+            fontWeight: 600,
           }}
         >
           Distribución del sector
@@ -107,8 +111,9 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
           sx={{
             position: "absolute",
             top: "-14px",
-            right: "2px"
-          }}>
+            right: "2px",
+          }}
+        >
           <HelpCenter fontSize="small" />
         </IconButton>
         {askedForHelp && <HelpTips isMobile={isMobile} />}
@@ -122,7 +127,7 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
           overflowY: "auto",
           maxWidth: "70vw",
           maxHeight: "50vh",
-          py: "1rem"
+          py: "1rem",
         }}
       >
         {rows.map((rowBlock) => (
@@ -130,7 +135,10 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
             item
             xs={12}
             key={rowBlock[0]._id}
-            sx={{ minWidth: "max-content", overflow: "visible" }}
+            sx={{
+              minWidth: "max-content",
+              overflow: "visible",
+            }}
           >
             <Box
               display="flex"
@@ -139,8 +147,8 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
               sx={{
                 marginLeft: "1rem",
                 marginRight: "1rem",
-                paddingLeft: "1rem",
-                paddingRight: "1rem",
+                paddingLeft: "2rem",
+                paddingRight: "2rem",
               }}
             >
               {rowBlock &&
@@ -161,20 +169,19 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
           </Grid>
         ))}
       </Grid>
-      {isOverflow && <Stack justifyContent="center" alignItems="center" pb={2}>
-        <ArrowDropUp />
-        <Typography sx={{ fontSize: isMobile ? "10px" : "12px", }} >
-          Usa la barra para ver más
-        </Typography>
-      </Stack>}
-      <Stack
-        direction="row"
-        spacing={1.5}
-      >
+      {isOverflow && (
+        <Stack justifyContent="center" alignItems="center" pb={2}>
+          <ArrowDropUp />
+          <Typography sx={{ fontSize: isMobile ? "10px" : "12px" }}>
+            Usa la barra para ver más
+          </Typography>
+        </Stack>
+      )}
+      <Stack direction="row" spacing={1.5}>
         <Typography
           display="flex"
           alignItems="center"
-          sx={{ fontSize: isMobile ? "10px" : "12px", }}
+          sx={{ fontSize: isMobile ? "10px" : "12px" }}
         >
           <img src={availableIcon} style={customStyles.seat} />
           Existente
@@ -182,7 +189,7 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
         <Typography
           display="flex"
           alignItems="center"
-          sx={{ fontSize: isMobile ? "10px" : "12px", }}
+          sx={{ fontSize: isMobile ? "10px" : "12px" }}
         >
           <img src={eliminatedIcon} style={customStyles.seat} />
           Eliminado
@@ -190,7 +197,7 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
         <Typography
           display="flex"
           alignItems="center"
-          sx={{ fontSize: isMobile ? "10px" : "12px", }}
+          sx={{ fontSize: isMobile ? "10px" : "12px" }}
         >
           <img src={preReservedIcon} style={customStyles.seat} />
           Pre-reservado

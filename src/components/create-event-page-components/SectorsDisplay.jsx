@@ -2,7 +2,6 @@ import { DeleteOutlineOutlined } from "@mui/icons-material";
 import { Button, Stack, Typography } from "@mui/material";
 
 export default function SectorsDisplay({ sectors, setSectors }) {
-  console.log(sectors);
   const deleteSector = (sector) => {
     setSectors((current) =>
       current.filter((storedSector) => storedSector !== sector)

@@ -6,11 +6,13 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import SectorsDisplay from "./SectorsDisplay";
 import SectorForm from "./SectorForm";
-import { AddCircleOutlineOutlined } from "@mui/icons-material";
+import { AddCircleOutlineOutlined, InfoOutlined } from "@mui/icons-material";
 import { customMuiTheme } from "../../config/customMuiTheme";
 
 export default function SectorsSection({
@@ -21,6 +23,10 @@ export default function SectorsSection({
 }) {
   const [showForm, setShowForm] = useState(false);
   const [selectedConfiguration, setSelectedConfiguration] = useState("");
+  const [
+    selectedConfigurationDescription,
+    setSelectedConfigurationDescription,
+  ] = useState("");
   const { contrastGreen } = customMuiTheme.colors;
 
   useEffect(() => {
@@ -29,6 +35,7 @@ export default function SectorsSection({
         (config) => config.name === selectedConfiguration
       );
       let configurations = config?.sectors ? config.sectors : [];
+      setSelectedConfigurationDescription(config.description);
       setSectors(configurations);
     }
   }, [selectedConfiguration, configurationsTemplates]);
@@ -44,17 +51,25 @@ export default function SectorsSection({
       </Typography>
       {!eventId && configurationsTemplates?.length > 0 && (
         <FormControl fullWidth>
-          <InputLabel shrink>
+          <InputLabel id="config-label">
             Configuraciones predeterminadas de sectores
           </InputLabel>
           <Select
+            labelId="config-label"
             value={selectedConfiguration}
             onChange={(e) => setSelectedConfiguration(e.target.value)}
             label="Configuraciones predeterminadas de sectores"
           >
             {configurationsTemplates?.map((config, index) => (
               <MenuItem key={index} value={config.name}>
-                {config.name}
+                <Stack direction="row" alignItems="center">
+                  <Typography>{config.name}</Typography>
+                  <Tooltip title={config.description} placement="right">
+                    <IconButton size="small">
+                      <InfoOutlined fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
               </MenuItem>
             ))}
           </Select>

@@ -210,6 +210,7 @@ export default function LocationSection({
                 color: contrastGreen,
                 alignSelf: "center",
                 fontSize: "14px",
+                textAlign: "center",
               }}
               onClick={handleOpenModal}
             >
@@ -230,7 +231,7 @@ export default function LocationSection({
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: "90%",
+            width: "95vw",
             maxWidth: "300px",
             boxShadow: 24,
             borderRadius: "5px",
