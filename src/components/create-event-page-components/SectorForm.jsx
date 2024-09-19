@@ -12,10 +12,12 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
   const [seats, setSeats] = useState(1);
   const [capacity, setCapacity] = useState("1");
   const [name, setName] = useState("Nuevo sector");
-  const [open, setOpen] = useState(false);
+  const [openNumbered, setOpenNumbered] = useState(false);
+  const [openNonNumbered, setOpenNonNumbered] = useState(false);
   const [seatMap, setSeatMap] = useState({ name: name, rows: [] });
   const [reservedSeats, setReservedSeats] = useState([]);
   const [eliminatedSeats, setEliminatedSeats] = useState([]);
+  const [reservedPlaces, setReservedPlaces] = useState(1);
 
   useEffect(() => {
     const newRows = [];
@@ -98,12 +100,18 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
   };
 
   const handleOpen = () => {
-    rows < 1 || seats < 1
-      ? alert("El sector debe tener al menos un asiento")
-      : setOpen(true);
+    if (isNumbered) {
+      rows < 1 || seats < 1
+        ? alert("El sector debe tener al menos un asiento")
+        : setOpenNumbered(true);
+    } else {
+      capacity < 1
+        ? alert("El sector debe tener al menos un lugar para poder reservar")
+        : setOpenNonNumbered(true);
+    }
   }
 
-  const handleClose = () => {
+  const handleCloseNumbered = () => {
     const reserved = []
     const eliminated = []
     for (var i = 0; i < rows; i++) {
@@ -119,7 +127,16 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
     setReservedSeats(reserved);
     setEliminatedSeats(eliminated);
     //console.log(seatMap.rows)
-    setOpen(false)
+    setOpenNumbered(false)
+  }
+
+  const handleNonNumberedReservationChange = (e) => {
+    setReservedPlaces(e.target.value);
+  };
+
+  const handleCloseNonNumbered = () => {
+    setReservedSeats([[reservedPlaces, 0]]);
+    setOpenNonNumbered(false);
   }
 
   const handleSeatClick = (clickedSeat) => {
@@ -152,6 +169,28 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
           error={nameError}
           required
         />
+        <Stack
+          direction={{xs:"column-reverse", sm: "row"}}
+          alignItems="center"
+          justifyContent="space-between"
+          spacing={3}
+        >
+          <Button
+            size="medium"
+            onClick={handleOpen}
+            variant="contained"
+          >
+            {isNumbered ? 'Personalizar/Reservar ' : 'Reservar'}
+          </Button>
+          <FormGroup>
+            <FormControlLabel
+              control={<Switch sx={{ ml: 0.5 }} size="small" onChange={() => setIsNumbered(!isNumbered)} />}
+              label={`${isNumbered ? "Numerado" : "No numerado"}`}
+              labelPlacement="start"
+              sx={{ mr: 0.01 }}
+            />
+          </FormGroup>
+        </Stack>
         {!isNumbered && (
           <TextField
             label="Capacidad"
@@ -162,16 +201,6 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
             required
           />
         )}
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch size="small" onChange={() => setIsNumbered(!isNumbered)} />
-            }
-            label={`${isNumbered ? "Numerado" : "No numerado"}`}
-            labelPlacement="end"
-            sx={{ alignSelf: "start", ml: 0.01 }}
-          />
-        </FormGroup>
         {isNumbered && (
           <Stack
             direction={{ xs: "column", sm: "row" }}
@@ -245,16 +274,9 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
                 </Stack>
               </Stack>
             </Stack>
-            <Stack alignItems="center" justifyContent="end" spacing={3}>
-              <Stack alignItems="center">
-                <Typography>Capacidad: </Typography>
-                <Typography variant="h1">{rows * seats}</Typography>
-              </Stack>
-              <Button
-                onClick={handleOpen}
-              >
-                Personalizar distribución del sector
-              </Button>
+            <Stack alignItems="center" justifyContent="center" p={{sm: 4}}>
+              <Typography>Capacidad: </Typography>
+              <Typography variant="h1">{rows * seats}</Typography>
             </Stack>
           </Stack>
         )}
@@ -298,8 +320,8 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
         </Stack>
       </Stack>
       <Modal
-        open={open}
-        onClose={handleClose}
+        open={openNumbered}
+        onClose={handleCloseNumbered}
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
@@ -333,12 +355,78 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
               onSeatClick={handleSeatClick}
             />
           )}
-          <Button onClick={handleClose} variant="contained" sx={{ mt: 2 }}>
+          <Button onClick={handleCloseNumbered} variant="contained" sx={{ mt: 2 }}>
             Guardar
           </Button>
         </Box>
       </Modal>
+      <Modal
+        open={openNonNumbered}
+        onClose={handleCloseNonNumbered}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "auto",
+            maxWidth: "90vw",
+            maxHeight: "95vh",
+            flexWrap: "wrap",
+            bgcolor: "#142539",
+            color: "lightgray",
+            border: "1px solid lightgray",
+            borderRadius: "5px",
+            boxShadow: 24,
+            p: 3,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Stack
+            spacing={2}
+            sx={{
+              color: "#fff",
+              fontSize: "18px",
+              letterSpacing: "2px",
+              marginBottom: "1rem",
+              paddingRight: "1rem",
+              paddingLeft: "1rem",
+              paddingBottom: "0.5rem",
+              borderBottom: "1px solid #01BB89",
+              textAlign: "center",
+            }}
+          >
+            <Typography sx={{ color: "#01BB89", fontWeight: 600 }}>
+              Reservar lugares
+            </Typography>
+            <Typography>{name}</Typography>
+          </Stack>
+          <Stack direction="row" spacing={3} p={2}>
+            <Typography id="cantidad" alignSelf="center">Cantidad</Typography>
+            <Input
+              value={reservedPlaces}
+              onChange={handleNonNumberedReservationChange}
+              size="small"
+              inputProps={{
+                step: 1,
+                min: 1,
+                max: capacity,
+                type: "number",
+                "aria-labelledby": "cantidad",
+              }}
+              sx={{ width: "55px", alignSelf: "center" }}
+            />
+          </Stack>
+          <Stack direction="row" mt={2} spacing={2}>
+            <Button onClick={() => setOpenNonNumbered(false)}>Cancelar</Button>
+            <Button onClick={handleCloseNonNumbered}>Aceptar</Button>
+          </Stack>
+        </Box>
+      </Modal>
     </>
-
   );
 }
