@@ -1,4 +1,4 @@
-import { CheckCircleOutlineOutlined, Close, Delete } from "@mui/icons-material";
+import { ArrowBackOutlined, CheckCircleOutlineOutlined, Close, Delete } from "@mui/icons-material";
 import { Box, Button, FormControlLabel, FormGroup, IconButton, Input, Modal, Slider, Stack, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import validator from "validator";
@@ -236,7 +236,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
                       color: "white",
                       fontSize: "14px",
                       borderRadius: "4px",
-                      p: 2,
+                      p: 1,
                     },
                   },
                   arrow: {
@@ -247,8 +247,8 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
                 }}
                 arrow
               >
-                <IconButton onClick={cancelReservations}>
-                  <Close />
+                <IconButton size="small" onClick={cancelReservations}>
+                  <Close fontSize="small"/>
                 </IconButton>
               </Tooltip>
               <Typography whiteSpace="nowrap" color={contrastGreen}>{`Reservado: ${isNumbered ? reservedSeats.length : reservedSeats[0][0]}`}</Typography>
@@ -266,7 +266,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
                       color: "white",
                       fontSize: "14px",
                       borderRadius: "4px",
-                      p: 2,
+                      p: 1,
                     },
                   },
                   arrow: {
@@ -277,8 +277,8 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
                 }}
                 arrow
               >
-                <IconButton onClick={cancelDistribution}>
-                  <Close />
+                <IconButton size="small" onClick={cancelDistribution}>
+                  <Close fontSize="small"/>
                 </IconButton>
               </Tooltip>
               <Typography color={contrastGreen}>¡Personalizado!</Typography>
@@ -395,12 +395,17 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
             onClick={() => setShowForm(!showForm)}
             sx={{
               width: 115,
-              display: "block"
+              display: "block",
             }}
           >
-            <Stack spacing={1} direction="row" justifyContent="center">
-              <Typography variant="info">Cerrar</Typography>
-              <Close />
+            <Stack
+              spacing={1}
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <ArrowBackOutlined />
+              <Typography variant="info">Cancelar</Typography>
             </Stack>
           </Button>
           <Button

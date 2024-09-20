@@ -1,4 +1,4 @@
-import { CheckCircleOutlineOutlined, Close } from "@mui/icons-material";
+import { ArrowBackOutlined, CheckCircleOutlineOutlined } from "@mui/icons-material";
 import { Button, Stack, Typography } from "@mui/material";
 import { DateTimePicker, LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
 import { useState } from "react";
@@ -26,6 +26,7 @@ export default function ResponsiveDateTimePicker({
   const addDate = (stringDate) => {
     if (isValidDate(stringDate)) {
       setDates([...dates, stringDate]);
+      setShowPicker(!showPicker);
     } else {
       alert("Introduce una fecha válida");
     }
@@ -67,12 +68,17 @@ export default function ResponsiveDateTimePicker({
           onClick={() => setShowPicker(!showPicker)}
           sx={{
             width: 115,
-            display: "block"
+            display: "block",
           }}
         >
-          <Stack spacing={1} direction="row" justifyContent="center">
-            <Typography variant="info">Cerrar</Typography>
-            <Close />
+          <Stack
+            spacing={1}
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <ArrowBackOutlined />
+            <Typography variant="info">Cancelar</Typography>
           </Stack>
         </Button>
         <Button

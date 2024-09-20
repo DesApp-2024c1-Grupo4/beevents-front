@@ -1,5 +1,5 @@
-import { DeleteOutlineOutlined } from "@mui/icons-material";
-import { Button, Stack, Typography } from "@mui/material";
+import { Delete, DeleteOutlineOutlined } from "@mui/icons-material";
+import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 
 export default function DatesDisplay({ dates, setDates }) {
   const getFormatedDate = (date) => {
@@ -25,15 +25,38 @@ return (
         key={date}
         direction="row"
         justifyContent="space-between"
+        alignItems="center"
         spacing={1}
       >
         <Stack>
           <Typography>{`Fecha ${dates.indexOf(date) + 1}:`}</Typography>
           <Typography sx={{ textAlign: "center" }}>{`${getFormatedDate(date)}`}</Typography>
         </Stack>
-        <Button onClick={() => deleteDate(date)}>
-          <DeleteOutlineOutlined />
-        </Button>
+        <Tooltip
+            title="Eliminar fecha"
+            placement="bottom-end"
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  bgcolor: "#000000",
+                  color: "white",
+                  fontSize: "12px",
+                  borderRadius: "4px",
+                  p: 1,
+                },
+              },
+              arrow: {
+                sx: {
+                  color: "#000000",
+                },
+              },
+            }}
+            arrow
+          >
+            <IconButton onClick={() => deleteDate(date)}>
+              <Delete />
+            </IconButton>
+          </Tooltip>
       </Stack>
     ))}
   </Stack>

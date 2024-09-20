@@ -15,6 +15,7 @@ export default function SectorsDisplay({ sectors, setSectors }) {
           key={sector.name}
           direction="row"
           justifyContent="space-between"
+          alignItems="center"
           spacing={1}
         >
           <Typography sx={{ alignSelf: "center" }}>
@@ -23,15 +24,15 @@ export default function SectorsDisplay({ sectors, setSectors }) {
           </Typography>
           <Tooltip
             title="Eliminar sector"
-            placement="bottom"
+            placement="bottom-end"
             componentsProps={{
               tooltip: {
                 sx: {
                   bgcolor: "#000000",
                   color: "white",
-                  fontSize: "14px",
+                  fontSize: "12px",
                   borderRadius: "4px",
-                  p: 2,
+                  p: 1,
                 },
               },
               arrow: {
