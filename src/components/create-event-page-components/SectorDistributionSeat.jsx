@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import availableIcon from "../../assets/img/available-seat.png";
 import eliminatedIcon from "../../assets/img/eliminated-seat.png";
-import preReservedIcon from "../../assets/img/prereserved-seat.png";
+import reservedIcon from "../../assets/img/notavailable-seat.png";
 
 const getSeatStatus = (seat) => {
   if (seat.available) {
-    return "Existente";
+    return "Disponible";
   } else if (!seat.available && seat.reservedBy === "vacio") {
     return "Eliminado";
   } else {
-    return "Pre-Reservado";
+    return "Reservado";
   }
 };
 
@@ -66,7 +66,7 @@ const SectorDistributionSeat = ({ seat, onSeatClick }) => {
     if (!seat.available && seat.reservedBy == "pre-reserved") {
       backgroundStyle = {
         ...backgroundStyle,
-        backgroundImage: `url(${preReservedIcon})`,
+        backgroundImage: `url(${reservedIcon})`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };

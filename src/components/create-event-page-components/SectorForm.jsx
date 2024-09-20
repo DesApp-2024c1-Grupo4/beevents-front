@@ -19,7 +19,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
   const [eliminatedSeats, setEliminatedSeats] = useState([]);
   const [reservedPlaces, setReservedPlaces] = useState(1);
 
-  useEffect(() => {
+  const resetSeatMap = () => {
     const newRows = [];
     for (var i = 0; i < rows; i++) {
       newRows[i] = [];
@@ -32,6 +32,9 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
       ...prevSeatMap,
       rows: newRows
     }));
+  }
+  useEffect(() => {
+    resetSeatMap();
   }, [rows, seats])
 
   useEffect(() => {
@@ -111,6 +114,11 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
     }
   }
 
+  const handleCancelNumbered = () => {
+    resetSeatMap();
+    setOpenNumbered(false);
+  }
+
   const handleCloseNumbered = () => {
     const reserved = []
     const eliminated = []
@@ -131,8 +139,13 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
   }
 
   const handleNonNumberedReservationChange = (e) => {
-    setReservedPlaces(e.target.value);
+    setReservedPlaces(Number(e.target.value));
   };
+
+  const handleCancelNonNumbered = () =>{
+    setReservedPlaces(1);
+    setOpenNonNumbered(false);
+  }
 
   const handleCloseNonNumbered = () => {
     setReservedSeats([[reservedPlaces, 0]]);
@@ -170,7 +183,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
           required
         />
         <Stack
-          direction={{xs:"column-reverse", sm: "row"}}
+          direction={{ xs: "column-reverse", sm: "row" }}
           alignItems="center"
           justifyContent="space-between"
           spacing={3}
@@ -274,7 +287,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
                 </Stack>
               </Stack>
             </Stack>
-            <Stack alignItems="center" justifyContent="center" p={{sm: 4}}>
+            <Stack alignItems="center" justifyContent="center" p={{ sm: 4 }}>
               <Typography>Capacidad: </Typography>
               <Typography variant="h1">{rows * seats}</Typography>
             </Stack>
@@ -355,9 +368,11 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
               onSeatClick={handleSeatClick}
             />
           )}
-          <Button onClick={handleCloseNumbered} variant="contained" sx={{ mt: 2 }}>
-            Guardar
-          </Button>
+          <Stack direction="row" mt={2} spacing={2}>
+            <Button onClick={handleCancelNumbered}>Cancelar</Button>
+            <Button onClick={handleCloseNumbered} variant="contained">Aceptar</Button>
+          </Stack>
+
         </Box>
       </Modal>
       <Modal
@@ -422,8 +437,8 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
             />
           </Stack>
           <Stack direction="row" mt={2} spacing={2}>
-            <Button onClick={() => setOpenNonNumbered(false)}>Cancelar</Button>
-            <Button onClick={handleCloseNonNumbered}>Aceptar</Button>
+            <Button onClick={handleCancelNonNumbered}>Cancelar</Button>
+            <Button variant="contained" onClick={handleCloseNonNumbered}>Aceptar</Button>
           </Stack>
         </Box>
       </Modal>

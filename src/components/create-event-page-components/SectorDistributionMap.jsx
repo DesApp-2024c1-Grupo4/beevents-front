@@ -6,7 +6,7 @@ import { customStyles } from "../../config/customMuiTheme";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import availableIcon from "../../assets/img/available-seat.png";
 import eliminatedIcon from "../../assets/img/eliminated-seat.png";
-import preReservedIcon from "../../assets/img/prereserved-seat.png";
+import reservedIcon from "../../assets/img/notavailable-seat.png";
 import { IconButton, Stack, Typography } from "@mui/material";
 import SectorDistributionSeat from "./SectorDistributionSeat";
 import { ArrowDropUp, HelpCenter } from "@mui/icons-material";
@@ -184,7 +184,15 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
           sx={{ fontSize: isMobile ? "10px" : "12px" }}
         >
           <img src={availableIcon} style={customStyles.seat} />
-          Existente
+          Disponible
+        </Typography>
+        <Typography
+          display="flex"
+          alignItems="center"
+          sx={{ fontSize: isMobile ? "10px" : "12px" }}
+        >
+          <img src={reservedIcon} style={customStyles.seat} />
+          Reservado
         </Typography>
         <Typography
           display="flex"
@@ -193,14 +201,6 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
         >
           <img src={eliminatedIcon} style={customStyles.seat} />
           Eliminado
-        </Typography>
-        <Typography
-          display="flex"
-          alignItems="center"
-          sx={{ fontSize: isMobile ? "10px" : "12px" }}
-        >
-          <img src={preReservedIcon} style={customStyles.seat} />
-          Pre-reservado
         </Typography>
       </Stack>
     </Box>
