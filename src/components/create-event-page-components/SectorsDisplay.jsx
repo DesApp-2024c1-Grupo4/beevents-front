@@ -1,5 +1,5 @@
-import { DeleteOutlineOutlined } from "@mui/icons-material";
-import { Button, Stack, Typography } from "@mui/material";
+import { Delete } from "@mui/icons-material";
+import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 
 export default function SectorsDisplay({ sectors, setSectors }) {
   const deleteSector = (sector) => {
@@ -18,13 +18,34 @@ export default function SectorsDisplay({ sectors, setSectors }) {
           spacing={1}
         >
           <Typography sx={{ alignSelf: "center" }}>
-            {`${sector.name}, capacidad: ${
-              sector.rowsNumber * sector.seatsNumber
-            }`}
+            {`${sector.name} - capacidad: 
+            ${sector.rowsNumber * sector.seatsNumber - sector.eliminated.length}`}
           </Typography>
-          <Button onClick={() => deleteSector(sector)}>
-            <DeleteOutlineOutlined />
-          </Button>
+          <Tooltip
+            title="Eliminar sector"
+            placement="bottom"
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  bgcolor: "#000000",
+                  color: "white",
+                  fontSize: "14px",
+                  borderRadius: "4px",
+                  p: 2,
+                },
+              },
+              arrow: {
+                sx: {
+                  color: "#000000",
+                },
+              },
+            }}
+            arrow
+          >
+            <IconButton onClick={() => deleteSector(sector)}>
+              <Delete />
+            </IconButton>
+          </Tooltip>
         </Stack>
       ))}
     </Stack>

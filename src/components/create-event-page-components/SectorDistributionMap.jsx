@@ -7,7 +7,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import availableIcon from "../../assets/img/available-seat.png";
 import eliminatedIcon from "../../assets/img/eliminated-seat.png";
 import reservedIcon from "../../assets/img/notavailable-seat.png";
-import { IconButton, Stack, Typography } from "@mui/material";
+import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import SectorDistributionSeat from "./SectorDistributionSeat";
 import { ArrowDropUp, HelpCenter } from "@mui/icons-material";
 
@@ -34,33 +34,18 @@ export const useIsOverflow = (ref, callback) => {
   return isOverflow;
 };
 
-export function HelpTips({ isMobile }) {
-  return (
-    <Stack
-      sx={{
-        position: "absolute",
-        top: "3px",
-        right: "20px",
-        backgroundColor: "#145362",
-        padding: "5px",
-        borderRadius: "5px",
-        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.8)",
-        pointerEvents: "none",
-        whiteSpace: "nowrap",
-      }}
-      alignItems="end"
-    >
-      <Typography sx={{ fontSize: isMobile ? "10px" : "12px" }}>
-        Toca una vez para reservar el asiento
-      </Typography>
-      <Typography sx={{ fontSize: isMobile ? "10px" : "12px" }}>
-        Toca dos veces para eliminar el asiento
-      </Typography>
-      <Typography sx={{ fontSize: isMobile ? "10px" : "12px" }}>
-        Toca otra vez para resetear el asiento
-      </Typography>
-    </Stack>
-  );
+export function HelpTips() {
+  return <>
+    <Typography sx={{ fontSize: { xs: "10px", sm: "12px" } }}>
+      Toca una vez para reservar el asiento
+    </Typography>
+    <Typography sx={{ fontSize: { xs: "10px", sm: "12px" } }}>
+      Toca dos veces para eliminar el asiento
+    </Typography>
+    <Typography sx={{ fontSize: { xs: "10px", sm: "12px" } }}>
+      Toca otra vez para resetear el asiento
+    </Typography>
+  </>
 }
 
 const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
@@ -68,11 +53,6 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const ref = useRef();
   const isOverflow = useIsOverflow(ref);
-  const [askedForHelp, setAskedForHelp] = useState(false);
-
-  const handleHelp = () => {
-    setAskedForHelp(!askedForHelp);
-  };
 
   return (
     <Box
@@ -105,18 +85,37 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
           Distribución del sector
         </Typography>
         <Typography>{sectorName}</Typography>
-        <IconButton
-          size="small"
-          onClick={handleHelp}
-          sx={{
-            position: "absolute",
-            top: "-14px",
-            right: "2px",
+        <Tooltip
+          title={<HelpTips />}
+          placement="right-start"
+          componentsProps={{
+            tooltip: {
+              sx: {
+                bgcolor: "#000000",
+                color: "white",
+                fontSize: { xs: "10px", sm: "12px" },
+                borderRadius: "4px",
+                p: 1,
+              },
+            },
+            arrow: {
+              sx: {
+                color: "#000000",
+              },
+            },
           }}
+          arrow
         >
-          <HelpCenter fontSize="small" />
-        </IconButton>
-        {askedForHelp && <HelpTips isMobile={isMobile} />}
+          <HelpCenter
+            fontSize="small"
+            sx={{
+              position: "absolute",
+              top: "-11px",
+              left: "5px",
+              cursor: "pointer"
+            }}
+          />
+        </Tooltip>
       </Stack>
       <Grid
         alignItems="center"

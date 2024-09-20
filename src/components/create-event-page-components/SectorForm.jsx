@@ -457,9 +457,42 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
               onSeatClick={handleSeatClick}
             />
           )}
+          <Tooltip
+            title="Cerrar"
+            placement="left-end"
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  bgcolor: "#000000",
+                  color: "white",
+                  fontSize: { xs: "10px", sm: "12px" },
+                  borderRadius: "4px",
+                  p: 1
+                },
+              },
+              arrow: {
+                sx: {
+                  color: "#000000",
+                },
+              },
+            }}
+            arrow
+          >
+            <IconButton
+              size="small"
+              onClick={() => setOpenNumbered(false)}
+              sx={{
+                position: "absolute",
+                top: "-1px",
+                right: "-2px"
+              }}>
+              <Close fontSize="small" />
+            </IconButton>
+          </Tooltip>
           <Stack direction="row" mt={2} spacing={2}>
-            <Button onClick={() => resetSeatMap()}>Resetear</Button>
-            <Button onClick={handleCloseNumbered} variant="contained">Aceptar</Button>
+            <Button onClick={() => setOpenNumbered(false)} size="small">Cancelar</Button>
+            <Button onClick={() => resetSeatMap()} variant="outlined" size="small">Resetear</Button>
+            <Button onClick={handleCloseNumbered} variant="contained" size="small">Aceptar</Button>
           </Stack>
 
         </Box>
@@ -525,9 +558,41 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
               sx={{ width: "55px", alignSelf: "center" }}
             />
           </Stack>
+          <Tooltip
+            title="Cerrar"
+            placement="left-start"
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  bgcolor: "#000000",
+                  color: "white",
+                  fontSize: { xs: "10px", sm: "12px" },
+                  borderRadius: "4px",
+                  p: 1
+                },
+              },
+              arrow: {
+                sx: {
+                  color: "#000000",
+                },
+              },
+            }}
+            arrow
+          >
+            <IconButton
+              size="small"
+              onClick={() => setOpenNonNumbered(false)}
+              sx={{
+                position: "absolute",
+                top: "-1px",
+                right: "-2px"
+              }}>
+              <Close fontSize="small" />
+            </IconButton>
+          </Tooltip>
           <Stack direction="row" mt={2} spacing={2}>
-            <Button onClick={() => setOpenNonNumbered(false)}>Cancelar</Button>
-            <Button variant="contained" onClick={handleCloseNonNumbered}>Aceptar</Button>
+            <Button onClick={() => setOpenNonNumbered(false)} size="small">Cancelar</Button>
+            <Button variant="contained" onClick={handleCloseNonNumbered} size="small">Aceptar</Button>
           </Stack>
         </Box>
       </Modal>
