@@ -1,4 +1,4 @@
-import { ArrowBackOutlined, CheckCircleOutlineOutlined, Close, Delete } from "@mui/icons-material";
+import { ArrowBackOutlined, CheckCircleOutlineOutlined, Close } from "@mui/icons-material";
 import { Box, Button, FormControlLabel, FormGroup, IconButton, Input, Modal, Slider, Stack, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import validator from "validator";

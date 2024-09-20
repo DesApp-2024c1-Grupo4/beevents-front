@@ -1,5 +1,5 @@
-import { Delete, DeleteOutlineOutlined } from "@mui/icons-material";
-import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Delete } from "@mui/icons-material";
+import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 
 export default function DatesDisplay({ dates, setDates }) {
   const getFormatedDate = (date) => {

@@ -6,6 +6,7 @@ import {
   Typography,
   Modal,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import LocationForm from "./LocationForm";
 import { customMuiTheme } from "../../config/customMuiTheme";
@@ -155,8 +156,13 @@ export default function LocationSection({
         <Stack spacing={3}>
           <Autocomplete
             disablePortal
-            options={getLocationOptions()}
+            options={fetchedLocations ? getLocationOptions() : []}
             onChange={handleLocationChange}
+            noOptionsText={
+              <Stack width="100%">
+                <CircularProgress size="2rem" sx={{ alignSelf: "center", justifySelf: "center" }} />
+              </Stack>
+            }
             isOptionEqualToValue={(option, value) => option.id === value.id}
             renderInput={(params) => (
               <TextField {...params} label="Seleccionar" />
