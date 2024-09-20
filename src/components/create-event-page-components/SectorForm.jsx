@@ -1,5 +1,5 @@
-import { CheckCircleOutlineOutlined, Close } from "@mui/icons-material";
-import { Box, Button, FormControlLabel, FormGroup, Input, Modal, Slider, Stack, Switch, TextField, Typography } from "@mui/material";
+import { CheckCircleOutlineOutlined, Close, Delete } from "@mui/icons-material";
+import { Box, Button, FormControlLabel, FormGroup, IconButton, Input, Modal, Slider, Stack, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import validator from "validator";
 import { customMuiTheme } from "../../config/customMuiTheme";
@@ -17,7 +17,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
   const [seatMap, setSeatMap] = useState({ name: name, rows: [] });
   const [reservedSeats, setReservedSeats] = useState([]);
   const [eliminatedSeats, setEliminatedSeats] = useState([]);
-  const [reservedPlaces, setReservedPlaces] = useState(1);
+  const [reservedPlaces, setReservedPlaces] = useState(0);
 
   const resetSeatMap = () => {
     const newRows = [];
@@ -33,8 +33,29 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
       rows: newRows
     }));
   }
-  useEffect(() => {
+
+  const updateSeatMapAfterCancel = (reservedOrEliminatedArray) => {
+    const newRows = seatMap.rows.slice();
+    for (var i = 0; i < reservedOrEliminatedArray.length; i++) {
+      const seat = newRows[reservedOrEliminatedArray[i][0]][reservedOrEliminatedArray[i][1]]
+      seat.available = true;
+      seat.reservedBy = "vacio";
+    }
+    setSeatMap(prevSeatMap => ({
+      ...prevSeatMap,
+      rows: newRows
+    }));
+  }
+
+  const resetAll = () => {
     resetSeatMap();
+    setReservedSeats([]);
+    setEliminatedSeats([]);
+    setReservedPlaces(0);
+  }
+
+  useEffect(() => {
+    resetAll();
   }, [rows, seats])
 
   useEffect(() => {
@@ -114,11 +135,6 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
     }
   }
 
-  const handleCancelNumbered = () => {
-    resetSeatMap();
-    setOpenNumbered(false);
-  }
-
   const handleCloseNumbered = () => {
     const reserved = []
     const eliminated = []
@@ -134,7 +150,6 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
     }
     setReservedSeats(reserved);
     setEliminatedSeats(eliminated);
-    //console.log(seatMap.rows)
     setOpenNumbered(false)
   }
 
@@ -142,13 +157,10 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
     setReservedPlaces(Number(e.target.value));
   };
 
-  const handleCancelNonNumbered = () =>{
-    setReservedPlaces(1);
-    setOpenNonNumbered(false);
-  }
-
   const handleCloseNonNumbered = () => {
-    setReservedSeats([[reservedPlaces, 0]]);
+    reservedPlaces > 0
+      ? setReservedSeats([[reservedPlaces, 0]])
+      : setReservedSeats([])
     setOpenNonNumbered(false);
   }
 
@@ -170,6 +182,23 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
       ...prevSeatMap,
       rows: rowsCopy
     }))
+  }
+
+  const handleSwitchChange = () => {
+    resetAll();
+    setIsNumbered(!isNumbered);
+  }
+
+  const cancelReservations = () => {
+    if (isNumbered) {
+      updateSeatMapAfterCancel(reservedSeats);
+    }
+    setReservedSeats([]);
+  }
+
+  const cancelDistribution = () => {
+    updateSeatMapAfterCancel(eliminatedSeats);
+    setEliminatedSeats([]);
   }
 
   return (
@@ -195,9 +224,69 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
           >
             {isNumbered ? 'Personalizar/Reservar ' : 'Reservar'}
           </Button>
+          {reservedSeats.length > 0 &&
+            <Stack direction="row" alignItems="center">
+              <Tooltip
+                title="Cancelar reservas"
+                placement="bottom"
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      bgcolor: "#000000",
+                      color: "white",
+                      fontSize: "14px",
+                      borderRadius: "4px",
+                      p: 2,
+                    },
+                  },
+                  arrow: {
+                    sx: {
+                      color: "#000000",
+                    },
+                  },
+                }}
+                arrow
+              >
+                <IconButton onClick={cancelReservations}>
+                  <Close />
+                </IconButton>
+              </Tooltip>
+              <Typography whiteSpace="nowrap" color={contrastGreen}>{`Reservado: ${isNumbered ? reservedSeats.length : reservedSeats[0][0]}`}</Typography>
+            </Stack>
+          }
+          {eliminatedSeats.length > 0 &&
+            <Stack direction="row" alignItems="center">
+              <Tooltip
+                title="Resetear distribución"
+                placement="bottom"
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      bgcolor: "#000000",
+                      color: "white",
+                      fontSize: "14px",
+                      borderRadius: "4px",
+                      p: 2,
+                    },
+                  },
+                  arrow: {
+                    sx: {
+                      color: "#000000",
+                    },
+                  },
+                }}
+                arrow
+              >
+                <IconButton onClick={cancelDistribution}>
+                  <Close />
+                </IconButton>
+              </Tooltip>
+              <Typography color={contrastGreen}>¡Personalizado!</Typography>
+            </Stack>
+          }
           <FormGroup>
             <FormControlLabel
-              control={<Switch sx={{ ml: 0.5 }} size="small" onChange={() => setIsNumbered(!isNumbered)} />}
+              control={<Switch sx={{ ml: 0.5 }} size="small" onChange={handleSwitchChange} />}
               label={`${isNumbered ? "Numerado" : "No numerado"}`}
               labelPlacement="start"
               sx={{ mr: 0.01 }}
@@ -289,7 +378,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
             </Stack>
             <Stack alignItems="center" justifyContent="center" p={{ sm: 4 }}>
               <Typography>Capacidad: </Typography>
-              <Typography variant="h1">{rows * seats}</Typography>
+              <Typography variant="h1">{rows * seats - eliminatedSeats.length}</Typography>
             </Stack>
           </Stack>
         )}
@@ -369,7 +458,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
             />
           )}
           <Stack direction="row" mt={2} spacing={2}>
-            <Button onClick={handleCancelNumbered}>Cancelar</Button>
+            <Button onClick={() => resetSeatMap()}>Resetear</Button>
             <Button onClick={handleCloseNumbered} variant="contained">Aceptar</Button>
           </Stack>
 
@@ -428,7 +517,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
               size="small"
               inputProps={{
                 step: 1,
-                min: 1,
+                min: 0,
                 max: capacity,
                 type: "number",
                 "aria-labelledby": "cantidad",
@@ -437,7 +526,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
             />
           </Stack>
           <Stack direction="row" mt={2} spacing={2}>
-            <Button onClick={handleCancelNonNumbered}>Cancelar</Button>
+            <Button onClick={() => setOpenNonNumbered(false)}>Cancelar</Button>
             <Button variant="contained" onClick={handleCloseNonNumbered}>Aceptar</Button>
           </Stack>
         </Box>
