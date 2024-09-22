@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Seat from "./Seat";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -9,10 +9,15 @@ import escenario from "../../assets/img/escenario.png";
 import availableIcon from "../../assets/img/available-seat.png";
 import notAvailableIcon from "../../assets/img/notavailable-seat.png";
 import preReservedIcon from "../../assets/img/prereserved-seat.png";
+import preReservedByAdminIcon from "../../assets/img/reservedByAdmin-seat.png";
+import UserService from "../../services/userService";
 
 const SeatMap = ({ rows, sectorName, onSeatClick }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const userService = new UserService();
+
+  const loggedUser = userService.getUserFromLocalStorage();
 
   return (
     <Box
@@ -119,18 +124,68 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
           flexDirection: "row",
         }}
       >
-        <Box display="flex" alignItems="center">
-          <img src={availableIcon} style={customStyles.seat}></img>
-          <p style={{ margin: 0, marginRight: 2 }}>Disponible</p>
-        </Box>
-        <Box display="flex" alignItems="center">
-          <img src={notAvailableIcon} style={customStyles.seat}></img>
-          <p style={{ margin: 0, marginRight: 2 }}>Reservado</p>
-        </Box>
-        <Box display="flex" alignItems="center">
-          <img src={preReservedIcon} style={customStyles.seat}></img>
-          <p style={{ margin: 0, marginRight: 2 }}>Pre-reservado</p>
-        </Box>
+        {loggedUser.role == "admin" ? (
+          <>
+            <Box
+              style={{
+                display: "flex",
+                alignItems: "start",
+                flexDirection: "column",
+              }}
+            >
+              <Box display="flex" alignItems="center">
+                <img src={availableIcon} style={customStyles.seat}></img>
+                <p style={{ margin: "5px 5px 0px 1px" }}>Disponible</p>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <img src={notAvailableIcon} style={customStyles.seat}></img>
+                <p style={{ margin: "5px 5px 0px 1px" }}>
+                  Reservado
+                  <br />
+                  (Con evento publicado)
+                </p>
+              </Box>
+            </Box>
+            <Box
+              style={{
+                display: "flex",
+                alignItems: "start",
+                flexDirection: "column",
+              }}
+            >
+              <Box display="flex" alignItems="center">
+                <img src={preReservedIcon} style={customStyles.seat}></img>
+                <p style={{ margin: "5px 5px 0px 1px" }}>Pre-reservado</p>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <img
+                  src={preReservedByAdminIcon}
+                  style={customStyles.seat}
+                ></img>
+                <p style={{ margin: "5px 5px 0px 1px" }}>
+                  Reservado
+                  <br />
+                  (En creación de sector)
+                </p>
+              </Box>
+            </Box>
+          </>
+        ) : (
+          <>
+            <Box display="flex" alignItems="center">
+              <img src={availableIcon} style={customStyles.seat}></img>
+              <p style={{ margin: "5px 5px 0px 1px" }}>Disponible</p>
+            </Box>
+            <Box display="flex" alignItems="center">
+              <img src={notAvailableIcon} style={customStyles.seat}></img>
+              <p style={{ margin: "5px 5px 0px 1px" }}>Reservado</p>
+            </Box>
+            <Box display="flex" alignItems="center">
+              <img src={preReservedIcon} style={customStyles.seat}></img>
+              <p style={{ margin: "5px 5px 0px 1px" }}>Pre-reservado</p>
+            </Box>
+          </>
+        )}
       </div>
     </Box>
   );

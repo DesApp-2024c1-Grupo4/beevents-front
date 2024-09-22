@@ -7,6 +7,7 @@ export const customStyles = {
     height: "15px",
     marginLeft: "8px",
     marginRight: "4px",
+    marginTop: "5px",
   },
 };
 

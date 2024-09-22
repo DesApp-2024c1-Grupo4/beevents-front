@@ -3,12 +3,14 @@ import availableIcon from "../../assets/img/available-seat.png";
 import notAvailableIcon from "../../assets/img/notavailable-seat.png";
 import preReservedIcon from "../../assets/img/prereserved-seat.png";
 import noPermissionCursor from "../../assets/img/ReservedCursor.png";
+import preReservedByAdminIcon from "../../assets/img/reservedByAdmin-seat.png";
+import UserService from "../../services/userService";
 
 const getSeatStatus = (seat) => {
   console.log(seat);
   if (seat.available == "true" && seat.reservedBy != "pre-reserved") {
     return "Disponible";
-  } else if (seat.available === "preReserved") {
+  } else if (seat.available === "preReserved" || seat.available === "false") {
     return "Reservado";
   } else if (seat.available == "true" && seat.reservedBy == "pre-reserved") {
     return "Pre-Reservado";
@@ -16,7 +18,6 @@ const getSeatStatus = (seat) => {
 };
 
 const SeatCard = ({ seat }) => {
-  console.log(seat);
   return (
     <>
       {seat.available != "eliminated" && (
@@ -49,6 +50,9 @@ const SeatCard = ({ seat }) => {
 
 const Seat = ({ seat, onSeatClick }) => {
   const [hovered, setHovered] = useState(false);
+  const userService = new UserService();
+
+  const loggedUser = userService.getUserFromLocalStorage();
 
   const handleClick = () => {
     onSeatClick(seat);
@@ -97,10 +101,13 @@ const Seat = ({ seat, onSeatClick }) => {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };
-    } else if (seat.available === "preReserved") {
+    } else if (seat.available === "preReserved" || seat.available === "false") {
       backgroundStyle = {
         ...backgroundStyle,
-        backgroundImage: `url(${notAvailableIcon})`,
+        backgroundImage:
+          loggedUser.role == "admin" && seat.available === "preReserved"
+            ? `url(${preReservedByAdminIcon})`
+            : `url(${notAvailableIcon})`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };

@@ -11,11 +11,15 @@ const us = new UserService();
 
 export async function patchEventSeat(seatData) {
   try {
-    const response = await api.patch(`/${seatData.eventId}/seat`, seatData, {
-      headers: {
-        Authorization: `Bearer ${us.getUserFromLocalStorage().access_token}`,
-      },
-    });
+    const response = await api.patch(
+      `/event/${seatData.eventId}/seat`,
+      seatData,
+      {
+        headers: {
+          Authorization: `Bearer ${us.getUserFromLocalStorage().access_token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.log(error.message);
@@ -25,11 +29,15 @@ export async function patchEventSeat(seatData) {
 
 export async function patchEventPlace(placeData) {
   try {
-    const response = await api.patch(`/${placeData.eventId}/place`, placeData, {
-      headers: {
-        Authorization: `Bearer ${us.getUserFromLocalStorage().access_token}`,
-      },
-    });
+    const response = await api.patch(
+      `/event/${placeData.eventId}/place`,
+      placeData,
+      {
+        headers: {
+          Authorization: `Bearer ${us.getUserFromLocalStorage().access_token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.log(error.message);
@@ -39,7 +47,7 @@ export async function patchEventPlace(placeData) {
 
 export async function getReservationsByUserId(userId) {
   try {
-    const response = await api.get(`/reservedBy/${userId}`, {
+    const response = await api.get(`/event/reservedBy/${userId}`, {
       headers: {
         Authorization: `Bearer ${us.getUserFromLocalStorage().access_token}`,
       },
