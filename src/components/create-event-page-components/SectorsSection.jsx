@@ -14,6 +14,7 @@ import SectorsDisplay from "./SectorsDisplay";
 import SectorForm from "./SectorForm";
 import { AddCircleOutlineOutlined, InfoOutlined } from "@mui/icons-material";
 import { customMuiTheme } from "../../config/customMuiTheme";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export default function SectorsSection({
   sectors,
@@ -28,6 +29,7 @@ export default function SectorsSection({
     setSelectedConfigurationDescription,
   ] = useState("");
   const { contrastGreen } = customMuiTheme.colors;
+  const isMobile = useMediaQuery("(max-width:1240px)");
 
   useEffect(() => {
     if (selectedConfiguration) {
@@ -50,52 +52,65 @@ export default function SectorsSection({
         Sectores
       </Typography>
       {!eventId && configurationsTemplates?.length > 0 && (
-        <FormControl fullWidth>
-          <InputLabel id="config-label">
-            Configuraciones predeterminadas
-          </InputLabel>
-          <Select
-            labelId="config-label"
-            value={selectedConfiguration}
-            onChange={(e) => setSelectedConfiguration(e.target.value)}
-            label="Configuraciones predeterminadas"
-          >
-            {configurationsTemplates?.map((config, index) => (
-              <MenuItem key={index} value={config.name}>
-                <Stack direction="row" alignItems="center">
-                  <Typography>{config.name}</Typography>
-                  {config.description && (
-                    <Tooltip
-                      title={config.description}
-                      placement="bottom"
-                      componentsProps={{
-                        tooltip: {
-                          sx: {
-                            bgcolor: "#000000",
-                            color: "white",
-                            fontSize: "14px",
-                            borderRadius: "4px",
-                            p: 2,
+        <>
+          <FormControl fullWidth>
+            <InputLabel id="config-label">
+              Configuraciones predeterminadas
+            </InputLabel>
+            <Select
+              labelId="config-label"
+              value={selectedConfiguration}
+              onChange={(e) => setSelectedConfiguration(e.target.value)}
+              label="Configuraciones predeterminadas"
+            >
+              {configurationsTemplates?.map((config, index) => (
+                <MenuItem key={index} value={config.name}>
+                  <Stack direction="row" alignItems="center">
+                    <Typography>{config.name}</Typography>
+                    {config.description && (
+                      <Tooltip
+                        title={config.description}
+                        placement="bottom"
+                        componentsProps={{
+                          tooltip: {
+                            sx: {
+                              bgcolor: "#000000",
+                              color: "white",
+                              fontSize: "14px",
+                              borderRadius: "4px",
+                              p: 2,
+                            },
                           },
-                        },
-                        arrow: {
-                          sx: {
-                            color: "#000000",
+                          arrow: {
+                            sx: {
+                              color: "#000000",
+                            },
                           },
-                        },
-                      }}
-                      arrow
-                    >
-                      <IconButton size="small">
-                        <InfoOutlined fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                </Stack>
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+                        }}
+                        arrow
+                      >
+                        <IconButton size="small">
+                          <InfoOutlined fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </Stack>
+                </MenuItem>
+              ))}
+            </Select>
+            {isMobile && (
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                style={{ marginTop: "10px" }}
+              >
+                * Mantén presionado el ícono de{" "}
+                <InfoOutlined fontSize="small" /> para ver la descripción de la
+                configuración.
+              </Typography>
+            )}
+          </FormControl>
+        </>
       )}
       <SectorsDisplay sectors={sectors} setSectors={setSectors} />
       {!showForm && (
