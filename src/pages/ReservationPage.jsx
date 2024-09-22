@@ -85,6 +85,10 @@ export function ReservationPage() {
     fetchData();
   }, [eventId]);
 
+  useEffect(() => {
+    console.log(numeredReservationUnconfirmed);
+  }, [numeredReservationUnconfirmed]);
+
   const hasUnconfirmedReservations = () => {
     return (
       notNumeredReservationUnconfirmed.length > 0 ||
@@ -157,7 +161,7 @@ export function ReservationPage() {
               if (seat._id === clickedSeat._id) {
                 return {
                   ...seat,
-                  available: !seat.available,
+                  // available: !seat.available,
                   reservedBy:
                     seat.reservedBy == "vacio" ? "pre-reserved" : "vacio",
                 };
@@ -233,7 +237,9 @@ export function ReservationPage() {
         setNotNumeredReservationUnconfirmed([]);
       }
       if (numeredReservationUnconfirmed.length > 0) {
+        console.log(numeredReservationUnconfirmed);
         for (const reservation of numeredReservationUnconfirmed) {
+          console.log(reservation);
           const response = await patchEventSeat(reservation);
           if (response.message == "Reserva realizada correctamente") {
             reservationsConfirmed = true;
@@ -299,113 +305,30 @@ export function ReservationPage() {
       </Box>
     );
   }
-  return (
-    loggedUser
-      ? <>
-        <Container maxWidth="md">
-          <>
-            <Typography
-              variant="h2"
-              component="h2"
-              gutterBottom
-              sx={{
-                color: contrastGreen,
-                mt: 4,
-                mb: {
-                  xs: 3,
-                  md: 6,
-                },
-                fontSize: {
-                  xs: "1.2rem",
-                  md: "2rem",
-                },
-                alignSelf: "flex-start",
-              }}
-            >
-              {"Reserva de tickets"}
-            </Typography>
-            <Typography
-              variant="h2"
-              component="h2"
-              gutterBottom
-              sx={{
-                mt: {
-                  xs: 2,
-                  md: 3,
-                },
-                fontSize: {
-                  xs: "1rem",
-                  md: "1.6rem",
-                },
-                alignSelf: "flex-start",
-                textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
-                color: "#bdbdbd",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <LocalActivityIcon sx={{ mr: 2, color: contrastGreen }} /> Artista
-            </Typography>
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{
-                color: contrastGreen,
-                // my: {
-                //   xs: 2,
-                // },
-                fontSize: {
-                  xs: "0.8rem",
-                  md: "1.4rem",
-                },
-                fontWeight: "bold",
-                textTransform: "uppercase",
-                letterSpacing: "0.1rem",
-                textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
-              }}
-            >
-              {event.artist}
-            </Typography>
-            <Typography
-              variant="h2"
-              component="h2"
-              gutterBottom
-              sx={{
-                mt: {
-                  xs: 2,
-                  md: 3,
-                },
-                fontSize: {
-                  xs: "1rem",
-                  md: "1.6rem",
-                },
-                alignSelf: "flex-start",
-                textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
-                color: "#bdbdbd",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <FestivalIcon sx={{ mr: 2, color: contrastGreen }} /> Evento
-            </Typography>
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{
-                color: contrastGreen,
-                fontSize: {
-                  xs: "0.8rem",
-                  md: "1.4rem",
-                },
-                fontWeight: "bold",
-                textTransform: "uppercase",
-                letterSpacing: "0.1rem",
-                textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
-              }}
-            >
-              {event.name}
-            </Typography>
-          </>
+  return loggedUser ? (
+    <>
+      <Container maxWidth="md">
+        <>
+          <Typography
+            variant="h2"
+            component="h2"
+            gutterBottom
+            sx={{
+              color: contrastGreen,
+              mt: 4,
+              mb: {
+                xs: 3,
+                md: 6,
+              },
+              fontSize: {
+                xs: "1.2rem",
+                md: "2rem",
+              },
+              alignSelf: "flex-start",
+            }}
+          >
+            {"Reserva de tickets"}
+          </Typography>
           <Typography
             variant="h2"
             component="h2"
@@ -426,35 +349,28 @@ export function ReservationPage() {
               alignItems: "center",
             }}
           >
-            <CalendarMonthIcon sx={{ mr: 2, color: contrastGreen }} /> Fechas
+            <LocalActivityIcon sx={{ mr: 2, color: contrastGreen }} /> Artista
           </Typography>
-          <div style={{ marginBottom: "20px" }}>
-            {event.dates.map((date, index) => (
-              <Button
-                key={index}
-                variant="contained"
-                onClick={() => handleDateChange(index)}
-                sx={{
-                  marginRight: "10px",
-                  marginTop: "5px",
-                  color: selectedDateIndex === index ? "black" : "white",
-                  border: "1px solid #01BB89",
-                  backgroundColor:
-                    selectedDateIndex === index ? contrastGreen : "transparent",
-                }}
-              >
-                {new Date(date.date_time).toLocaleDateString()}
-                {" - "}
-                {new Date(date.date_time).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                  timeZone: "UTC",
-                })}
-                {"hs"}
-              </Button>
-            ))}
-          </div>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{
+              color: contrastGreen,
+              // my: {
+              //   xs: 2,
+              // },
+              fontSize: {
+                xs: "0.8rem",
+                md: "1.4rem",
+              },
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              letterSpacing: "0.1rem",
+              textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
+            }}
+          >
+            {event.artist}
+          </Typography>
           <Typography
             variant="h2"
             component="h2"
@@ -475,245 +391,335 @@ export function ReservationPage() {
               alignItems: "center",
             }}
           >
-            <EventSeatIcon sx={{ mr: 2, color: contrastGreen }} /> Sectores
+            <FestivalIcon sx={{ mr: 2, color: contrastGreen }} /> Evento
           </Typography>
-          {loading ? (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="200px"
-            >
-              <CircularProgress />
-            </Box>
-          ) : (
-            <TableContainer
-              component={Paper}
-              sx={{
-                mt: {
-                  xs: 2,
-                  md: 3,
-                },
-                backgroundColor: "#142539",
-                color: "GrayText",
-              }}
-            >
-              <Table
-                sx={{
-                  backgroundColor: "#142539",
-                  color: "lightgray",
-                  borderColor: "lightgray",
-                }}
-                aria-label="simple table"
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        color: "lightgray",
-                        borderColor: "lightgray",
-                        textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-                        fontSize: "15px",
-                      }}
-                    >
-                      <b>Sector</b>
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        color: "lightgray",
-                        borderColor: "lightgray",
-                        textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-                        fontSize: "15px",
-                      }}
-                      align="right"
-                    >
-                      <b>Asientos Totales</b>
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        color: "lightgray",
-                        borderColor: "lightgray",
-                        textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-                        fontSize: "15px",
-                      }}
-                      align="right"
-                    >
-                      <b>Asientos (Ocupados / Totales)</b>
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        color: "lightgray",
-                        borderColor: "lightgray",
-                        textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-                        fontSize: "15px",
-                      }}
-                      align="center"
-                    >
-                      <b>Reservar</b>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {seatMaps.map((sector, index) => {
-                    const totalSeats = sector.rowsNumber * sector.seatsNumber;
-                    const occupiedSeats = sector.rows.reduce(
-                      (acc, row) =>
-                        acc +
-                        row.filter((seat) => seat.available === false).length,
-                      0
-                    );
-
-                    return (
-                      <TableRow key={index}>
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          sx={{ color: "lightgray", borderColor: "lightgray" }}
-                        >
-                          {sector.name}
-                        </TableCell>
-                        <TableCell
-                          align="right"
-                          sx={{ color: "lightgray", borderColor: "lightgray" }}
-                        >
-                          {totalSeats}
-                        </TableCell>
-                        <TableCell
-                          align="right"
-                          sx={{ color: "lightgray", borderColor: "lightgray" }}
-                        >
-                          {occupiedSeats}/{totalSeats}
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          sx={{ color: "lightgray", borderColor: "lightgray" }}
-                        >
-                          {sector.numbered ? (
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              onClick={() => handleOpenModal(sector)}
-                            >
-                              Seleccionar Asientos
-                            </Button>
-                          ) : (
-                            <Box
-                              display="flex"
-                              alignItems="center"
-                              justifyContent="center"
-                            >
-                              <IconButton
-                                color="primary"
-                                onClick={() =>
-                                  handleNonNumberedReservation(
-                                    sector._id,
-                                    "remove"
-                                  )
-                                }
-                              >
-                                <RemoveIcon />
-                              </IconButton>
-                              <Typography>
-                                {countReservationsBySectorId(
-                                  notNumeredReservationUnconfirmed,
-                                  sector._id
-                                )}
-                              </Typography>
-                              <IconButton
-                                color="primary"
-                                onClick={() =>
-                                  handleNonNumberedReservation(sector._id, "add")
-                                }
-                              >
-                                <AddIcon />
-                              </IconButton>
-                            </Box>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-          <Box sx={{ mt: 2, textAlign: "center" }}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{
+              color: contrastGreen,
+              fontSize: {
+                xs: "0.8rem",
+                md: "1.4rem",
+              },
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              letterSpacing: "0.1rem",
+              textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
+            }}
+          >
+            {event.name}
+          </Typography>
+        </>
+        <Typography
+          variant="h2"
+          component="h2"
+          gutterBottom
+          sx={{
+            mt: {
+              xs: 2,
+              md: 3,
+            },
+            fontSize: {
+              xs: "1rem",
+              md: "1.6rem",
+            },
+            alignSelf: "flex-start",
+            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+            color: "#bdbdbd",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <CalendarMonthIcon sx={{ mr: 2, color: contrastGreen }} /> Fechas
+        </Typography>
+        <div style={{ marginBottom: "20px" }}>
+          {event.dates.map((date, index) => (
             <Button
+              key={index}
               variant="contained"
-              onClick={handleConfirmReservations}
+              onClick={() => handleDateChange(index)}
               sx={{
-                mt: 2,
-                mb: 6,
-                backgroundColor: "#01BB89",
+                marginRight: "10px",
+                marginTop: "5px",
+                color: selectedDateIndex === index ? "black" : "white",
                 border: "1px solid #01BB89",
-                color: "white",
+                backgroundColor:
+                  selectedDateIndex === index ? contrastGreen : "transparent",
               }}
             >
-              Confirmar Reservas
+              {new Date(date.date_time).toLocaleDateString()}
+              {" - "}
+              {new Date(date.date_time).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+                timeZone: "UTC",
+              })}
+              {"hs"}
             </Button>
-          </Box>
-        </Container>
-        <Modal
-          open={modalOpen}
-          onClose={handleCloseModal}
-          aria-labelledby="modal-title"
-          aria-describedby="modal-description"
+          ))}
+        </div>
+        <Typography
+          variant="h2"
+          component="h2"
+          gutterBottom
+          sx={{
+            mt: {
+              xs: 2,
+              md: 3,
+            },
+            fontSize: {
+              xs: "1rem",
+              md: "1.6rem",
+            },
+            alignSelf: "flex-start",
+            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+            color: "#bdbdbd",
+            display: "flex",
+            alignItems: "center",
+          }}
         >
+          <EventSeatIcon sx={{ mr: 2, color: contrastGreen }} /> Sectores
+        </Typography>
+        {loading ? (
           <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="200px"
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
+          <TableContainer
+            component={Paper}
             sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              // maxWidth: "90%",
-              width: "auto",
-              maxWidth: "90vw",
-              maxHeight: "95vh",
-              flexWrap: "wrap",
-              bgcolor: "#142539",
-              color: "lightgray",
-              border: "1px solid lightgray",
-              borderRadius: "5px",
-              boxShadow: 24,
-              p: 2,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
+              mt: {
+                xs: 2,
+                md: 3,
+              },
+              backgroundColor: "#142539",
+              color: "GrayText",
             }}
           >
-            {selectedSeatMap && (
-              <SeatMap
-                rows={selectedSeatMap.rows}
-                sectorName={selectedSeatMap.name}
-                onSeatClick={handleSeatClick}
-              />
-            )}
-            <Button onClick={handleCloseModal} variant="contained" sx={{ mt: 2 }}>
-              Cerrar
-            </Button>
-          </Box>
-        </Modal>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <img src={Logo} alt="Logo" style={{ width: 100, marginBottom: 5 }} />
-            <Typography
-              id="modal-modal-description"
-              sx={{ mt: 2, textAlign: "center" }}
+            <Table
+              sx={{
+                backgroundColor: "#142539",
+                color: "lightgray",
+                borderColor: "lightgray",
+              }}
+              aria-label="simple table"
             >
-              ¡{apiMessage}!
-            </Typography>
-            <Button onClick={handleClose} variant="contained" sx={{ mt: 3 }}>
-              Cerrar
-            </Button>
-          </Box>
-        </Modal>
-      </>
-      : <NotFound />
+              <TableHead>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      color: "lightgray",
+                      borderColor: "lightgray",
+                      textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+                      fontSize: "15px",
+                    }}
+                  >
+                    <b>Sector</b>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "lightgray",
+                      borderColor: "lightgray",
+                      textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+                      fontSize: "15px",
+                    }}
+                    align="right"
+                  >
+                    <b>Asientos Totales</b>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "lightgray",
+                      borderColor: "lightgray",
+                      textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+                      fontSize: "15px",
+                    }}
+                    align="right"
+                  >
+                    <b>Asientos (Ocupados / Totales)</b>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "lightgray",
+                      borderColor: "lightgray",
+                      textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+                      fontSize: "15px",
+                    }}
+                    align="center"
+                  >
+                    <b>Reservar</b>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {seatMaps.map((sector, index) => {
+                  const totalSeats = sector.rowsNumber * sector.seatsNumber;
+                  const occupiedSeats = sector.rows.reduce(
+                    (acc, row) =>
+                      acc +
+                      row.filter((seat) => seat.available === false).length,
+                    0
+                  );
+
+                  return (
+                    <TableRow key={index}>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {sector.name}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {totalSeats}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {occupiedSeats}/{totalSeats}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ color: "lightgray", borderColor: "lightgray" }}
+                      >
+                        {sector.numbered ? (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleOpenModal(sector)}
+                          >
+                            Seleccionar Asientos
+                          </Button>
+                        ) : (
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <IconButton
+                              color="primary"
+                              onClick={() =>
+                                handleNonNumberedReservation(
+                                  sector._id,
+                                  "remove"
+                                )
+                              }
+                            >
+                              <RemoveIcon />
+                            </IconButton>
+                            <Typography>
+                              {countReservationsBySectorId(
+                                notNumeredReservationUnconfirmed,
+                                sector._id
+                              )}
+                            </Typography>
+                            <IconButton
+                              color="primary"
+                              onClick={() =>
+                                handleNonNumberedReservation(sector._id, "add")
+                              }
+                            >
+                              <AddIcon />
+                            </IconButton>
+                          </Box>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+        <Box sx={{ mt: 2, textAlign: "center" }}>
+          <Button
+            variant="contained"
+            onClick={handleConfirmReservations}
+            sx={{
+              mt: 2,
+              mb: 6,
+              backgroundColor: "#01BB89",
+              border: "1px solid #01BB89",
+              color: "white",
+            }}
+          >
+            Confirmar Reservas
+          </Button>
+        </Box>
+      </Container>
+      <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            // maxWidth: "90%",
+            width: "auto",
+            maxWidth: "90vw",
+            maxHeight: "95vh",
+            flexWrap: "wrap",
+            bgcolor: "#142539",
+            color: "lightgray",
+            border: "1px solid lightgray",
+            borderRadius: "5px",
+            boxShadow: 24,
+            p: 2,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {selectedSeatMap && (
+            <SeatMap
+              rows={selectedSeatMap.rows}
+              sectorName={selectedSeatMap.name}
+              onSeatClick={handleSeatClick}
+            />
+          )}
+          <Button onClick={handleCloseModal} variant="contained" sx={{ mt: 2 }}>
+            Cerrar
+          </Button>
+        </Box>
+      </Modal>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <img src={Logo} alt="Logo" style={{ width: 100, marginBottom: 5 }} />
+          <Typography
+            id="modal-modal-description"
+            sx={{ mt: 2, textAlign: "center" }}
+          >
+            ¡{apiMessage}!
+          </Typography>
+          <Button onClick={handleClose} variant="contained" sx={{ mt: 3 }}>
+            Cerrar
+          </Button>
+        </Box>
+      </Modal>
+    </>
+  ) : (
+    <NotFound />
   );
 }

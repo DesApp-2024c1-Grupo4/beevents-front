@@ -5,39 +5,45 @@ import preReservedIcon from "../../assets/img/prereserved-seat.png";
 import noPermissionCursor from "../../assets/img/ReservedCursor.png";
 
 const getSeatStatus = (seat) => {
-  if (seat.available) {
+  console.log(seat);
+  if (seat.available == "true" && seat.reservedBy != "pre-reserved") {
     return "Disponible";
-  } else if (!seat.available) {
+  } else if (seat.available === "preReserved") {
     return "Reservado";
-  } else if (seat.available == "pre-reserved") {
+  } else if (seat.available == "true" && seat.reservedBy == "pre-reserved") {
     return "Pre-Reservado";
   }
 };
 
 const SeatCard = ({ seat }) => {
+  console.log(seat);
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: "-40px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        backgroundColor: "#145362",
-        padding: "5px",
-        borderRadius: "5px",
-        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.8)",
-        zIndex: 999,
-        pointerEvents: "none",
-        whiteSpace: "nowrap",
-      }}
-    >
-      <p style={{ fontSize: "10px", margin: "0.5px", color: "white" }}>
-        <b>Estado:</b> {getSeatStatus(seat)}
-      </p>
-      <p style={{ fontSize: "10px", margin: "0.5px", color: "white" }}>
-        <b>Asiento:</b> {seat.displayId}
-      </p>
-    </div>
+    <>
+      {seat.available != "eliminated" && (
+        <div
+          style={{
+            position: "absolute",
+            top: "-40px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#145362",
+            padding: "5px",
+            borderRadius: "5px",
+            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.8)",
+            zIndex: 999,
+            pointerEvents: "none",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <p style={{ fontSize: "9px", margin: "0.5px", color: "white" }}>
+            <b>Estado:</b> {getSeatStatus(seat)}
+          </p>
+          <p style={{ fontSize: "9px", margin: "0.5px", color: "white" }}>
+            <b>Asiento:</b> {seat.displayId}
+          </p>
+        </div>
+      )}
+    </>
   );
 };
 
@@ -49,42 +55,56 @@ const Seat = ({ seat, onSeatClick }) => {
   };
 
   const getSeatStyle = (seat) => {
+    console.log(seat);
     let backgroundStyle = {
       minWidth: "6px",
       minHeight: "6px",
       margin: "4px",
       padding: "4px",
       cursor:
-        seat.available || seat.reservedBy === "pre-reserved"
+        seat.available === "eliminated"
+          ? "default"
+          : seat.available === "true" || seat.reservedBy === "pre-reserved"
           ? "pointer"
           : `url(${noPermissionCursor}), not-allowed`,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       color: "#100E0C",
-      textShadow: "1px 1px 2px rgba(0,0,0,0.7)",
+      textShadow:
+        seat.available === "eliminated"
+          ? "none"
+          : "1px 1px 2px rgba(0,0,0,0.7)",
       borderRadius: "5px",
       transition: "all 0.3s ease-in-out",
-      transform: hovered ? "scale(1.1)" : "scale(1)",
-      boxShadow: hovered
-        ? "0 4px 8px rgba(0, 0, 0, 0.3)"
-        : "0 2px 4px rgba(0, 0, 0, 0.2)",
+      transform:
+        hovered && seat.available !== "eliminated" ? "scale(1.1)" : "scale(1)",
+      boxShadow:
+        hovered && seat.available !== "eliminated"
+          ? "0 4px 8px rgba(0, 0, 0, 0.3)"
+          : "none",
     };
-    if (!seat.available && seat.reservedBy == "pre-reserved") {
+
+    if (seat.available === "eliminated") {
+      backgroundStyle = {
+        ...backgroundStyle,
+        backgroundColor: "transparent",
+      };
+    } else if (seat.reservedBy === "pre-reserved") {
       backgroundStyle = {
         ...backgroundStyle,
         backgroundImage: `url(${preReservedIcon})`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };
-    } else if (!seat.available) {
+    } else if (seat.available === "preReserved") {
       backgroundStyle = {
         ...backgroundStyle,
         backgroundImage: `url(${notAvailableIcon})`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       };
-    } else if (seat.available && seat.reservedBy == "vacio") {
+    } else if (seat.reservedBy === "vacio") {
       backgroundStyle = {
         ...backgroundStyle,
         backgroundImage: `url(${availableIcon})`,
@@ -93,14 +113,8 @@ const Seat = ({ seat, onSeatClick }) => {
       };
     }
 
-    let backgroundColor = "transparent";
-    // if (seat.preReserved) {
-    //   backgroundColor = "#51DD99";
-    // }
-
     return {
       ...backgroundStyle,
-      backgroundColor: backgroundColor,
     };
   };
 
@@ -120,11 +134,3 @@ const Seat = ({ seat, onSeatClick }) => {
 };
 
 export default Seat;
-// minWidth: "6px",
-// minHeight: "6px",
-// margin: "4px",
-// padding: "4px",
-// // cursor:
-// //   seat.available || seat.reservedBy === "pre-reserved"
-// //     ? "pointer"
-// //     : `url(${noPermissionCursor}), not-allowed`,
