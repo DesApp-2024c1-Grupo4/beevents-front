@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { customMuiTheme } from "../../config/customMuiTheme";
 import SectorDistributionMap from "./SectorDistributionMap";
 
-export default function ReservationSection({ dates, sectors }) {
+export default function ReservationSection({ prevStep, nextStep, dates, sectors }) {
   const { contrastGreen } = customMuiTheme.colors;
   const [datesArray, setDatesArray] = useState(dates.map(date => ({
     date_time: date,
@@ -74,13 +74,20 @@ export default function ReservationSection({ dates, sectors }) {
   return (
     <>
       <Stack spacing={3} px={3}>
-        <Typography
-          variant="h1"
-          gutterBottom
-          sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
+        <Stack
+          direction={{ xs: "column-reverse", sm: "row" }}
+          spacing={3}
+          justifyContent="space-between"
+          alignItems="center"
         >
-          Pre-reservas
-        </Typography>
+          <Button variant="contained" onClick={prevStep} >Anterior</Button>
+          <Typography
+            variant="h1"
+          >
+            Pre-reservas
+          </Typography>
+          <Button variant="contained" onClick={nextStep} >Siguiente</Button>
+        </Stack>
         <Stack direction={{ xs: "column", sm: "row" }}>
           {datesArray.map((date, index) => (
             <Button
