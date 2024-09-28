@@ -7,7 +7,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import availableIcon from "../../assets/img/available-seat.png";
 import eliminatedIcon from "../../assets/img/eliminated-seat.png";
 import reservedIcon from "../../assets/img/notavailable-seat.png";
-import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Stack, Tooltip, Typography } from "@mui/material";
 import SectorDistributionSeat from "./SectorDistributionSeat";
 import { ArrowDropUp, HelpCenter } from "@mui/icons-material";
 
@@ -34,13 +34,10 @@ export const useIsOverflow = (ref, callback) => {
   return isOverflow;
 };
 
-export function HelpTips() {
+export function HelpTips({ reserving }) {
   return <>
     <Typography sx={{ fontSize: { xs: "10px", sm: "12px" } }}>
-      Toca una vez para reservar el asiento
-    </Typography>
-    <Typography sx={{ fontSize: { xs: "10px", sm: "12px" } }}>
-      Toca dos veces para eliminar el asiento
+      Toca una vez para {reserving ? "reservar" : "eliminar"} el asiento
     </Typography>
     <Typography sx={{ fontSize: { xs: "10px", sm: "12px" } }}>
       Toca otra vez para resetear el asiento
@@ -48,11 +45,20 @@ export function HelpTips() {
   </>
 }
 
-const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
+const SectorDistributionMap = ({ rows, sectorName, onSeatClick, reserving, statuses }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const ref = useRef();
   const isOverflow = useIsOverflow(ref);
+  const seatIcon = (status) => {
+    var icon = availableIcon
+    if (status === "Reservado") {
+      icon = reservedIcon
+    } else if (status === "Eliminado") {
+      icon = eliminatedIcon
+    }
+    return icon;
+  }
 
   return (
     <Box
@@ -82,11 +88,11 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
             fontWeight: 600,
           }}
         >
-          Distribución del sector
+          {reserving? "Reservar asientos" : "Distribución del sector" }
         </Typography>
         <Typography>{sectorName}</Typography>
         <Tooltip
-          title={<HelpTips />}
+          title={<HelpTips reserving={reserving} />}
           placement="right-start"
           componentsProps={{
             tooltip: {
@@ -177,30 +183,18 @@ const SectorDistributionMap = ({ rows, sectorName, onSeatClick }) => {
         </Stack>
       )}
       <Stack direction="row" spacing={1.5}>
-        <Typography
-          display="flex"
-          alignItems="center"
-          sx={{ fontSize: isMobile ? "10px" : "12px" }}
-        >
-          <img src={availableIcon} style={customStyles.seat} />
-          Disponible
-        </Typography>
-        <Typography
-          display="flex"
-          alignItems="center"
-          sx={{ fontSize: isMobile ? "10px" : "12px" }}
-        >
-          <img src={reservedIcon} style={customStyles.seat} />
-          Reservado
-        </Typography>
-        <Typography
-          display="flex"
-          alignItems="center"
-          sx={{ fontSize: isMobile ? "10px" : "12px" }}
-        >
-          <img src={eliminatedIcon} style={customStyles.seat} />
-          Eliminado
-        </Typography>
+        {statuses.map((status) => (
+          <Typography
+            display="flex"
+            alignItems="end"
+            sx={{ fontSize: isMobile ? "10px" : "12px" }}
+          >
+            <img src={seatIcon(status)} style={customStyles.seat} />
+            {status}
+          </Typography>
+        ))
+        }
+
       </Stack>
     </Box>
   );

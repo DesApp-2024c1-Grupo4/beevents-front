@@ -165,14 +165,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
   }
 
   const handleSeatClick = (clickedSeat) => {
-    if (clickedSeat.available) {
-      clickedSeat.available = false
-      clickedSeat.reservedBy = "pre-reserved"
-    } else if (clickedSeat.reservedBy === "pre-reserved") {
-      clickedSeat.reservedBy = "vacio"
-    } else {
-      clickedSeat.available = true
-    }
+    clickedSeat.available = !clickedSeat.available
     const rowsCopy = seatMap.rows.slice();
     const clickedSeatIdx = clickedSeat._id
     const clickedSeatCopy = rowsCopy[clickedSeatIdx[0]][clickedSeatIdx[1]]
@@ -213,17 +206,18 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
         />
         <Stack
           direction={{ xs: "column-reverse", sm: "row" }}
-          alignItems="center"
-          justifyContent="space-between"
+          alignItems="start"
+          justifyContent= {isNumbered ? "space-between" : "end"}
           spacing={3}
         >
-          <Button
-            size="medium"
-            onClick={handleOpen}
-            variant="contained"
-          >
-            {isNumbered ? 'Personalizar/Reservar ' : 'Reservar'}
-          </Button>
+          {isNumbered &&
+            <Button
+              size="medium"
+              onClick={handleOpen}
+              variant="contained"
+            >
+              Personalizar disposición
+            </Button>}
           {reservedSeats.length > 0 &&
             <Stack direction="row" alignItems="center">
               <Tooltip
@@ -248,7 +242,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
                 arrow
               >
                 <IconButton size="small" onClick={cancelReservations}>
-                  <Close fontSize="small"/>
+                  <Close fontSize="small" />
                 </IconButton>
               </Tooltip>
               <Typography whiteSpace="nowrap" color={contrastGreen}>{`Reservado: ${isNumbered ? reservedSeats.length : reservedSeats[0][0]}`}</Typography>
@@ -278,7 +272,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
                 arrow
               >
                 <IconButton size="small" onClick={cancelDistribution}>
-                  <Close fontSize="small"/>
+                  <Close fontSize="small" />
                 </IconButton>
               </Tooltip>
               <Typography color={contrastGreen}>¡Personalizado!</Typography>
@@ -460,6 +454,8 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
               rows={seatMap.rows}
               sectorName={seatMap.name}
               onSeatClick={handleSeatClick}
+              statuses={["Disponible","Eliminado"]}
+              reserving={false}
             />
           )}
           <Tooltip

@@ -23,6 +23,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import UserService from "../services/userService";
 import NotFound from "../components/NotFound";
+import ReservationSection from "../components/create-event-page-components/ReservationSection";
 
 export function CreateEventPage() {
   const [datesArray, setDatesArray] = useState([]);
@@ -202,6 +203,8 @@ export function CreateEventPage() {
             sectors={sectors}
             setSectors={setSectors}
           />
+          {dates.length > 0 && sectors.length > 0 && 
+          <ReservationSection dates={dates} sectors={sectors}/>}
           <Button
             size="large"
             type="submit"

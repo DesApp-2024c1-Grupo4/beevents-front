@@ -453,8 +453,7 @@ export function ReservationPage() {
               {new Date(date.date_time).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
-                hour12: false,
-                timeZone: "UTC",
+                hour12: false
               })}
               {"hs"}
             </Button>
@@ -560,13 +559,8 @@ export function ReservationPage() {
               </TableHead>
               <TableBody>
                 {seatMaps.map((sector, index) => {
-                  const totalSeats = sector.rowsNumber * sector.seatsNumber;
-                  const occupiedSeats = sector.rows.reduce(
-                    (acc, row) =>
-                      acc +
-                      row.filter((seat) => seat.available === false).length,
-                    0
-                  );
+                  const totalSeats = sector.capacity;
+                  const occupiedSeats = sector.ocuped;
 
                   return (
                     <TableRow key={index}>
