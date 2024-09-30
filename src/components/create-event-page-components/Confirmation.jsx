@@ -1,26 +1,23 @@
 import { Button, Stack, Typography } from "@mui/material";
 
-export default function Confirmation({ prevStep, handleSubmit, formData }) {
+export default function Confirmation({ handleSubmit, formData }) {
   return (
-    <Stack spacing={3} px={3}>
-      <Stack
-        direction={{ xs: "column-reverse", sm: "row" }}
-        spacing={3}
-        justifyContent="space-between"
-        alignItems="center"
+    <Stack spacing={3} px={6}>
+      <Typography
+        variant="h1"
+        alignSelf="center"
+        textAlign="center"
       >
-        <Button variant="contained" onClick={prevStep} >Atrás</Button>
-        <Typography
-          variant="h1"
-        >
-          Confirma los datos de tu evento
-        </Typography>
-        <Button variant="contained" onClick={handleSubmit} >Crear evento</Button>
-      </Stack>
+        Confirma los datos de tu evento
+      </Typography>
       <Stack>
-        <Typography>{formData.name}</Typography>
-        <Typography>{formData.artist}</Typography>
-        <Typography>{formData.description}</Typography>
+        <Typography>Nombre: {formData.name}</Typography>
+        <Typography>Artista: {formData.artist}</Typography>
+        <img src={formData.image}/>
+        <Typography>Descripción: {formData.description}</Typography>
+        <Typography>Lugar: {formData.location_id}</Typography>
+        <Typography>Fechas: {formData.dates.map(date => date.date_time)}</Typography>
+        <Typography>Sectores: {formData.dates[0].sectors.map(sector => sector.name)}</Typography>
       </Stack>
     </Stack>
   )

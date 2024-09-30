@@ -22,8 +22,6 @@ import validator from "validator";
 import { useParams } from "react-router-dom";
 
 export default function LocationSection({
-  prevStep,
-  nextStep,
   locationId,
   setLocationId,
   sectors,
@@ -122,23 +120,15 @@ export default function LocationSection({
   };
 
   return (
-    <Stack spacing={3} px={3}>
-      <Stack
-        direction={{ xs: "column-reverse", sm: "row" }}
-        spacing={3}
-        justifyContent="space-between"
-        alignItems="center"
+    <Stack spacing={3} px={6}>
+      <Typography
+        variant="h1"
+        alignSelf="center"
       >
-        <Button variant="contained" onClick={prevStep} >Anterior</Button>
-        <Typography
-          variant="h1"
-        >
-          Predio
-        </Typography>
-        <Button variant="contained" onClick={nextStep} >Siguiente</Button>
-      </Stack>
+        Predio
+      </Typography>
       <Typography>
-        {selectedLocationName ? selectedLocationName : "Ninguno"}
+        {selectedLocationName ? selectedLocationName : "Ninguno seleccionado"}
       </Typography>
       {displayChangeButton && (
         <Button

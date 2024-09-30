@@ -4,25 +4,17 @@ import DatesDisplay from "./DatesDisplay";
 import ResponsiveDateTimePicker from "./ResponsiveDateTimePicker";
 import { AddCircleOutlineOutlined } from "@mui/icons-material";
 
-export default function DatesSection({ prevStep, nextStep, dates, setDates }) {
+export default function DatesSection({ dates, setDates }) {
   const [showPicker, setShowPicker] = useState(false);
 
   return (
-    <Stack spacing={3} px={3}>
-      <Stack
-        direction={{xs: "column-reverse", sm: "row"}}
-        spacing={3}
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Button variant="contained" onClick={prevStep} >Anterior</Button>
-        <Typography
+    <Stack spacing={3} px={6}>
+      <Typography
           variant="h1"
+          alignSelf="center"
         >
           Fechas
         </Typography>
-        <Button variant="contained" onClick={nextStep} >Siguiente</Button>
-      </Stack>
       <DatesDisplay dates={dates} setDates={setDates} />
       {!showPicker && (
         <Button

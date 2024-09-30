@@ -1,21 +1,14 @@
-import { Button, Stack, TextField, Typography } from "@mui/material";
+import { Stack, TextField, Typography } from "@mui/material";
 
-export default function MainDataSection({ nextStep, handleChange, formData }) {
+export default function MainDataSection({ handleChange, formData }) {
   return (
-    <Stack spacing={3} px={3}>
-      <Stack
-        direction={{ xs: "column-reverse", sm: "row" }}
-        spacing={3}
-        justifyContent="space-between"
-        alignItems="center"
-      >
+    <Stack spacing={3} px={6}>
         <Typography
           variant="h1"
+          alignSelf="center"
         >
           Datos principales
         </Typography>
-        <Button variant="contained" onClick={nextStep} >Siguiente</Button>
-      </Stack>
       <TextField
         name="name"
         label={"Nombre del evento"}
