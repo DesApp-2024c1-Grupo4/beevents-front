@@ -75,6 +75,7 @@ export function ReservationPage() {
 
   async function fetchEvent() {
     const event = await getEventById(eventId);
+    console.log(event);
     setEvent(event);
   }
 
@@ -561,13 +562,7 @@ export function ReservationPage() {
               <TableBody>
                 {seatMaps.map((sector, index) => {
                   const totalSeats = sector.rowsNumber * sector.seatsNumber;
-                  const occupiedSeats = sector.rows.reduce(
-                    (acc, row) =>
-                      acc +
-                      row.filter((seat) => seat.available === false).length,
-                    0
-                  );
-
+                  const occupiedSeats = sector.ocuped;
                   return (
                     <TableRow key={index}>
                       <TableCell
