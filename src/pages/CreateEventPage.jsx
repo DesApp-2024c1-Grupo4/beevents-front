@@ -39,6 +39,7 @@ export function CreateEventPage() {
   const userService = new UserService();
   const loggedUser = userService.getUserFromLocalStorage();
   const [step, setStep] = useState(1);
+  const [selectedLocationName, setSelectedLocationName] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     artist: "",
@@ -155,7 +156,7 @@ export function CreateEventPage() {
   };
 
   return loggedUser && loggedUser.role === "admin" ? (
-    <Container maxWidth="md">
+    <Container maxWidth="md" sx={{ mb: 5 }}>
       <Typography
         variant="h2"
         component="h2"
@@ -215,8 +216,14 @@ export function CreateEventPage() {
         setLocationId={setLocationId}
         sectors={sectors}
         setSectors={setSectors}
+        setSelectedLocationName={setSelectedLocationName}
+        selectedLocationName={selectedLocationName}
       />}
-      {step === 4 && <Confirmation handleSubmit={handleSubmit} formData={formData} />}
+      {step === 4 && <Confirmation
+        handleSubmit={handleSubmit}
+        formData={formData}
+        selectedLocationName={selectedLocationName}
+      />}
       {/** 
         <Button
           size="large"

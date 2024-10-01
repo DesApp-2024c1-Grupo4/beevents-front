@@ -13,11 +13,8 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
   const [capacity, setCapacity] = useState("1");
   const [name, setName] = useState("Nuevo sector");
   const [openNumbered, setOpenNumbered] = useState(false);
-  const [openNonNumbered, setOpenNonNumbered] = useState(false);
   const [seatMap, setSeatMap] = useState({ name: name, rows: [] });
-  const [reservedSeats, setReservedSeats] = useState([]);
   const [eliminatedSeats, setEliminatedSeats] = useState([]);
-  const [reservedPlaces, setReservedPlaces] = useState(0);
 
   const resetSeatMap = () => {
     const newRows = [];
@@ -34,10 +31,10 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
     }));
   }
 
-  const updateSeatMapAfterCancel = (reservedOrEliminatedArray) => {
+  const updateSeatMapAfterCancel = () => {
     const newRows = seatMap.rows.slice();
-    for (var i = 0; i < reservedOrEliminatedArray.length; i++) {
-      const seat = newRows[reservedOrEliminatedArray[i][0]][reservedOrEliminatedArray[i][1]]
+    for (var i = 0; i < eliminatedSeats.length; i++) {
+      const seat = newRows[eliminatedSeats[i][0]][eliminatedSeats[i][1]]
       seat.available = true;
       seat.reservedBy = "vacio";
     }
@@ -49,9 +46,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
 
   const resetAll = () => {
     resetSeatMap();
-    setReservedSeats([]);
     setEliminatedSeats([]);
-    setReservedPlaces(0);
   }
 
   useEffect(() => {
@@ -105,7 +100,6 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
     numbered: isNumbered,
     rowsNumber: isNumbered ? rows : 1,
     seatsNumber: isNumbered ? seats : Number(capacity),
-    preReserved: reservedSeats,
     eliminated: eliminatedSeats
   };
 
@@ -124,44 +118,23 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
   };
 
   const handleOpen = () => {
-    if (isNumbered) {
-      rows < 1 || seats < 1
-        ? alert("El sector debe tener al menos un asiento")
-        : setOpenNumbered(true);
-    } else {
-      capacity < 1
-        ? alert("El sector debe tener al menos un lugar para poder reservar")
-        : setOpenNonNumbered(true);
-    }
+    rows < 1 || seats < 1
+      ? alert("El sector debe tener al menos un asiento")
+      : setOpenNumbered(true);
   }
 
   const handleCloseNumbered = () => {
-    const reserved = []
     const eliminated = []
     for (var i = 0; i < rows; i++) {
       for (var j = 0; j < seats; j++) {
         const seat = seatMap.rows[i][j]
-        if (!eliminated.includes(seat._id) && !seat.available && seat.reservedBy === "vacio") {
+        if (!seat.available) {
           eliminated.push(seat._id)
-        } else if (!reserved.includes(seat._id) && seat.reservedBy === "pre-reserved") {
-          reserved.push(seat._id)
         }
       }
     }
-    setReservedSeats(reserved);
     setEliminatedSeats(eliminated);
     setOpenNumbered(false)
-  }
-
-  const handleNonNumberedReservationChange = (e) => {
-    setReservedPlaces(Number(e.target.value));
-  };
-
-  const handleCloseNonNumbered = () => {
-    reservedPlaces > 0
-      ? setReservedSeats([[reservedPlaces, 0]])
-      : setReservedSeats([])
-    setOpenNonNumbered(false);
   }
 
   const handleSeatClick = (clickedSeat) => {
@@ -170,7 +143,6 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
     const clickedSeatIdx = clickedSeat._id
     const clickedSeatCopy = rowsCopy[clickedSeatIdx[0]][clickedSeatIdx[1]]
     clickedSeatCopy.available = clickedSeat.available
-    clickedSeatCopy.reservedBy = clickedSeat.reservedBy
     setSeatMap(prevSeatMap => ({
       ...prevSeatMap,
       rows: rowsCopy
@@ -182,15 +154,8 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
     setIsNumbered(!isNumbered);
   }
 
-  const cancelReservations = () => {
-    if (isNumbered) {
-      updateSeatMapAfterCancel(reservedSeats);
-    }
-    setReservedSeats([]);
-  }
-
   const cancelDistribution = () => {
-    updateSeatMapAfterCancel(eliminatedSeats);
+    updateSeatMapAfterCancel();
     setEliminatedSeats([]);
   }
 
@@ -206,8 +171,8 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
         />
         <Stack
           direction={{ xs: "column-reverse", sm: "row" }}
-          alignItems="start"
-          justifyContent= {isNumbered ? "space-between" : "end"}
+          alignItems={{ xs: "center", sm: "start" }}
+          justifyContent={isNumbered ? "space-between" : "end"}
           spacing={3}
         >
           {isNumbered &&
@@ -218,40 +183,10 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
             >
               Personalizar disposición
             </Button>}
-          {reservedSeats.length > 0 &&
-            <Stack direction="row" alignItems="center">
-              <Tooltip
-                title="Cancelar reservas"
-                placement="bottom"
-                componentsProps={{
-                  tooltip: {
-                    sx: {
-                      bgcolor: "#000000",
-                      color: "white",
-                      fontSize: "14px",
-                      borderRadius: "4px",
-                      p: 1,
-                    },
-                  },
-                  arrow: {
-                    sx: {
-                      color: "#000000",
-                    },
-                  },
-                }}
-                arrow
-              >
-                <IconButton size="small" onClick={cancelReservations}>
-                  <Close fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Typography whiteSpace="nowrap" color={contrastGreen}>{`Reservado: ${isNumbered ? reservedSeats.length : reservedSeats[0][0]}`}</Typography>
-            </Stack>
-          }
           {eliminatedSeats.length > 0 &&
             <Stack direction="row" alignItems="center">
               <Tooltip
-                title="Resetear distribución"
+                title="Resetear disposición"
                 placement="bottom"
                 componentsProps={{
                   tooltip: {
@@ -454,7 +389,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
               rows={seatMap.rows}
               sectorName={seatMap.name}
               onSeatClick={handleSeatClick}
-              statuses={["Disponible","Eliminado"]}
+              statuses={["Disponible", "Eliminado"]}
               reserving={false}
             />
           )}
@@ -494,106 +429,6 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
             <Button onClick={() => setOpenNumbered(false)} size="small">Cancelar</Button>
             <Button onClick={() => resetSeatMap()} variant="outlined" size="small">Resetear</Button>
             <Button onClick={handleCloseNumbered} variant="contained" size="small">Aceptar</Button>
-          </Stack>
-
-        </Box>
-      </Modal>
-      <Modal
-        open={openNonNumbered}
-        onClose={handleCloseNonNumbered}
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "auto",
-            maxWidth: "90vw",
-            maxHeight: "95vh",
-            flexWrap: "wrap",
-            bgcolor: "#142539",
-            color: "lightgray",
-            border: "1px solid lightgray",
-            borderRadius: "5px",
-            boxShadow: 24,
-            p: 3,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Stack
-            spacing={2}
-            sx={{
-              color: "#fff",
-              fontSize: "18px",
-              letterSpacing: "2px",
-              marginBottom: "1rem",
-              paddingRight: "1rem",
-              paddingLeft: "1rem",
-              paddingBottom: "0.5rem",
-              borderBottom: "1px solid #01BB89",
-              textAlign: "center",
-            }}
-          >
-            <Typography sx={{ color: "#01BB89", fontWeight: 600 }}>
-              Reservar lugares
-            </Typography>
-            <Typography>{name}</Typography>
-          </Stack>
-          <Stack direction="row" spacing={3} p={2}>
-            <Typography id="cantidad" alignSelf="center">Cantidad</Typography>
-            <Input
-              value={reservedPlaces}
-              onChange={handleNonNumberedReservationChange}
-              size="small"
-              inputProps={{
-                step: 1,
-                min: 0,
-                max: capacity,
-                type: "number",
-                "aria-labelledby": "cantidad",
-              }}
-              sx={{ width: "55px", alignSelf: "center" }}
-            />
-          </Stack>
-          <Tooltip
-            title="Cerrar"
-            placement="left-start"
-            componentsProps={{
-              tooltip: {
-                sx: {
-                  bgcolor: "#000000",
-                  color: "white",
-                  fontSize: { xs: "10px", sm: "12px" },
-                  borderRadius: "4px",
-                  p: 1
-                },
-              },
-              arrow: {
-                sx: {
-                  color: "#000000",
-                },
-              },
-            }}
-            arrow
-          >
-            <IconButton
-              size="small"
-              onClick={() => setOpenNonNumbered(false)}
-              sx={{
-                position: "absolute",
-                top: "-1px",
-                right: "-2px"
-              }}>
-              <Close fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Stack direction="row" mt={2} spacing={2}>
-            <Button onClick={() => setOpenNonNumbered(false)} size="small">Cancelar</Button>
-            <Button variant="contained" onClick={handleCloseNonNumbered} size="small">Aceptar</Button>
           </Stack>
         </Box>
       </Modal>

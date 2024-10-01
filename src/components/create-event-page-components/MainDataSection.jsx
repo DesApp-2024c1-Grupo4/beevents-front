@@ -2,7 +2,7 @@ import { Stack, TextField, Typography } from "@mui/material";
 
 export default function MainDataSection({ handleChange, formData }) {
   return (
-    <Stack spacing={3} px={6}>
+    <Stack spacing={3} px={{xs: 3, sm: 6}}>
         <Typography
           variant="h1"
           alignSelf="center"

@@ -8,7 +8,7 @@ export default function DatesSection({ dates, setDates }) {
   const [showPicker, setShowPicker] = useState(false);
 
   return (
-    <Stack spacing={3} px={6}>
+    <Stack spacing={3} px={{xs: 3, sm: 6}}>
       <Typography
           variant="h1"
           alignSelf="center"

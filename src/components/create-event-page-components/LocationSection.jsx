@@ -26,13 +26,14 @@ export default function LocationSection({
   setLocationId,
   sectors,
   setSectors,
+  setSelectedLocationName,
+  selectedLocationName
 }) {
   const { contrastGreen } = customMuiTheme.colors;
   const [showForm, setShowForm] = useState(false);
   const [fetchedLocations, setFetchedLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState({});
   const [configurationsTemplates, setConfigurationsTemplates] = useState([]);
-  const [selectedLocationName, setSelectedLocationName] = useState("");
   const [configName, setConfigName] = useState("");
   const [configDescription, setConfigDescription] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -120,7 +121,7 @@ export default function LocationSection({
   };
 
   return (
-    <Stack spacing={3} px={6}>
+    <Stack spacing={3} px={{xs: 3, sm: 6}}>
       <Typography
         variant="h1"
         alignSelf="center"
