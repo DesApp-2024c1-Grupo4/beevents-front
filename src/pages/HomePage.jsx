@@ -26,12 +26,10 @@ export function HomePage() {
   useEffect(() => {
     const fetchEvents = async () => {
       const allEvents = await getAllEvents();
-      console.log(allEvents);
       const sortedEvents = orderEventsByDate(allEvents);
       setEventsOrderByDates(sortedEvents);
       const countedTickets = countReservedTickets(allEvents);
       setEventsOrderByTickets(countedTickets);
-      console.log(eventsOrderByTickets);
     };
     fetchEvents();
   }, []);
@@ -50,21 +48,7 @@ export function HomePage() {
       let reservedTicketsCount = 0;
       event.dates.forEach((date) => {
         date.sectors.forEach((sector) => {
-          if (sector.numbered) {
-            sector.rows.forEach((row) => {
-              row.forEach((seat) => {
-                if (!seat.available) {
-                  reservedTicketsCount++;
-                }
-              });
-            });
-          } else {
-            sector.rows.forEach((row) => {
-              row.forEach((seat) => {
-                reservedTicketsCount++;
-              });
-            });
-          }
+          reservedTicketsCount += sector.ocuped;
         });
       });
       return {

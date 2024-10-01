@@ -75,6 +75,7 @@ export function ReservationPage() {
 
   async function fetchEvent() {
     const event = await getEventById(eventId);
+    console.log(event);
     setEvent(event);
   }
 

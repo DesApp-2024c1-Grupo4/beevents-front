@@ -29,7 +29,7 @@ export default function MediaCard({
 
   useEffect(() => {
     if (inView) {
-      const increment = Math.floor(totalSeats / 30);
+      const increment = Math.floor(totalSeats / 10);
       const interval = setInterval(() => {
         setReservedSeats((prevSeats) =>
           prevSeats < totalSeats ? prevSeats + increment : totalSeats
