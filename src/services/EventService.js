@@ -36,7 +36,7 @@ export async function createEvent(event) {
     });
     return response.data;
   } catch (error) {
-    return error;
+    return null;
   }
 }
 
@@ -49,7 +49,7 @@ export async function updateEvent(event, id) {
     });
     return response.data;
   } catch (error) {
-    return error;
+    return null;
   }
 }
 

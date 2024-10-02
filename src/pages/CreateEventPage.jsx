@@ -23,6 +23,7 @@ import MainDataSection from "../components/create-event-page-components/MainData
 import Confirmation from "../components/create-event-page-components/Confirmation";
 import ProgressBar from "../components/create-event-page-components/ProgressBar";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import BeeventsModal from "../components/BeeventsModal";
 
 export function CreateEventPage() {
   const [datesArray, setDatesArray] = useState([]);
@@ -49,6 +50,8 @@ export function CreateEventPage() {
     user_id: loggedUser.id,
     dates: datesArray
   });
+  const [open, setOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   const nextStep = () => {
     setStep(step + 1);
@@ -69,24 +72,7 @@ export function CreateEventPage() {
   useEffect(() => {
     setDatesArray(dates.map((date) => ({ date_time: date, sectors: sectors })));
   }, [dates, sectors]);
-  /**
-  useEffect(() => {
-    setValue("location_id", locationId);
-  }, [locationId, setValue]);
 
-  useEffect(() => {
-    setValue("dates", datesArray);
-  }, [datesArray, setValue]);
- */
-  /*
-  useEffect(() => {
-    setValue("date_times", dates);
-  }, [dates, setValue]);
-
-  useEffect(() => {
-    setValue("sectors", sectors);
-  }, [sectors, setValue]);
-  */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -104,7 +90,8 @@ export function CreateEventPage() {
 
   useEffect(() => {
     if (event) {
-      reset({
+      setFormData({
+        ...formData,
         name: event.name,
         artist: event.artist,
         image: event.image,
@@ -122,137 +109,130 @@ export function CreateEventPage() {
   };
 
   const createNewEvent = async (formData) => {
-    try {
-      await createEvent(formData);
-      setSnackbarMessage("¡Evento creado exitosamente!");
-      setTimeout(navigate, 2000, "/account");
-      setTimeout(window.scrollTo, 2001, 0, 0);
-    } catch (error) {
-      console.log(error);
-      setSnackbarMessage("Hubo un error al crear el evento");
-    } finally {
-      setLoading(false);
-      setSnackbarOpen(true);
+    setModalMessage("Creando evento...");
+    setOpen(true);
+    const created = await createEvent(formData);
+    if (created) {
+      setModalMessage("¡Evento creado!");
+      setTimeout(() => {
+        setOpen(false);
+      }, 2500);
+    } else {
+      setModalMessage("Ocurrió un error al crear el evento");
+      setTimeout(() => {
+        setOpen(false);
+      }, 2500);
     }
+    //setTimeout(navigate, 2000, "/account");
+    //setTimeout(window.scrollTo, 2001, 0, 0);
   };
 
   const updateAnEvent = async (formData) => {
-    try {
-      await updateEvent(formData, eventId);
-      setSnackbarMessage("¡Evento editado exitosamente!");
-      setTimeout(navigate, 2000, "/account");
-      setTimeout(window.scrollTo, 2001, 0, 0);
-    } catch (error) {
-      console.log(error);
-      setSnackbarMessage("Hubo un error al editar el evento");
-    } finally {
-      setLoading(false);
-      setSnackbarOpen(true);
+    setModalMessage("Editando evento...");
+    setOpen(true);
+    const updated = await updateEvent(formData, eventId);
+    if (updated) {
+      setModalMessage("¡Evento editado!");
+      setTimeout(() => {
+        setOpen(false);
+      }, 2500);
+    } else {
+      setModalMessage("Ocurrió un error al editar el evento");
+      setTimeout(() => {
+        setOpen(false);
+      }, 2500);
     }
+    await updateEvent(formData, eventId);
+    //setTimeout(navigate, 2000, "/account");
+    //setTimeout(window.scrollTo, 2001, 0, 0);
   };
-
+  /** 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
+  */
 
   return loggedUser && loggedUser.role === "admin" ? (
-    <Container maxWidth="md" sx={{ mb: 5 }}>
-      <Typography
-        variant="h2"
-        component="h2"
-        gutterBottom
-        sx={{
-          color: contrastGreen,
-          mt: 4,
-          fontSize: {
-            xs: "1.5rem",
-            md: "2rem",
-          },
-          textAlign: { xs: "center", sm: "left" },
-        }}
-      >
-        {eventId ? "Editar evento" : "Crear un evento nuevo"}
-      </Typography>
-      <Stack
-        direction="row"
-        alignItems="start"
-        justifyContent="center"
-        mt={7}
-        mb={4}
-        spacing={{ xs: 1, sm: 4 }}
-      >
-        {step !== 1
-          ?
-          <IconButton
-            onClick={() => prevStep()}
-            sx={{
-              position: "relative",
-              bottom: "15px"
-            }}
-          >
-            <ArrowBack></ArrowBack>
-          </IconButton>
-          : <Box sx={{ width: "46px" }}></Box>
-        }
-        <ProgressBar currentStep={step} />
-        {step !== 4
-          ?
-          <IconButton
-            onClick={() => nextStep()}
-            sx={{
-              position: "relative",
-              bottom: "15px"
-            }}
-          >
-            <ArrowForward></ArrowForward>
-          </IconButton>
-          : <Box sx={{ width: "46px" }}></Box>
-        }
-      </Stack>
-      {step === 1 && <MainDataSection handleChange={handleChange} formData={formData} />}
-      {step === 2 && <DatesSection dates={dates} setDates={setDates} />}
-      {step === 3 && <LocationSection
-        locationId={locationId}
-        setLocationId={setLocationId}
-        sectors={sectors}
-        setSectors={setSectors}
-        setSelectedLocationName={setSelectedLocationName}
-        selectedLocationName={selectedLocationName}
-      />}
-      {step === 4 && <Confirmation
-        handleSubmit={handleSubmit}
-        formData={formData}
-        selectedLocationName={selectedLocationName}
-      />}
-      {/** 
-        <Button
-          size="large"
-          type="submit"
-          disabled={loading}
+    <>
+      <Container maxWidth="md" sx={{ mb: 5 }}>
+        <Typography
+          variant="h2"
+          component="h2"
+          gutterBottom
           sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: contrastGreen,
-            color: "whitesmoke",
-            alignSelf: { xs: "center", sm: "flex-end" },
-            "&.Mui-disabled": {
-              backgroundColor: contrastGreen,
-              color: "whitesmoke",
+            color: contrastGreen,
+            mt: 4,
+            fontSize: {
+              xs: "1.5rem",
+              md: "2rem",
             },
-            width: "120px",
+            textAlign: { xs: "center", sm: "left" },
           }}
         >
-          {loading ? (
-            <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
-          ) : (
-            <Typography variant="h2">
-              {eventId ? "Confirmar" : "Crear"}
-            </Typography>
-          )}
-        </Button>
-        */}
-    </Container>
+          {eventId ? "Editar evento" : "Crear un evento nuevo"}
+        </Typography>
+        <Stack
+          direction="row"
+          alignItems="start"
+          justifyContent="center"
+          mt={7}
+          mb={4}
+          spacing={{ xs: 1, sm: 4 }}
+        >
+          {step !== 1
+            ?
+            <IconButton
+              onClick={() => prevStep()}
+              sx={{
+                position: "relative",
+                bottom: "15px"
+              }}
+            >
+              <ArrowBack></ArrowBack>
+            </IconButton>
+            : <Box sx={{ width: "46px" }}></Box>
+          }
+          <ProgressBar currentStep={step} />
+          {step !== 4
+            ?
+            <IconButton
+              onClick={() => nextStep()}
+              sx={{
+                position: "relative",
+                bottom: "15px"
+              }}
+            >
+              <ArrowForward></ArrowForward>
+            </IconButton>
+            : <Box sx={{ width: "46px" }}></Box>
+          }
+        </Stack>
+        {step === 1 && <MainDataSection handleChange={handleChange} formData={formData} />}
+        {step === 2 && <DatesSection dates={dates} setDates={setDates} />}
+        {step === 3 && <LocationSection
+          locationId={locationId}
+          setLocationId={setLocationId}
+          sectors={sectors}
+          setSectors={setSectors}
+          setSelectedLocationName={setSelectedLocationName}
+          selectedLocationName={selectedLocationName}
+        />}
+        {step === 4 && <Confirmation
+          handleSubmit={handleSubmit}
+          formData={formData}
+          selectedLocationName={selectedLocationName}
+          eventId={eventId}
+        />}
+      </Container>
+      <BeeventsModal
+        open={open}
+        handleClose={() => setOpen(false)}
+        message={modalMessage}
+        processMessageIncludes={eventId? "Editando" : "Creando"}
+        errorMessageIncludes={"error"}
+        tryAgainMessage={"Revisa los datos y vuelve a intentarlo"}
+      />
+    </>
   ) : (
     <NotFound />
   );
