@@ -36,6 +36,7 @@ export async function createEvent(event) {
     });
     return response.data;
   } catch (error) {
+    console.log(error);
     return null;
   }
 }
@@ -49,7 +50,22 @@ export async function updateEvent(event, id) {
     });
     return response.data;
   } catch (error) {
+    console.log(error);
     return null;
+  }
+}
+
+export async function publishUnpublishEvent(state, id) {
+  try {
+    const response = await api.patch(`/event/${id}`, state, {
+      headers: {
+        Authorization: `Bearer ${us.getUserFromLocalStorage().access_token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null
   }
 }
 

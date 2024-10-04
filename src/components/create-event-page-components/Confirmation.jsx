@@ -8,7 +8,8 @@ export default function Confirmation({ handleSubmit, formData, selectedLocationN
   
   const name = formData.name ? formData.name : "Ninguno"
   const artist = formData.artist ? formData.artist : "Ninguno/a"
-  const image = validator.isURL(formData.image);
+  const image = formData.image;
+  const isValidImage = validator.isURL(image);
   const description = formData.description ? formData.description : "Ninguna"
   const location = selectedLocationName ? selectedLocationName : "Ninguno"
   const thereIsOneDateAtLeast = formData.dates.length > 0
@@ -72,7 +73,7 @@ export default function Confirmation({ handleSubmit, formData, selectedLocationN
           <Typography sx={dataStyle}>{name}</Typography>
           <Typography sx={titlesStyle}>Artista</Typography>
           <Typography sx={dataStyle}>{artist}</Typography>
-          {!image && <>
+          {!isValidImage && <>
             <Typography sx={titlesStyle}>Imagen</Typography>
             <Typography sx={dataStyle}>Ninguna</Typography>
           </>}
@@ -83,8 +84,8 @@ export default function Confirmation({ handleSubmit, formData, selectedLocationN
           {thereIsOneDateAtLeast &&
             <Stack>
               {dates.map(date =>
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={{ xs: 0, sm: 2 }}>
-                  <Typography key={indexOf(dates, date)} sx={dataStyle}>Fecha {indexOf(dates, date) + 1}:</Typography>
+                <Stack key={indexOf(dates, date)} direction={{ xs: "column", sm: "row" }} spacing={{ xs: 0, sm: 2 }}>
+                  <Typography sx={dataStyle}>Fecha {indexOf(dates, date) + 1}:</Typography>
                   <Typography sx={dataStyle}>{formatDate(date)}</Typography>
                 </Stack>
               )}
@@ -100,7 +101,7 @@ export default function Confirmation({ handleSubmit, formData, selectedLocationN
             </Stack>
           }
         </Stack>
-        {image && <Stack width={{ xs: "100%", sm: "50%" }}>
+        {isValidImage && <Stack width={{ xs: "100%", sm: "50%" }}>
           <img src={image} style={imageStyle} />
         </Stack>
         }
@@ -128,7 +129,7 @@ export default function Confirmation({ handleSubmit, formData, selectedLocationN
       ><Stack alignSelf="center">
           <Button
             size="large"
-            onClick={handleSubmit}
+            onClick={() => handleSubmit(formData)}
             disabled={!allowCreateOrEdit}
             sx={{
               display: "flex",

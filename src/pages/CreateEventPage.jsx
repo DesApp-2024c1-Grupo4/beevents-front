@@ -8,12 +8,14 @@ import {
   CircularProgress,
   Box,
   IconButton,
+  useMediaQuery,
 } from "@mui/material";
 import LocationSection from "../components/create-event-page-components/LocationSection";
 import DatesSection from "../components/create-event-page-components/DatesSection";
 import {
   createEvent,
   getEventById,
+  publishUnpublishEvent,
   updateEvent,
 } from "../services/EventService";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,8 +24,9 @@ import NotFound from "../components/NotFound";
 import MainDataSection from "../components/create-event-page-components/MainDataSection";
 import Confirmation from "../components/create-event-page-components/Confirmation";
 import ProgressBar from "../components/create-event-page-components/ProgressBar";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import { ArrowBack, ArrowForward, CheckBoxOutlineBlank, CheckCircle } from "@mui/icons-material";
 import BeeventsModal from "../components/BeeventsModal";
+import { useTheme } from "@emotion/react";
 
 export function CreateEventPage() {
   const [datesArray, setDatesArray] = useState([]);
@@ -34,7 +37,7 @@ export function CreateEventPage() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [event, setEvent] = useState(null);
-  const { contrastGreen } = customMuiTheme.colors;
+  const { contrastGreen, oceanicBlue } = customMuiTheme.colors;
   const { eventId } = useParams();
   const navigate = useNavigate();
   const userService = new UserService();
@@ -52,6 +55,9 @@ export function CreateEventPage() {
   });
   const [open, setOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [createdEventId, setEventCreatedId] = useState(null);
+  const [publicated, setPublicated] = useState(false);
+  const [edited, setEdited] = useState(false);
 
   const nextStep = () => {
     setStep(step + 1);
@@ -114,17 +120,15 @@ export function CreateEventPage() {
     const created = await createEvent(formData);
     if (created) {
       setModalMessage("¡Evento creado!");
-      setTimeout(() => {
-        setOpen(false);
-      }, 2500);
+      setEventCreatedId(created._id);
+      window.scrollTo(0, 0);
+      setOpen(false);
     } else {
       setModalMessage("Ocurrió un error al crear el evento");
       setTimeout(() => {
         setOpen(false);
       }, 2500);
     }
-    //setTimeout(navigate, 2000, "/account");
-    //setTimeout(window.scrollTo, 2001, 0, 0);
   };
 
   const updateAnEvent = async (formData) => {
@@ -133,102 +137,236 @@ export function CreateEventPage() {
     const updated = await updateEvent(formData, eventId);
     if (updated) {
       setModalMessage("¡Evento editado!");
-      setTimeout(() => {
-        setOpen(false);
-      }, 2500);
+      setEdited(true);
+      window.scrollTo(0, 0);
+      setOpen(false);
     } else {
       setModalMessage("Ocurrió un error al editar el evento");
       setTimeout(() => {
         setOpen(false);
       }, 2500);
     }
-    await updateEvent(formData, eventId);
-    //setTimeout(navigate, 2000, "/account");
-    //setTimeout(window.scrollTo, 2001, 0, 0);
   };
-  /** 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-  */
+
+  const publishEvent = async (idEvent) => {
+    setModalMessage("Publicando evento...");
+    setOpen(true);
+    const state = { publicated: true }
+    const publicated = await publishUnpublishEvent(state, idEvent)
+    if (publicated) {
+      setModalMessage("¡Evento publicado!");
+      setPublicated(true);
+      setOpen(false);
+    } else {
+      setModalMessage("Ocurrió un error al publicar el evento");
+      setTimeout(() => {
+        setOpen(false);
+      }, 2500);
+    }
+  }
 
   return loggedUser && loggedUser.role === "admin" ? (
     <>
-      <Container maxWidth="md" sx={{ mb: 5 }}>
-        <Typography
-          variant="h2"
-          component="h2"
-          gutterBottom
-          sx={{
-            color: contrastGreen,
-            mt: 4,
-            fontSize: {
-              xs: "1.5rem",
-              md: "2rem",
-            },
-            textAlign: { xs: "center", sm: "left" },
-          }}
-        >
-          {eventId ? "Editar evento" : "Crear un evento nuevo"}
-        </Typography>
-        <Stack
-          direction="row"
-          alignItems="start"
-          justifyContent="center"
-          mt={7}
-          mb={4}
-          spacing={{ xs: 1, sm: 4 }}
-        >
-          {step !== 1
-            ?
-            <IconButton
-              onClick={() => prevStep()}
+      {!createdEventId && !edited &&
+        <Container maxWidth="md" sx={{ mb: 5 }}>
+          <Typography
+            variant="h2"
+            component="h2"
+            gutterBottom
+            sx={{
+              color: contrastGreen,
+              mt: 4,
+              fontSize: {
+                xs: "1.5rem",
+                md: "2rem",
+              },
+              textAlign: { xs: "center", sm: "left" },
+            }}
+          >
+            {eventId ? "Editar evento" : "Crear un evento nuevo"}
+          </Typography>
+          <Stack
+            direction="row"
+            alignItems="start"
+            justifyContent="center"
+            mt={7}
+            mb={4}
+            spacing={{ xs: 1, sm: 4 }}
+          >
+            {step !== 1
+              ?
+              <IconButton
+                onClick={() => prevStep()}
+                sx={{
+                  position: "relative",
+                  bottom: "15px"
+                }}
+              >
+                <ArrowBack></ArrowBack>
+              </IconButton>
+              : <Box sx={{ width: "46px" }}></Box>
+            }
+            <ProgressBar currentStep={step} />
+            {step !== 4
+              ?
+              <IconButton
+                onClick={() => nextStep()}
+                sx={{
+                  position: "relative",
+                  bottom: "15px"
+                }}
+              >
+                <ArrowForward></ArrowForward>
+              </IconButton>
+              : <Box sx={{ width: "46px" }}></Box>
+            }
+          </Stack>
+          {step === 1 && <MainDataSection handleChange={handleChange} formData={formData} />}
+          {step === 2 && <DatesSection dates={dates} setDates={setDates} />}
+          {step === 3 && <LocationSection
+            locationId={locationId}
+            setLocationId={setLocationId}
+            sectors={sectors}
+            setSectors={setSectors}
+            setSelectedLocationName={setSelectedLocationName}
+            selectedLocationName={selectedLocationName}
+          />}
+          {step === 4 && <Confirmation
+            handleSubmit={handleSubmit}
+            formData={formData}
+            selectedLocationName={selectedLocationName}
+            eventId={eventId}
+          />}
+        </Container>
+      }
+      {(createdEventId || edited) &&
+        <Container maxWidth="md" sx={{ my: 10 }}>
+          <Stack alignItems="center" spacing={3}>
+            <Typography
+              variant="h2"
               sx={{
-                position: "relative",
-                bottom: "15px"
+                color: contrastGreen,
+                mt: 4,
+                fontSize: {
+                  xs: "1.5rem",
+                  sm: "2rem",
+                },
+                textAlign: "center",
               }}
             >
-              <ArrowBack></ArrowBack>
-            </IconButton>
-            : <Box sx={{ width: "46px" }}></Box>
-          }
-          <ProgressBar currentStep={step} />
-          {step !== 4
-            ?
-            <IconButton
-              onClick={() => nextStep()}
-              sx={{
-                position: "relative",
-                bottom: "15px"
-              }}
-            >
-              <ArrowForward></ArrowForward>
-            </IconButton>
-            : <Box sx={{ width: "46px" }}></Box>
-          }
-        </Stack>
-        {step === 1 && <MainDataSection handleChange={handleChange} formData={formData} />}
-        {step === 2 && <DatesSection dates={dates} setDates={setDates} />}
-        {step === 3 && <LocationSection
-          locationId={locationId}
-          setLocationId={setLocationId}
-          sectors={sectors}
-          setSectors={setSectors}
-          setSelectedLocationName={setSelectedLocationName}
-          selectedLocationName={selectedLocationName}
-        />}
-        {step === 4 && <Confirmation
-          handleSubmit={handleSubmit}
-          formData={formData}
-          selectedLocationName={selectedLocationName}
-          eventId={eventId}
-        />}
-      </Container>
+              {!edited && !publicated && "¡Evento creado!"}
+              {!edited && publicated && "¡Evento publicado!"}
+              {edited && "¡Evento editado!"}
+            </Typography>
+            <CheckCircle sx={{ fontSize: { xs: 40, sm: 60 }, color: contrastGreen }} />
+            {!publicated && !edited &&
+              <>
+                <Typography sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
+                  ¿Quieres publicar el evento ahora?
+                </Typography>
+                <Stack spacing={2}>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: contrastGreen,
+                        color: oceanicBlue,
+                        borderColor: oceanicBlue
+                      }
+                    }}
+                    onClick={() => publishEvent(createdEventId)}
+                  >
+                    <Typography sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
+                      Sí
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: contrastGreen,
+                        color: oceanicBlue,
+                        borderColor: oceanicBlue
+                      }
+                    }}
+                    onClick={() => navigate(`/reservation/${createdEventId}`)}
+                  >
+                    <Typography sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
+                      No, quiero pre-reservar
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: contrastGreen,
+                        color: oceanicBlue,
+                        borderColor: oceanicBlue
+                      }
+                    }}
+                    onClick={() => navigate(`/account`)}
+                  >
+                    <Typography sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
+                      No, ya terminé
+                    </Typography>
+                  </Button>
+                </Stack>
+              </>}
+            {(publicated || edited) && <Stack spacing={2}>
+              <Button
+                variant="outlined"
+                sx={{
+                  "&:hover": {
+                    backgroundColor: contrastGreen,
+                    color: oceanicBlue,
+                    borderColor: oceanicBlue
+                  }
+                }}
+                onClick={edited? () => navigate(`/event/${eventId}`) : () => navigate(`/events`)}
+              >
+                <Typography sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
+                  Ver evento{edited? " editado" : "s publicados"}
+                </Typography>
+              </Button>
+              <Button
+                variant="outlined"
+                sx={{
+                  "&:hover": {
+                    backgroundColor: contrastGreen,
+                    color: oceanicBlue,
+                    borderColor: oceanicBlue
+                  }
+                }}
+                onClick={() => navigate("/account")}
+              >
+                <Typography sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
+                  Ir a mi cuenta
+                </Typography>
+              </Button>
+              <Button
+                variant="outlined"
+                sx={{
+                  "&:hover": {
+                    backgroundColor: contrastGreen,
+                    color: oceanicBlue,
+                    borderColor: oceanicBlue
+                  }
+                }}
+                onClick={() => navigate("/")}
+              >
+                <Typography sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
+                  Ir a inicio
+                </Typography>
+              </Button>
+            </Stack>}
+          </Stack>
+        </Container>
+      }
       <BeeventsModal
         open={open}
         handleClose={() => setOpen(false)}
         message={modalMessage}
-        processMessageIncludes={eventId? "Editando" : "Creando"}
+        processMessageIncludes={"ando"}
         errorMessageIncludes={"error"}
         tryAgainMessage={"Revisa los datos y vuelve a intentarlo"}
       />
