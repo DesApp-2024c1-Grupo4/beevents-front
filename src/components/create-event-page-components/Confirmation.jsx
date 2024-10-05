@@ -5,7 +5,7 @@ import validator from "validator";
 
 export default function Confirmation({ handleSubmit, formData, selectedLocationName, eventId }) {
   const { contrastGreen } = customMuiTheme.colors;
-  
+
   const name = formData.name ? formData.name : "Ninguno"
   const artist = formData.artist ? formData.artist : "Ninguno/a"
   const image = formData.image;
@@ -17,7 +17,7 @@ export default function Confirmation({ handleSubmit, formData, selectedLocationN
   const thereIsOneSectorAtLeast = thereIsOneDateAtLeast && formData.dates[0].sectors.length > 0
   const sectors = thereIsOneSectorAtLeast && formData.dates[0].sectors.map(sector => sector.name)
   const allowCreateOrEdit = name && artist && image && description && location && thereIsOneDateAtLeast && thereIsOneSectorAtLeast
-  
+
   const formatDate = (date) => {
     return (
       new Date(date).toLocaleDateString()
@@ -62,52 +62,43 @@ export default function Confirmation({ handleSubmit, formData, selectedLocationN
         Confirma los datos del evento
       </Typography>
       <Stack
-        direction={{ xs: "column-reverse", sm: "row" }}
-        spacing={{ xs: 3, sm: 5 }}
+        spacing={3}
       >
-        <Stack
-          spacing={2}
-          width={{ xs: "100%", sm: "50%" }}
-        >
-          <Typography sx={titlesStyle}>Nombre</Typography>
-          <Typography sx={dataStyle}>{name}</Typography>
-          <Typography sx={titlesStyle}>Artista</Typography>
-          <Typography sx={dataStyle}>{artist}</Typography>
-          {!isValidImage && <>
-            <Typography sx={titlesStyle}>Imagen</Typography>
-            <Typography sx={dataStyle}>Ninguna</Typography>
-          </>}
-          <Typography sx={titlesStyle}>Descripción</Typography>
-          <Typography sx={dataStyle}>{description}</Typography>
-          <Typography sx={titlesStyle}>Fechas</Typography>
-          {!thereIsOneDateAtLeast && <Typography sx={dataStyle}>Ninguna</Typography>}
-          {thereIsOneDateAtLeast &&
-            <Stack>
-              {dates.map(date =>
-                <Stack key={indexOf(dates, date)} direction={{ xs: "column", sm: "row" }} spacing={{ xs: 0, sm: 2 }}>
-                  <Typography sx={dataStyle}>Fecha {indexOf(dates, date) + 1}:</Typography>
-                  <Typography sx={dataStyle}>{formatDate(date)}</Typography>
-                </Stack>
-              )}
-            </Stack>
-          }
-          <Typography sx={titlesStyle}>Predio</Typography>
-          <Typography sx={dataStyle}>{location}</Typography>
-          <Typography sx={titlesStyle}>Sectores</Typography>
-          {!thereIsOneSectorAtLeast && <Typography sx={dataStyle}>Ninguno</Typography>}
-          {thereIsOneSectorAtLeast &&
-            <Stack>
-              {sectors.map(sector => <Typography key={indexOf(sectors, sector)} sx={dataStyle}>{sector}</Typography>)}
-            </Stack>
-          }
-        </Stack>
-        {isValidImage && <Stack width={{ xs: "100%", sm: "50%" }}>
-          <img src={image} style={imageStyle} />
-        </Stack>
+        {isValidImage && <img src={image} style={imageStyle} />}
+        <Typography sx={titlesStyle}>Nombre</Typography>
+        <Typography sx={dataStyle}>{name}</Typography>
+        <Typography sx={titlesStyle}>Artista</Typography>
+        <Typography sx={dataStyle}>{artist}</Typography>
+        {!isValidImage && <>
+          <Typography sx={titlesStyle}>Imagen</Typography>
+          <Typography sx={dataStyle}>Ninguna</Typography>
+        </>}
+        <Typography sx={titlesStyle}>Descripción</Typography>
+        <Typography sx={dataStyle}>{description}</Typography>
+        <Typography sx={titlesStyle}>Fechas</Typography>
+        {!thereIsOneDateAtLeast && <Typography sx={dataStyle}>Ninguna</Typography>}
+        {thereIsOneDateAtLeast &&
+          <Stack>
+            {dates.map(date =>
+              <Stack key={indexOf(dates, date)} direction={{ xs: "column", sm: "row" }} spacing={{ xs: 0, sm: 2 }}>
+                <Typography sx={dataStyle}>Fecha {indexOf(dates, date) + 1}:</Typography>
+                <Typography sx={dataStyle}>{formatDate(date)}</Typography>
+              </Stack>
+            )}
+          </Stack>
+        }
+        <Typography sx={titlesStyle}>Predio</Typography>
+        <Typography sx={dataStyle}>{location}</Typography>
+        <Typography sx={titlesStyle}>Sectores</Typography>
+        {!thereIsOneSectorAtLeast && <Typography sx={dataStyle}>Ninguno</Typography>}
+        {thereIsOneSectorAtLeast &&
+          <Stack>
+            {sectors.map(sector => <Typography key={indexOf(sectors, sector)} sx={dataStyle}>{sector}</Typography>)}
+          </Stack>
         }
       </Stack>
       <Tooltip
-        title={!allowCreateOrEdit? "¡Te falta completar datos!": ""}
+        title={!allowCreateOrEdit ? "¡Te falta completar datos!" : ""}
         placement="top"
         componentsProps={{
           tooltip: {
