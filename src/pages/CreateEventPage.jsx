@@ -5,8 +5,7 @@ import {
   Container,
   Stack,
   Typography,
-  Box,
-  IconButton
+  Tooltip
 } from "@mui/material";
 import LocationSection from "../components/create-event-page-components/LocationSection";
 import DatesSection from "../components/create-event-page-components/DatesSection";
@@ -22,7 +21,7 @@ import NotFound from "../components/NotFound";
 import MainDataSection from "../components/create-event-page-components/MainDataSection";
 import Confirmation from "../components/create-event-page-components/Confirmation";
 import ProgressBar from "../components/create-event-page-components/ProgressBar";
-import { ArrowBack, ArrowBackIos, ArrowForward, ArrowForwardIos, CheckCircle } from "@mui/icons-material";
+import { ArrowBackIos, ArrowForwardIos, CheckCircle, Info } from "@mui/icons-material";
 import BeeventsModal from "../components/BeeventsModal";
 
 export function CreateEventPage() {
@@ -55,7 +54,7 @@ export function CreateEventPage() {
 
   const navButtonStyle = {
     position: "fixed",
-    top: "140px",
+    top: "155px",
     minWidth: "0px",
     color: "lightslategray",
     "&:hover": { color: contrastGreen, backgroundColor: "inherit" }
@@ -171,24 +170,56 @@ export function CreateEventPage() {
       {!createdEventId && !edited &&
         <>
           <Container maxWidth="md" sx={{ mb: 5 }}>
-            <Typography
-              variant="h2"
-              component="h2"
-              gutterBottom
-              sx={{
-                color: contrastGreen,
-                mt: 4,
-                fontSize: {
-                  xs: "1.5rem",
-                  md: "2rem",
-                },
-                textAlign: { xs: "center", sm: "left" },
-              }}
+            <Stack
+              alignItems="center"
+              justifyContent="center"
+              my={6}
+              spacing={{ xs: 1.5, sm: 2 }}
             >
-              {eventId ? "Editar evento" : "Crear un evento nuevo"}
-            </Typography>
-            <Stack alignItems="center" mt={7} mb={4} >
-              <ProgressBar currentStep={step} />
+              <Typography
+                variant="h2"
+                sx={{
+                  color: contrastGreen,
+                  fontSize: {
+                    xs: "1.5rem",
+                    md: "2rem",
+                  },
+                  alignSelf: { xs: "center", sm: "start" }
+                }}
+              >
+                {eventId ? "Editar evento" : "Crear un evento nuevo"}
+              </Typography>
+              <Tooltip
+                title="Usa las flechas laterales o toca un paso de la barra de progreso para navegar"
+                placement="top-start"
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      bgcolor: "#000000",
+                      color: "white",
+                      fontSize: {xs: "12px", sm: "14px"},
+                      borderRadius: "4px",
+                      textAlign: "center",
+                      p: 1,
+                    },
+                  },
+                  arrow: {
+                    sx: {
+                      color: "#000000",
+                    },
+                  },
+                }}
+                arrow
+              >
+                <Info sx={{
+                  fontSize: { xs: 18, sm: 25 },
+                  alignSelf: "end",
+                  position: "relative",
+                  bottom: { xs: "60px", sm: "50px" }
+                }}
+                />
+              </Tooltip>
+              <ProgressBar currentStep={step} setStep={setStep} />
             </Stack>
             <Container maxWidth="sm">
               {step === 1 && <MainDataSection handleChange={handleChange} formData={formData} />}

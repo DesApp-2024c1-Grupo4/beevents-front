@@ -1,7 +1,7 @@
-import { Box, Slider, Stack } from "@mui/material";
+import { Box, Button, Slider, Stack } from "@mui/material";
 import { customMuiTheme } from "../../config/customMuiTheme";
 
-function ProgressBar({ currentStep }) {
+function ProgressBar({ currentStep, setStep }) {
   const { contrastGreen } = customMuiTheme.colors;
   const getStepValue = (step) => {
     switch (step) {
@@ -18,6 +18,29 @@ function ProgressBar({ currentStep }) {
     }
   };
 
+  const SliderButton = ({ step }) => {
+    return (
+      <Button
+        onClick={() => setStep(Number(step))}
+        sx={{
+          fontSize: "13px",
+          fontWeight: "500",
+          color: getStepColor(Number(step), currentStep),
+          "&:hover": {
+            backgroundColor: "inherit",
+            borderBottom: `1px solid ${contrastGreen}`,
+            p: 0
+          },
+          minWidth: 0,
+          p: 0,
+          borderRadius: "5px 5px 0px 0px"
+        }}
+      >
+        {`PASO ${step}`}
+      </Button>
+    )
+  }
+
   const getStepColor = (step, targetStep) => {
     return step === targetStep ? contrastGreen : "lightslategray";
   };
@@ -30,7 +53,7 @@ function ProgressBar({ currentStep }) {
       justifyContent="center"
       alignItems="center"
       spacing={0.7}
-      >
+    >
       <Slider
         size="small"
         value={sliderValue}
@@ -64,42 +87,10 @@ function ProgressBar({ currentStep }) {
           justifyContent: "space-between",
         }}
       >
-        <p
-          style={{
-            fontSize: "13px",
-            fontWeight: "500",
-            color: getStepColor(1, currentStep),
-          }}
-        >
-          PASO 1
-        </p>
-        <p
-          style={{
-            fontSize: "13px",
-            fontWeight: "500",
-            color: getStepColor(2, currentStep),
-          }}
-        >
-          PASO 2
-        </p>
-        <p
-          style={{
-            fontSize: "13px",
-            fontWeight: "500",
-            color: getStepColor(3, currentStep),
-          }}
-        >
-          PASO 3
-        </p>
-        <p
-          style={{
-            fontSize: "13px",
-            fontWeight: "500",
-            color: getStepColor(4, currentStep),
-          }}
-        >
-          PASO <span className="special-font">4</span>
-        </p>
+        <SliderButton step={"1"} />
+        <SliderButton step={"2"} />
+        <SliderButton step={"3"} />
+        <SliderButton step={"4"} />
       </Box>
     </Stack>
   );
