@@ -22,7 +22,7 @@ import NotFound from "../components/NotFound";
 import MainDataSection from "../components/create-event-page-components/MainDataSection";
 import Confirmation from "../components/create-event-page-components/Confirmation";
 import ProgressBar from "../components/create-event-page-components/ProgressBar";
-import { ArrowBack, ArrowForward, CheckCircle } from "@mui/icons-material";
+import { ArrowBack, ArrowBackIos, ArrowForward, ArrowForwardIos, CheckCircle } from "@mui/icons-material";
 import BeeventsModal from "../components/BeeventsModal";
 
 export function CreateEventPage() {
@@ -52,6 +52,14 @@ export function CreateEventPage() {
   const [createdEventId, setEventCreatedId] = useState(null);
   const [publicated, setPublicated] = useState(false);
   const [edited, setEdited] = useState(false);
+
+  const navButtonStyle = {
+    position: "fixed",
+    top: "140px",
+    minWidth: "0px",
+    color: "lightslategray",
+    "&:hover": { color: contrastGreen, backgroundColor: "inherit" }
+  }
 
   const nextStep = () => {
     setStep(step + 1);
@@ -158,91 +166,83 @@ export function CreateEventPage() {
     }
   }
 
-  const text = "hola"
-
   return loggedUser && loggedUser.role === "admin" ? (
     <>
       {!createdEventId && !edited &&
-        <Container maxWidth="md" sx={{ mb: 5 }}>
-          <Typography
-            variant="h2"
-            component="h2"
-            gutterBottom
-            sx={{
-              color: contrastGreen,
-              mt: 4,
-              fontSize: {
-                xs: "1.5rem",
-                md: "2rem",
-              },
-              textAlign: { xs: "center", sm: "left" },
-            }}
-          >
-            {eventId ? "Editar evento" : "Crear un evento nuevo"}
-          </Typography>
-          <Stack
-            direction="row"
-            alignItems="start"
-            justifyContent="center"
-            mt={7}
-            mb={4}
-            spacing={{ xs: 1, sm: 4 }}
-          >
-            {step !== 1
-              ?
-              <Button
-                size="small"
-                onClick={() => prevStep()}
-                sx={{
-                  "&:after": { content: { xs: `""`, sm: `"Anterior"` } },
-                  position: "relative",
-                  bottom: "15px",
-                  minWidth: "0px",
-                  color: "lightslategray",
-                  "&:hover": { color: contrastGreen}
-                }}
-              >
-                <ArrowBack sx={{ pr: 1 }} />
-              </Button>
-              : <Box sx={{ width: {xs: "46px", sm: "100px"} }}></Box>
-            }
-            <ProgressBar currentStep={step} />
-            {step !== 4
-              ?
-              <Button
-                size="small"
-                onClick={() => nextStep()}
-                sx={{
-                  "&:before": { content: { xs: `""`, sm: `"Siguiente"` } },
-                  position: "relative",
-                  bottom: "15px",
-                  minWidth: "0px",
-                  color: "lightslategray",
-                  "&:hover": { color: contrastGreen}
-                }}
-              >
-                <ArrowForward sx={{ pl: 1 }} />
-              </Button>
-              : <Box sx={{ width: {xs: "46px", sm: "100px"} }}></Box>
-            }
-          </Stack>
-          {step === 1 && <MainDataSection handleChange={handleChange} formData={formData} />}
-          {step === 2 && <DatesSection dates={dates} setDates={setDates} />}
-          {step === 3 && <LocationSection
-            locationId={locationId}
-            setLocationId={setLocationId}
-            sectors={sectors}
-            setSectors={setSectors}
-            setSelectedLocationName={setSelectedLocationName}
-            selectedLocationName={selectedLocationName}
-          />}
-          {step === 4 && <Confirmation
-            handleSubmit={handleSubmit}
-            formData={formData}
-            selectedLocationName={selectedLocationName}
-            eventId={eventId}
-          />}
-        </Container >
+        <>
+          <Container maxWidth="md" sx={{ mb: 5 }}>
+            <Typography
+              variant="h2"
+              component="h2"
+              gutterBottom
+              sx={{
+                color: contrastGreen,
+                mt: 4,
+                fontSize: {
+                  xs: "1.5rem",
+                  md: "2rem",
+                },
+                textAlign: { xs: "center", sm: "left" },
+              }}
+            >
+              {eventId ? "Editar evento" : "Crear un evento nuevo"}
+            </Typography>
+            <Stack alignItems="center" mt={7} mb={4} >
+              <ProgressBar currentStep={step} />
+            </Stack>
+            <Container maxWidth="sm">
+              {step === 1 && <MainDataSection handleChange={handleChange} formData={formData} />}
+              {step === 2 && <DatesSection dates={dates} setDates={setDates} />}
+              {step === 3 && <LocationSection
+                locationId={locationId}
+                setLocationId={setLocationId}
+                sectors={sectors}
+                setSectors={setSectors}
+                setSelectedLocationName={setSelectedLocationName}
+                selectedLocationName={selectedLocationName}
+              />}
+              {step === 4 && <Confirmation
+                handleSubmit={handleSubmit}
+                formData={formData}
+                selectedLocationName={selectedLocationName}
+                eventId={eventId}
+              />}
+            </Container>
+          </Container >
+          {step !== 1
+            &&
+            <Button
+              onClick={() => prevStep()}
+              sx={{
+                ...navButtonStyle,
+                "&:after": { content: { sm: `""`, md: `"Anterior"` } },
+                left: "0px",
+                py: 30,
+                pl: { xs: 0, sm: 3, md: 10, lg: 30, xl: 50 },
+                pr: { xs: 0, sm: 1 },
+                borderRadius: "250px 10px 10px 250px"
+              }}
+            >
+              <ArrowBackIos sx={{ fontSize: 50 }} />
+            </Button>
+          }
+          {step !== 4
+            &&
+            <Button
+              onClick={() => nextStep()}
+              sx={{
+                ...navButtonStyle,
+                "&:before": { content: { sm: `""`, md: `"Siguiente"` } },
+                right: { xs: "-10px", sm: "0px" },
+                py: 30,
+                pr: { xs: 0, sm: 3, md: 10, lg: 30, xl: 50 },
+                borderRadius: "10px 250px 250px 10px"
+              }}
+            >
+              <ArrowForwardIos sx={{ fontSize: 50 }} />
+            </Button>
+          }
+        </>
       }
       {
         (createdEventId || edited) &&
