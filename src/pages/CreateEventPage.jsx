@@ -5,10 +5,8 @@ import {
   Container,
   Stack,
   Typography,
-  CircularProgress,
   Box,
-  IconButton,
-  useMediaQuery,
+  IconButton
 } from "@mui/material";
 import LocationSection from "../components/create-event-page-components/LocationSection";
 import DatesSection from "../components/create-event-page-components/DatesSection";
@@ -24,18 +22,14 @@ import NotFound from "../components/NotFound";
 import MainDataSection from "../components/create-event-page-components/MainDataSection";
 import Confirmation from "../components/create-event-page-components/Confirmation";
 import ProgressBar from "../components/create-event-page-components/ProgressBar";
-import { ArrowBack, ArrowForward, CheckBoxOutlineBlank, CheckCircle } from "@mui/icons-material";
+import { ArrowBack, ArrowForward, CheckCircle } from "@mui/icons-material";
 import BeeventsModal from "../components/BeeventsModal";
-import { useTheme } from "@emotion/react";
 
 export function CreateEventPage() {
   const [datesArray, setDatesArray] = useState([]);
   const [sectors, setSectors] = useState([]);
   const [dates, setDates] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [locationId, setLocationId] = useState("");
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [event, setEvent] = useState(null);
   const { contrastGreen, oceanicBlue } = customMuiTheme.colors;
   const { eventId } = useParams();
@@ -110,7 +104,6 @@ export function CreateEventPage() {
   }, [event]);
 
   const handleSubmit = (formData) => {
-    setLoading(true);
     eventId ? updateAnEvent(formData) : createNewEvent(formData);
   };
 
@@ -165,6 +158,8 @@ export function CreateEventPage() {
     }
   }
 
+  const text = "hola"
+
   return loggedUser && loggedUser.role === "admin" ? (
     <>
       {!createdEventId && !edited &&
@@ -195,30 +190,40 @@ export function CreateEventPage() {
           >
             {step !== 1
               ?
-              <IconButton
+              <Button
+                size="small"
                 onClick={() => prevStep()}
                 sx={{
+                  "&:after": { content: { xs: `""`, sm: `"Anterior"` } },
                   position: "relative",
-                  bottom: "15px"
+                  bottom: "15px",
+                  minWidth: "0px",
+                  color: "lightslategray",
+                  "&:hover": { color: contrastGreen}
                 }}
               >
-                <ArrowBack></ArrowBack>
-              </IconButton>
-              : <Box sx={{ width: "46px" }}></Box>
+                <ArrowBack sx={{ pr: 1 }} />
+              </Button>
+              : <Box sx={{ width: {xs: "46px", sm: "100px"} }}></Box>
             }
             <ProgressBar currentStep={step} />
             {step !== 4
               ?
-              <IconButton
+              <Button
+                size="small"
                 onClick={() => nextStep()}
                 sx={{
+                  "&:before": { content: { xs: `""`, sm: `"Siguiente"` } },
                   position: "relative",
-                  bottom: "15px"
+                  bottom: "15px",
+                  minWidth: "0px",
+                  color: "lightslategray",
+                  "&:hover": { color: contrastGreen}
                 }}
               >
-                <ArrowForward></ArrowForward>
-              </IconButton>
-              : <Box sx={{ width: "46px" }}></Box>
+                <ArrowForward sx={{ pl: 1 }} />
+              </Button>
+              : <Box sx={{ width: {xs: "46px", sm: "100px"} }}></Box>
             }
           </Stack>
           {step === 1 && <MainDataSection handleChange={handleChange} formData={formData} />}
@@ -237,9 +242,10 @@ export function CreateEventPage() {
             selectedLocationName={selectedLocationName}
             eventId={eventId}
           />}
-        </Container>
+        </Container >
       }
-      {(createdEventId || edited) &&
+      {
+        (createdEventId || edited) &&
         <Container maxWidth="md" sx={{ my: 10 }}>
           <Stack alignItems="center" spacing={3}>
             <Typography
@@ -322,10 +328,10 @@ export function CreateEventPage() {
                     borderColor: oceanicBlue
                   }
                 }}
-                onClick={edited? () => navigate(`/event/${eventId}`) : () => navigate(`/events`)}
+                onClick={edited ? () => navigate(`/event/${eventId}`) : () => navigate(`/events`)}
               >
                 <Typography sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
-                  Ver evento{edited? " editado" : "s publicados"}
+                  Ver evento{edited ? " editado" : "s publicados"}
                 </Typography>
               </Button>
               <Button
