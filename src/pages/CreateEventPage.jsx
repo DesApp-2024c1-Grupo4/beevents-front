@@ -54,7 +54,7 @@ export function CreateEventPage() {
 
   const navButtonStyle = {
     position: "fixed",
-    top: "155px",
+    top: "175px",
     minWidth: "0px",
     color: "lightslategray",
     "&:hover": { color: contrastGreen, backgroundColor: "inherit" }
@@ -191,7 +191,7 @@ export function CreateEventPage() {
               </Typography>
               <Tooltip
                 title="Usa las flechas laterales o toca un paso de la barra de progreso para navegar"
-                placement="top-start"
+                placement="top-end"
                 componentsProps={{
                   tooltip: {
                     sx: {
