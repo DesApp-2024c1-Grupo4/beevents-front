@@ -17,7 +17,7 @@ export default function CardHorizontal() {
   return (
     <Card sx={{ display: "flex", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.8)" }}>
       <CardMedia
-        sx={{ width: "50%", minWidth: 140 }}
+        sx={{ width: "33%"/*, minWidth: 140, maxWidth: "30%"*/}}
         image={randomImageUrl}
         title="green iguana"
       />
@@ -28,23 +28,23 @@ export default function CardHorizontal() {
           flex: "1 0 auto",
           backgroundColor: "#0C1017",
           border: "2px solid",
-          borderImage: "linear-gradient(to left, white, transparent) 1",
+          borderImage: `linear-gradient(to left, ${contrastGreen}, gray, transparent) 1`,
         }}
       >
-        <CardContent sx={{ display: "flex", alignItems: "center" }}>
+        <CardContent sx={{ display: "flex", alignItems: "center", padding: 1 }}>
           <RoomIcon
             sx={{
               marginLeft: {
                 xs: 0,
-                sm: 2,
+                sm: 0,
               },
               marginRight: {
                 xs: 1,
-                sm: 2,
+                sm: 1.5,
               },
               fontSize: {
                 xs: 20,
-                md: 40,
+                md: 25,
               },
             }}
           />
@@ -56,9 +56,24 @@ export default function CardHorizontal() {
                 color: iconGrey,
                 fontWeight: "bold",
                 fontSize: {
+                  xs: "1rem",
+                  sm: "1.1rem",
+                  md: "1.3rem",
+                },
+              }}
+            >
+              Predio
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                color: iconGrey,
+                fontWeight: "light",
+                fontSize: {
                   xs: "0.8rem",
-                  sm: "1.5rem",
-                  md: "1.6rem",
+                  sm: "1.0rem",
+                  md: "1.1rem",
                 },
               }}
             >
@@ -69,15 +84,28 @@ export default function CardHorizontal() {
               color="text.secondary"
               sx={{
                 color: iconGrey,
-                fontWeight: "light",
                 fontSize: {
                   xs: "0.8rem",
-                  sm: "1rem",
-                  md: "1.2rem",
+                  sm: "1.0rem",
+                  md: "1.1rem",
                 },
               }}
             >
               Localidad
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                color: iconGrey,
+                fontSize: {
+                  xs: "0.7rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              }}
+            >
+              Distancia
             </Typography>
           </Box>
         </CardContent>

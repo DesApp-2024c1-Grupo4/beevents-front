@@ -224,13 +224,13 @@ export function HomePage() {
           </Typography>
           <Grid
             container
-            rowSpacing={1}
-            columnSpacing={{ xs: 0, sm: 2, md: 3 }}
+            rowSpacing={2}
+            columnSpacing={{ xs: 0, sm: 2, md: 2 }}
             justifyContent="center"
             alignItems="center"
           >
             {[...Array(4)].map((_, index) => (
-              <Grid item xs={12} key={index}>
+              <Grid item xs={12} sm={6} key={index}>
                 <CardHorizontal />
               </Grid>
             ))}
