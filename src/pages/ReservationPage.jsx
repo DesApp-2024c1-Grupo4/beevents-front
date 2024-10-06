@@ -128,6 +128,10 @@ export function ReservationPage() {
     }
   }, [event, selectedDateIndex]);
 
+  useEffect(() => {
+    console.log(selectedDate);
+  }, [selectedDate]);
+
   const handleSeatClick = (clickedSeat) => {
     if (
       clickedSeat.reservedBy == "vacio" ||
@@ -187,8 +191,16 @@ export function ReservationPage() {
     }
   };
 
-  const handleNonNumberedReservation = (sectorId, operation) => {
-    if (operation === "add") {
+  const handleNonNumberedReservation = (
+    sectorId,
+    operation,
+    occupiedSeats,
+    totalSeats
+  ) => {
+    if (
+      operation === "add" &&
+      notNumeredReservationUnconfirmed.length + occupiedSeats < totalSeats
+    ) {
       const newReservedUnconfirmed = {
         eventId: event._id,
         sectorId: sectorId,
@@ -224,7 +236,15 @@ export function ReservationPage() {
       handleOpen();
       return;
     }
+    // const formData = {
+    //   eventId: event._id,
+    //   reservedBy: user.id,
+    //   numbered: [],
+    //   notNumbered: [],
+    // };
     setLoading(true);
+    // console.log(notNumeredReservationUnconfirmed);
+    // console.log(numeredReservationUnconfirmed);
     try {
       let reservationsConfirmed = false;
       if (notNumeredReservationUnconfirmed.length > 0) {
@@ -289,6 +309,8 @@ export function ReservationPage() {
   };
 
   const countReservationsBySectorId = (reservations, sectorId) => {
+    console.log(reservations);
+    console.log(sectorId);
     return reservations.filter(
       (reservation) => reservation.sectorId === sectorId
     ).length;
@@ -328,8 +350,11 @@ export function ReservationPage() {
               alignSelf: "flex-start",
             }}
           >
-            {"Reserva de tickets"}
+            {!event.publicated
+              ? "Pre-Reserva de tickets"
+              : "Reserva de tickets"}
           </Typography>
+
           <Typography
             variant="h2"
             component="h2"
@@ -454,7 +479,7 @@ export function ReservationPage() {
               {new Date(date.date_time).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
-                hour12: false
+                hour12: false,
               })}
               {"hs"}
             </Button>
@@ -622,7 +647,12 @@ export function ReservationPage() {
                             <IconButton
                               color="primary"
                               onClick={() =>
-                                handleNonNumberedReservation(sector._id, "add")
+                                handleNonNumberedReservation(
+                                  sector._id,
+                                  "add",
+                                  occupiedSeats,
+                                  totalSeats
+                                )
                               }
                             >
                               <AddIcon />

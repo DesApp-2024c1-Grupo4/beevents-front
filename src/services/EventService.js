@@ -18,6 +18,15 @@ export async function getAllEvents() {
   }
 }
 
+export async function getAllEventsWithUnpublishedEvents() {
+  try {
+    const response = await api.get("/event/pubAndNotPub");
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export async function getEventById(id) {
   try {
     const response = await api.get(`/event/${id}`);
@@ -65,7 +74,7 @@ export async function publishUnpublishEvent(state, id) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null
+    return null;
   }
 }
 

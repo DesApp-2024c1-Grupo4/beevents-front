@@ -35,18 +35,26 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
+import EventSeatIcon from "@mui/icons-material/EventSeat";
+import PublicIcon from "@mui/icons-material/Public";
+import PublicOffIcon from "@mui/icons-material/PublicOff";
 import { useEffect, useState } from "react";
 import validator from "validator";
 import { getLocationById } from "../services/LocationService";
 import { Link, useNavigate } from "react-router-dom";
 import InputSearch from "../components/InputSearch";
-import { deleteEvent, getAllEvents } from "../services/EventService";
+import {
+  deleteEvent,
+  getAllEventsWithUnpublishedEvents,
+  publishUnpublishEvent,
+} from "../services/EventService";
 import UserService from "../services/userService";
 import SnackBar from "../components/SnackBar";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { getReservationsByUserId } from "../services/ReservationService";
 import { useTheme } from "@emotion/react";
 import NotFound from "../components/NotFound";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 function getFormatedDate(date) {
   const thisDate = new Date(date);
@@ -139,10 +147,14 @@ export default function CardHorizontalWBorder({
   location,
   dates,
   sectors,
+  publicated,
 }) {
   const { contrastGreen } = customMuiTheme.colors;
   const [locationName, setLocationName] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [publishLoading, setPublishLoading] = useState(false);
+  const isMobile = useMediaQuery("(max-width:600px)");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getLocationName = async (locationId) => {
@@ -158,16 +170,41 @@ export default function CardHorizontalWBorder({
     );
     if (confirm) {
       try {
-        setLoading(true);
+        setDeleteLoading(true);
         await deleteEvent(eventId);
-        fetchEvents();
+        await fetchEvents();
         setSnackbarMessage("Evento eliminado");
       } catch (error) {
         console.log(error);
         setSnackbarMessage("Error al eliminar evento");
       } finally {
         setSnackbarOpen(true);
-        setLoading(false);
+        setDeleteLoading(false);
+      }
+    }
+  };
+
+  const handlePublish = async (eventId, published) => {
+    const confirm = window.confirm(
+      !published
+        ? "Estás a punto de despublicar este evento. ¿Estás segur@?"
+        : "Estás a punto de publicar este evento. ¿Estás segur@?"
+    );
+    if (confirm) {
+      const state = {
+        publicated: published,
+      };
+      try {
+        setPublishLoading(true);
+        await publishUnpublishEvent(state, eventId);
+        await fetchEvents();
+        setSnackbarMessage("Evento publicado");
+      } catch (error) {
+        console.log(error);
+        setSnackbarMessage("Error al publicar evento");
+      } finally {
+        setSnackbarOpen(true);
+        setPublishLoading(false);
       }
     }
   };
@@ -228,7 +265,7 @@ export default function CardHorizontalWBorder({
           ))}
         </Stack>
         <Stack width={{ xs: "100%", sm: "15%" }} spacing={1}>
-          {sectors.map((sector) => (
+          {sectors?.map((sector) => (
             <Typography
               key={sector.name}
               variant="info"
@@ -239,33 +276,108 @@ export default function CardHorizontalWBorder({
           ))}
         </Stack>
         <Stack
-          direction="row"
+          direction={isMobile ? "row" : "column"}
           spacing={1}
           width={{ xs: "100%", sm: "15%" }}
           justifyContent="center"
         >
-          <IconButton
-            title="Editar"
-            component={Link}
-            to={`/create_event/${id}`}
-            sx={{
-              bgcolor: contrastGreen,
-              "&:hover": { color: "white" },
-            }}
-          >
-            <Edit />
-          </IconButton>
-          <IconButton
-            title="Eliminar"
-            onClick={() => handleDelete(id)}
-            sx={{ bgcolor: "crimson" }}
-          >
-            {loading ? (
-              <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+          <Stack spacing={1} direction={"row"}>
+            <IconButton
+              title="Editar"
+              component={Link}
+              to={`/create_event/${id}`}
+              sx={{
+                bgcolor: contrastGreen,
+                "&:hover": { color: "white" },
+              }}
+            >
+              <Edit />
+            </IconButton>
+            <IconButton
+              title="Eliminar"
+              onClick={() => handleDelete(id)}
+              sx={{ bgcolor: "crimson" }}
+            >
+              {deleteLoading ? (
+                <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+              ) : (
+                <DeleteOutlineOutlined />
+              )}
+            </IconButton>
+          </Stack>
+          <Stack spacing={1} direction={"row"}>
+            {!publicated ? (
+              <IconButton
+                title="Publicar"
+                onClick={() => handlePublish(id, true)}
+                sx={{ bgcolor: "#0B6B81" }}
+              >
+                {publishLoading ? (
+                  <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+                ) : (
+                  <PublicIcon />
+                )}
+              </IconButton>
             ) : (
-              <DeleteOutlineOutlined />
+              <IconButton
+                title="Despublicar"
+                onClick={() => handlePublish(id, false)}
+                sx={{ bgcolor: "#0B6B81" }}
+              >
+                {publishLoading ? (
+                  <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+                ) : (
+                  <PublicOffIcon />
+                )}
+              </IconButton>
             )}
-          </IconButton>
+            <IconButton
+              title="Pre-Reservar"
+              onClick={() => navigate(`/reservation/${id}`)}
+              sx={{
+                background: publicated ? "grey" : "#E59A0E",
+                border: publicated ? "1px solid grey" : "",
+              }}
+              disabled={publicated}
+            >
+              <EventSeatIcon />
+            </IconButton>
+
+            {/* {!publicated ? (
+              <>
+                <IconButton
+                  title="Publicar"
+                  onClick={() => handlePublish(id, true)}
+                  sx={{ bgcolor: "#0B6B81" }}
+                >
+                  {publishLoading ? (
+                    <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+                  ) : (
+                    <PublicIcon />
+                  )}
+                </IconButton>
+                <IconButton
+                  title="Pre-Reservar"
+                  onClick={() => navigate(`/reservation/${id}`)}
+                  sx={{ bgcolor: "#E59A0E" }}
+                >
+                  <EventSeatIcon />
+                </IconButton>
+              </>
+            ) : (
+              <IconButton
+                title="Despublicar"
+                onClick={() => handlePublish(id, false)}
+                sx={{ bgcolor: "#0B6B81" }}
+              >
+                {publishLoading ? (
+                  <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+                ) : (
+                  <PublicOffIcon />
+                )}
+              </IconButton>
+            )} */}
+          </Stack>
         </Stack>
       </Stack>
     </Card>
@@ -405,8 +517,9 @@ export function MyAccountPage() {
   }, []);
 
   const fetchEvents = async () => {
-    const allEvents = await getAllEvents();
+    const allEvents = await getAllEventsWithUnpublishedEvents();
     setEvents(allEvents);
+    console.log(allEvents);
     const totalEvents = allEvents.length;
     totalEvents > 1
       ? setShownEvents([allEvents[totalEvents - 1], allEvents[totalEvents - 2]])
@@ -574,6 +687,7 @@ export function MyAccountPage() {
                       location={event.location_id}
                       dates={event.dates.map((date) => date.date_time)}
                       sectors={event.dates[0].sectors}
+                      publicated={event.publicated}
                     />
                   ))
                 ) : (

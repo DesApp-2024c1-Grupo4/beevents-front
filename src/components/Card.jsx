@@ -130,7 +130,12 @@ export default function MediaCard({
           </Typography>
         )}
         <Typography
-          sx={{ color: iconGrey, fontWeight: "bold", fontSize: "20px" }}
+          sx={{
+            color: iconGrey,
+            fontWeight: "bold",
+            fontSize: "20px",
+            height: "50px",
+          }}
         >
           {toUpperCase(artist)}
         </Typography>
@@ -149,7 +154,7 @@ export default function MediaCard({
               sx={{
                 color: contrastGreen,
                 fontWeight: "bold",
-                fontSize: "14px",
+                fontSize: "16px",
                 marginTop: "0.3rem",
               }}
             >
