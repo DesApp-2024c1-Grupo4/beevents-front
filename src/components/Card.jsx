@@ -29,7 +29,7 @@ export default function MediaCard({
 
   useEffect(() => {
     if (inView) {
-      const increment = Math.floor(totalSeats / 10);
+      const increment = Math.floor(totalSeats / 20);
       const interval = setInterval(() => {
         setReservedSeats((prevSeats) =>
           prevSeats < totalSeats ? prevSeats + increment : totalSeats
@@ -130,7 +130,13 @@ export default function MediaCard({
           </Typography>
         )}
         <Typography
-          sx={{ color: iconGrey, fontWeight: "bold", fontSize: "20px" }}
+          sx={{
+            color: iconGrey,
+            fontWeight: "bold",
+            fontSize: artist.length > 20 ? "15px" : "20px",
+            height: "30px",
+            lineHeight: 1.2,
+          }}
         >
           {toUpperCase(artist)}
         </Typography>
@@ -149,7 +155,7 @@ export default function MediaCard({
               sx={{
                 color: contrastGreen,
                 fontWeight: "bold",
-                fontSize: "14px",
+                fontSize: "16px",
                 marginTop: "0.3rem",
               }}
             >

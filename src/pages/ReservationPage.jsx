@@ -27,10 +27,7 @@ import UserService from "../services/userService";
 import { getEventById } from "../services/EventService";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import {
-  patchEventPlace,
-  patchEventSeat,
-} from "../services/ReservationService";
+import { patchEventReservations } from "../services/ReservationService";
 import NotFound from "../components/NotFound";
 
 const style = {
@@ -128,6 +125,10 @@ export function ReservationPage() {
     }
   }, [event, selectedDateIndex]);
 
+  useEffect(() => {
+    console.log(selectedDate);
+  }, [selectedDate]);
+
   const handleSeatClick = (clickedSeat) => {
     if (
       clickedSeat.reservedBy == "vacio" ||
@@ -187,12 +188,18 @@ export function ReservationPage() {
     }
   };
 
-  const handleNonNumberedReservation = (sectorId, operation) => {
-    if (operation === "add") {
+  const handleNonNumberedReservation = (
+    sectorId,
+    operation,
+    occupiedSeats,
+    totalSeats
+  ) => {
+    if (
+      operation === "add" &&
+      notNumeredReservationUnconfirmed.length + occupiedSeats < totalSeats
+    ) {
       const newReservedUnconfirmed = {
-        eventId: event._id,
         sectorId: sectorId,
-        reservedBy: user.id,
         date_time: selectedDate,
       };
       const newNotNumeredReservationUnconfirmed = [
@@ -218,48 +225,78 @@ export function ReservationPage() {
     }
   };
 
+  const transformNotNumbered = (reservations) => {
+    const grouped = reservations.reduce((acc, curr) => {
+      const key = `${curr.sectorId}-${curr.date_time}`;
+      if (!acc[key]) {
+        acc[key] = {
+          sector_id: curr.sectorId,
+          date_time: curr.date_time,
+          quantity: 1,
+        };
+      } else {
+        acc[key].quantity += 1;
+      }
+      return acc;
+    }, {});
+
+    return Object.values(grouped);
+  };
+
+  const transformNumbered = (reservations) => {
+    const grouped = reservations.reduce((acc, curr) => {
+      const key = `${curr.sectorId}-${curr.date_time}`;
+      if (!acc[key]) {
+        acc[key] = {
+          sector_id: curr.sectorId,
+          date_time: curr.date_time,
+          reservations: [
+            {
+              displayId: curr.displayId,
+              timestamp: curr.timestamp,
+              _id: curr._id,
+            },
+          ],
+        };
+      } else {
+        acc[key].reservations.push({
+          displayId: curr.displayId,
+          timestamp: curr.timestamp,
+          _id: curr._id,
+        });
+      }
+      return acc;
+    }, {});
+
+    return Object.values(grouped);
+  };
+
   const handleConfirmReservations = async () => {
     if (!hasUnconfirmedReservations()) {
       setApiMessage("No tiene reservas para confirmar");
       handleOpen();
       return;
     }
+    const formData = {
+      eventId: event._id,
+      reservedBy: user.id,
+      numbered: transformNumbered(numeredReservationUnconfirmed),
+      notNumbered: transformNotNumbered(notNumeredReservationUnconfirmed),
+    };
     setLoading(true);
     try {
-      let reservationsConfirmed = false;
-      if (notNumeredReservationUnconfirmed.length > 0) {
-        for (const reservation of notNumeredReservationUnconfirmed) {
-          const response = await patchEventPlace(reservation);
-          if (response.message == "Asiento creado correctamente") {
-            reservationsConfirmed = true;
-            await fetchEvent();
-          }
-        }
-        setNotNumeredReservationUnconfirmed([]);
-      }
-      if (numeredReservationUnconfirmed.length > 0) {
-        console.log(numeredReservationUnconfirmed);
-        for (const reservation of numeredReservationUnconfirmed) {
-          console.log(reservation);
-          const response = await patchEventSeat(reservation);
-          if (response.message == "Reserva realizada correctamente") {
-            reservationsConfirmed = true;
-            await fetchEvent();
-          }
-        }
-        setNumeredReservationUnconfirmed([]);
-      }
-
-      if (reservationsConfirmed) {
-        setApiMessage("Tickets reservados exitosamente");
-        handleOpen();
-      } else {
-        setApiMessage("Hubo un inconveniente en la reserva de Tickets");
-        handleOpen();
-      }
+      const response = await patchEventReservations(formData);
+      setNotNumeredReservationUnconfirmed([]);
+      setNumeredReservationUnconfirmed([]);
+      setApiMessage("Tickets reservados exitosamente");
+      setLoading(false);
+      handleOpen();
     } catch (error) {
       console.log(error);
+      setApiMessage("Hubo un inconveniente en la reserva de Tickets");
+      handleOpen();
     } finally {
+      await fetchEvent();
       setLoading(false);
     }
   };
@@ -328,8 +365,11 @@ export function ReservationPage() {
               alignSelf: "flex-start",
             }}
           >
-            {"Reserva de tickets"}
+            {!event.publicated
+              ? "Pre-Reserva de tickets"
+              : "Reserva de tickets"}
           </Typography>
+
           <Typography
             variant="h2"
             component="h2"
@@ -454,7 +494,7 @@ export function ReservationPage() {
               {new Date(date.date_time).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
-                hour12: false
+                hour12: false,
               })}
               {"hs"}
             </Button>
@@ -622,7 +662,12 @@ export function ReservationPage() {
                             <IconButton
                               color="primary"
                               onClick={() =>
-                                handleNonNumberedReservation(sector._id, "add")
+                                handleNonNumberedReservation(
+                                  sector._id,
+                                  "add",
+                                  occupiedSeats,
+                                  totalSeats
+                                )
                               }
                             >
                               <AddIcon />

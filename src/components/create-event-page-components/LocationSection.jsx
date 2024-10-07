@@ -43,7 +43,6 @@ export default function LocationSection({
   useEffect(() => {
     const fetchLocations = async () => {
       setFetchedLocations(await getAllLocations());
-      console.log(fetchedLocations);
     };
     fetchLocations();
   }, []);

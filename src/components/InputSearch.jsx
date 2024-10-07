@@ -20,7 +20,7 @@ export default function InputSearch({ options, onSearch }) {
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Buscar eventos..."
+            label="Buscar en todos los eventos"
             InputProps={{
               ...params.InputProps,
               endAdornment: (

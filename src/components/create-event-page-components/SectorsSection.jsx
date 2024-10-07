@@ -36,9 +36,15 @@ export default function SectorsSection({
       const config = configurationsTemplates.find(
         (config) => config.name === selectedConfiguration
       );
-      let configurations = config?.sectors ? config.sectors : [];
-      setSelectedConfigurationDescription(config.description);
-      setSectors(configurations);
+      if (config) {
+        let configurations = config?.sectors ? config.sectors : [];
+        setSelectedConfigurationDescription(config.description);
+        setSectors(configurations);
+      } else {
+        setSelectedConfiguration("");
+        setSelectedConfigurationDescription("");
+        setSectors([]);
+      }
     }
   }, [selectedConfiguration, configurationsTemplates]);
 
