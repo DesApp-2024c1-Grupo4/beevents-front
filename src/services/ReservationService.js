@@ -9,6 +9,24 @@ const api = axios.create({
 
 const us = new UserService();
 
+export async function patchEventReservations(formData) {
+  try {
+    const response = await api.patch(
+      `/event/${formData.eventId}/reservations`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${us.getUserFromLocalStorage().access_token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error.message);
+    return null;
+  }
+}
+
 export async function patchEventSeat(seatData) {
   try {
     const response = await api.patch(
@@ -52,7 +70,6 @@ export async function getReservationsByUserId(userId) {
         Authorization: `Bearer ${us.getUserFromLocalStorage().access_token}`,
       },
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error(error);

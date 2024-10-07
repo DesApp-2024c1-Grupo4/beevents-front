@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Card,
   CircularProgress,
   Container,
@@ -18,6 +19,10 @@ import {
   TableRow,
   TextField,
   Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
 import {
@@ -198,7 +203,9 @@ export default function CardHorizontalWBorder({
         setPublishLoading(true);
         await publishUnpublishEvent(state, eventId);
         await fetchEvents();
-        setSnackbarMessage("Evento publicado");
+        setSnackbarMessage(
+          published ? "Evento publicado" : "Evento despublicado"
+        );
       } catch (error) {
         console.log(error);
         setSnackbarMessage("Error al publicar evento");
@@ -342,41 +349,6 @@ export default function CardHorizontalWBorder({
             >
               <EventSeatIcon />
             </IconButton>
-
-            {/* {!publicated ? (
-              <>
-                <IconButton
-                  title="Publicar"
-                  onClick={() => handlePublish(id, true)}
-                  sx={{ bgcolor: "#0B6B81" }}
-                >
-                  {publishLoading ? (
-                    <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
-                  ) : (
-                    <PublicIcon />
-                  )}
-                </IconButton>
-                <IconButton
-                  title="Pre-Reservar"
-                  onClick={() => navigate(`/reservation/${id}`)}
-                  sx={{ bgcolor: "#E59A0E" }}
-                >
-                  <EventSeatIcon />
-                </IconButton>
-              </>
-            ) : (
-              <IconButton
-                title="Despublicar"
-                onClick={() => handlePublish(id, false)}
-                sx={{ bgcolor: "#0B6B81" }}
-              >
-                {publishLoading ? (
-                  <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
-                ) : (
-                  <PublicOffIcon />
-                )}
-              </IconButton>
-            )} */}
           </Stack>
         </Stack>
       </Stack>
@@ -385,7 +357,6 @@ export default function CardHorizontalWBorder({
 }
 
 export function TicketsTable({ userId }) {
-  console.log(userId);
   const [reservations, setReservations] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(3);
@@ -511,6 +482,10 @@ export function MyAccountPage() {
   const [isLoading, setIsLoading] = useState(true);
   const userService = new UserService();
   const navigate = useNavigate();
+  const [filter, setFilter] = useState("all");
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [eventsToShow, setEventsToShow] = useState(3);
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     fetchEvents();
@@ -518,12 +493,15 @@ export function MyAccountPage() {
 
   const fetchEvents = async () => {
     const allEvents = await getAllEventsWithUnpublishedEvents();
-    setEvents(allEvents);
-    console.log(allEvents);
-    const totalEvents = allEvents.length;
-    totalEvents > 1
-      ? setShownEvents([allEvents[totalEvents - 1], allEvents[totalEvents - 2]])
-      : setShownEvents(allEvents);
+    const eventsOrderByCreat = allEvents.reverse();
+    setFilter("all");
+    setEvents(eventsOrderByCreat);
+    setFilteredEvents(eventsOrderByCreat);
+    setShownEvents(eventsOrderByCreat.slice(0, eventsToShow));
+    // const totalEvents = allEvents.length;
+    // totalEvents > 1
+    //   ? setShownEvents([allEvents[totalEvents - 1], allEvents[totalEvents - 2]])
+    //   : setShownEvents(allEvents);
     setIsLoading(false);
   };
 
@@ -594,17 +572,23 @@ export function MyAccountPage() {
   }
 
   const handleSearch = (searchValue) => {
-    const totalEvents = events.length;
-    const previousShown = [events[totalEvents - 1], events[totalEvents - 2]];
+    if (filter != "all") {
+      handleFilterChange("all");
+    }
     const lowercasedFilter = searchValue.toLowerCase();
     const filteredData = events.filter(
       (item) =>
         item.name.toLowerCase().includes(lowercasedFilter) ||
         item.artist.toLowerCase().includes(lowercasedFilter)
     );
-    !validator.isEmpty(searchValue)
-      ? setShownEvents(filteredData)
-      : setShownEvents(previousShown);
+    setFilteredEvents(filteredData);
+    setShownEvents(filteredData.slice(0, eventsToShow));
+  };
+
+  const handleEventsToShowChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    setEventsToShow(value);
+    setShownEvents(filteredEvents.slice(0, value));
   };
 
   const handleLogout = () => {
@@ -616,6 +600,19 @@ export function MyAccountPage() {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    const filteredData = events.filter((event) => {
+      if (newFilter === "all") return true;
+      if (newFilter === "published") return event.publicated === true;
+      if (newFilter === "unpublished") return event.publicated === false;
+      return true;
+    });
+    setFilteredEvents(filteredData);
+    setShownEvents(filteredData.slice(0, eventsToShow));
+  };
+
   const loggedUser = userService.getUserFromLocalStorage();
 
   return loggedUser ? (
@@ -627,7 +624,6 @@ export function MyAccountPage() {
         handleClose={handleSnackbarClose}
       />
       <Stack spacing={10} my={4}>
-        {/* Title and subtitle */}
         <Stack>
           <Typography
             variant="h2"
@@ -648,33 +644,101 @@ export function MyAccountPage() {
             reservas, tus datos, y cambiar tu contraseña.
           </Typography>
         </Stack>
-        {
-          /* Event cards */
-          loggedUser.role === "admin" && (
-            <Stack spacing={5}>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
+        {loggedUser.role === "admin" && (
+          <Stack spacing={5}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
               >
-                <Typography
-                  variant="h2"
-                  sx={{ fontSize: { xs: "1.3rem", md: "1.7rem" } }}
-                >
-                  Últimos eventos creados
-                </Typography>
-                <StadiumOutlined
-                  sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }}
+                Últimos eventos creados
+              </Typography>
+              <StadiumOutlined
+                sx={{ fontSize: { xs: "1.8rem", md: "2.3rem" } }}
+              />
+            </Stack>
+            <Stack spacing={3} px={1}>
+              <Stack
+                direction={isMobile ? "column" : "row"}
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <InputSearch
+                  options={filteredEvents.map((event) => event.name)}
+                  onSearch={handleSearch}
                 />
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: isMobile ? "column" : "row",
+                  }}
+                >
+                  <ButtonGroup
+                    variant="inlined"
+                    sx={{ marginTop: isMobile ? "1rem" : "0rem" }}
+                  >
+                    <Button
+                      style={{
+                        color: filter == "all" ? contrastGreen : "white",
+                        borderBottom: contrastGreen,
+                      }}
+                      onClick={() => handleFilterChange("all")}
+                    >
+                      Todos
+                    </Button>
+                    <Button
+                      style={{
+                        color: filter == "published" ? contrastGreen : "white",
+                        borderBottom: contrastGreen,
+                      }}
+                      onClick={() => handleFilterChange("published")}
+                    >
+                      Publicados
+                    </Button>
+
+                    <Button
+                      style={{
+                        color:
+                          filter == "unpublished" ? contrastGreen : "white",
+                        borderBottom: contrastGreen,
+                      }}
+                      onClick={() => handleFilterChange("unpublished")}
+                    >
+                      No Publicados
+                    </Button>
+                  </ButtonGroup>
+                  <FormControl
+                    variant="standard"
+                    sx={{
+                      width: "auto",
+                      marginTop: isMobile ? "0.5rem" : "0rem",
+                    }}
+                  >
+                    <Select
+                      labelId="events-to-show-label"
+                      value={eventsToShow}
+                      onChange={handleEventsToShowChange}
+                      label="Eventos a Mostrar"
+                    >
+                      <MenuItem value={3}>Mostrar 3</MenuItem>
+                      <MenuItem value={5}>Mostrar 5</MenuItem>
+                      <MenuItem value={10}>Mostrar 10</MenuItem>
+                      <MenuItem value={filteredEvents.length}>
+                        Mostrar Todos ({filteredEvents.length})
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
               </Stack>
-              <Stack spacing={3} px={1}>
-                <Stack alignItems={{ xs: "center", sm: "end" }} pb={1}>
-                  <InputSearch
-                    options={events.map((event) => event.name)}
-                    onSearch={handleSearch}
-                  />
-                </Stack>
-                {!isLoading ? (
+
+              {!isLoading ? (
+                shownEvents.length > 0 ? (
                   shownEvents.map((event) => (
                     <CardHorizontalWBorder
                       key={event._id}
@@ -691,12 +755,20 @@ export function MyAccountPage() {
                     />
                   ))
                 ) : (
-                  <LoadingIndicator />
-                )}
-              </Stack>
+                  <Typography variant="p" align="center" m={6}>
+                    {filter === "unpublished"
+                      ? "No hay eventos sin publicar"
+                      : filter === "published"
+                      ? "No hay eventos publicados"
+                      : "No hay eventos disponibles"}
+                  </Typography>
+                )
+              ) : (
+                <LoadingIndicator />
+              )}
             </Stack>
-          )
-        }
+          </Stack>
+        )}
         {/* Reserved tickets */}
         <Stack spacing={5}>
           <Stack
