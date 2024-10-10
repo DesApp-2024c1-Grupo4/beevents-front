@@ -15,7 +15,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import StarIcon from "@mui/icons-material/Star";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import LoadingIndicator from "../components/LoadingIndicator";
-import { getNearByEvents } from "../services/EventService"; 
+import { getNearByEvents } from "../services/EventService";
+import { getLocationById} from "../services/LocationService";
 
 export function HomePage() {
   const theme = useTheme();
@@ -23,7 +24,7 @@ export function HomePage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [eventsOrderByDates, setEventsOrderByDates] = useState([]);
   const [eventsOrderByTickets, setEventsOrderByTickets] = useState([]);
-  const [nearbyEvents, setNearbyEvents] = useState([]);
+  const [nearByEventsWithLocation, setNearByEventsWithLocation] = useState([]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -33,8 +34,27 @@ export function HomePage() {
       const countedTickets = countReservedTickets(allEvents);
       setEventsOrderByTickets(countedTickets);
       // Llama a getEventsNearBy y guarda los eventos cercanos
-      const nearbyEventsData = await getNearByEvents();
-      setNearbyEvents(nearbyEventsData);
+      //const nearbyEventsData = await getNearByEvents();
+      //setNearbyEvents(nearbyEventsData);
+
+
+
+      const nearByEvents = await getNearByEvents();
+      
+      // Obtenemos las ubicaciones para cada evento cercano
+      const nearByEventsWithLocation = await Promise.all(
+        nearByEvents.map(async (event) => {
+          const location = await getLocationById(event.location_id);
+          return {
+            ...event,
+            locationName: location.name,
+            locationStreet: location.address.street,
+            locationNumber: location.address.number,
+          };
+        })
+      );
+
+      setNearByEventsWithLocation(nearByEventsWithLocation);
     };
     fetchEvents();
   }, []);
@@ -234,14 +254,17 @@ export function HomePage() {
             justifyContent="center"
             alignItems="center"
           >
-            {nearbyEvents.length > 0 ? (
-              nearbyEvents.slice(0, 4).map((event, index) => (
+            {nearByEventsWithLocation.length > 0 ? (
+              nearByEventsWithLocation.map((event, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <CardHorizontal
                     id={event._id}
                     title={event.name}
                     artist={event.artist}
                     imageUrl={event.image}
+                    locationName={event.locationName}
+                    locationStreet={event.locationStreet}
+                    locationNumber={event.locationNumber}
                   />
                 </Grid>
               ))

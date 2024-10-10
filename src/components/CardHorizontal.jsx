@@ -16,6 +16,9 @@ export default function CardHorizontal({
   title,
   artist,
   imageUrl,
+  locationName,
+  locationStreet,
+  locationNumber
 }) {
   const { contrastGreen, iconGrey } = customMuiTheme.colors;
   const isMobile = useMediaQuery("(max-width:600px)");
@@ -23,7 +26,7 @@ export default function CardHorizontal({
     Math.random() * 1000
   )}`;*/
   return (
-    <Card sx={{ display: "flex", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.8)", height: isMobile ? 60 : 130, }}>
+    <Card sx={{ display: "flex", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.8)", height: isMobile ? 100 : 140, }}>
       <img
           src={imageUrl}
           alt="Event"
@@ -101,9 +104,10 @@ export default function CardHorizontal({
                   sm: "1.0rem",
                   md: "1.1rem",
                 },
+                fontWeight: "bold",
               }}
             >
-              Predio
+              {locationName}
             </Typography>
             <Typography
               variant="body2"
@@ -117,7 +121,7 @@ export default function CardHorizontal({
                 },
               }}
             >
-              Localidad
+              {locationStreet} {locationNumber}
             </Typography>
           </Box>
         </CardContent>
