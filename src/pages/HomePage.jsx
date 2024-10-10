@@ -15,6 +15,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import StarIcon from "@mui/icons-material/Star";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import LoadingIndicator from "../components/LoadingIndicator";
+import { getNearByEvents } from "../services/EventService"; 
 
 export function HomePage() {
   const theme = useTheme();
@@ -22,6 +23,7 @@ export function HomePage() {
   const { contrastGreen } = customMuiTheme.colors;
   const [eventsOrderByDates, setEventsOrderByDates] = useState([]);
   const [eventsOrderByTickets, setEventsOrderByTickets] = useState([]);
+  const [nearbyEvents, setNearbyEvents] = useState([]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -30,6 +32,9 @@ export function HomePage() {
       setEventsOrderByDates(sortedEvents);
       const countedTickets = countReservedTickets(allEvents);
       setEventsOrderByTickets(countedTickets);
+      // Llama a getEventsNearBy y guarda los eventos cercanos
+      const nearbyEventsData = await getNearByEvents();
+      setNearbyEvents(nearbyEventsData);
     };
     fetchEvents();
   }, []);
@@ -229,11 +234,25 @@ export function HomePage() {
             justifyContent="center"
             alignItems="center"
           >
-            {[...Array(4)].map((_, index) => (
+            {nearbyEvents.length > 0 ? (
+              nearbyEvents.slice(0, 4).map((event, index) => (
+                <Grid item xs={12} sm={6} key={index}>
+                  <CardHorizontal
+                    id={event._id}
+                    title={event.name}
+                    artist={event.artist}
+                    imageUrl={event.image}
+                  />
+                </Grid>
+              ))
+            ) : (
+              <LoadingIndicator />
+            )}
+            {/* {[...Array(4)].map((_, index) => (
               <Grid item xs={12} sm={6} key={index}>
                 <CardHorizontal />
               </Grid>
-            ))}
+            ))} */}
           </Grid>
         </Box>
       </Container>

@@ -81,3 +81,12 @@ export async function deleteEvent(id) {
     console.error(error);
   }
 }
+
+export async function getNearByEvents() {
+  try {
+    const response = await api.get("/event/nearby");
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
