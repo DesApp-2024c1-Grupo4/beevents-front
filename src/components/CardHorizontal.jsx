@@ -8,19 +8,34 @@ import RoomIcon from "@mui/icons-material/Room";
 import { customMuiTheme } from "../config/customMuiTheme";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import { autoBatchEnhancer } from "@reduxjs/toolkit";
+import { useMediaQuery } from "@mui/material";
 
-export default function CardHorizontal() {
+export default function CardHorizontal({
+  id,
+  title,
+  artist,
+  imageUrl,
+  locationName,
+  locationStreet,
+  locationNumber
+}) {
   const { contrastGreen, iconGrey } = customMuiTheme.colors;
-  const randomImageUrl = `https://picsum.photos/600/140?random=${Math.floor(
+  const isMobile = useMediaQuery("(max-width:600px)");
+  /*const randomImageUrl = `https://picsum.photos/600/140?random=${Math.floor(
     Math.random() * 1000
-  )}`;
+  )}`;*/
   return (
-    <Card sx={{ display: "flex", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.8)" }}>
-      <CardMedia
-        sx={{ width: "33%"/*, minWidth: 140, maxWidth: "30%"*/}}
-        image={randomImageUrl}
-        title="green iguana"
-      />
+    <Card sx={{ display: "flex", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.8)", height: isMobile ? 100 : 140, }}>
+      <img
+          src={imageUrl}
+          alt="Event"
+          style={{
+            width: "33%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
       <Box
         sx={{
           display: "flex",
@@ -62,7 +77,7 @@ export default function CardHorizontal() {
                 },
               }}
             >
-              Predio
+              {artist}
             </Typography>
             <Typography
               variant="body2"
@@ -77,7 +92,7 @@ export default function CardHorizontal() {
                 },
               }}
             >
-              Dirección
+              {title}
             </Typography>
             <Typography
               variant="body2"
@@ -89,9 +104,10 @@ export default function CardHorizontal() {
                   sm: "1.0rem",
                   md: "1.1rem",
                 },
+                fontWeight: "bold",
               }}
             >
-              Localidad
+              {locationName}
             </Typography>
             <Typography
               variant="body2"
@@ -105,7 +121,7 @@ export default function CardHorizontal() {
                 },
               }}
             >
-              Distancia
+              {locationStreet} {locationNumber}
             </Typography>
           </Box>
         </CardContent>
