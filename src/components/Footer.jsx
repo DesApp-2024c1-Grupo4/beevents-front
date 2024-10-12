@@ -1,10 +1,7 @@
 import { Box, Link, Stack, Typography } from "@mui/material";
-import XIcon from '@mui/icons-material/X';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import YouTubeIcon from '@mui/icons-material/YouTube';
 import { customMuiTheme } from "../config/customMuiTheme";
 import logo from '../assets/img/abreviatura.png'
-import { GitHub } from "@mui/icons-material";
+import { GitHub, Mail } from "@mui/icons-material";
 
 function BrandingAndCopyright() {
   return <>
@@ -24,7 +21,7 @@ function BrandingAndCopyright() {
 }
 
 function ContactAndFollow() {
-  const { softGrey, contrastGreen, iconGrey } = customMuiTheme.colors
+  const { softGrey, contrastGreen } = customMuiTheme.colors
 
   return <>
     <Stack
@@ -146,9 +143,25 @@ function ContactAndFollow() {
         <Typography variant="footerTitle">
           Contacto
         </Typography>
-        <Typography variant="footerFont" sx={{ mt: 1.5, mb: 1 }}>
-          ejemplo@mail.com
-        </Typography>
+        <Link
+          href="mailto:beevents.contacto@gmail.com"
+          target="_blank"
+          rel="noopener"
+          color="inherit"
+          underline="none"
+          sx={{
+            display: "flex",
+            gap: 1,
+            alignItems: "center",
+            py: 1,
+            "&:hover": { color: contrastGreen }
+          }}
+        >
+          <Mail/>
+          <Typography variant="footerFont">
+            beevents.contacto@gmail.com
+          </Typography>
+        </Link>
       </Stack>
     </Stack>
   </>
@@ -161,9 +174,8 @@ export function Footer() {
   return <>
     <Stack
       sx={{ backgroundColor: softGrey, padding: 4 }}
-      direction={{ xs: 'column-reverse', sm: 'row' }}
+      direction={{ xs: 'column', sm: 'row' }}
       justifyContent={{ sm: 'space-between', lg: 'space-around' }}
-      spacing={4}
     >
       <BrandingAndCopyright />
       <ContactAndFollow />
