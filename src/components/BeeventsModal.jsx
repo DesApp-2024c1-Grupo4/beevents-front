@@ -1,5 +1,11 @@
-import { Box, CircularProgress, Modal, Typography } from "@mui/material";
-import Logo from "../assets/img/logo.png"
+import {
+  Box,
+  CircularProgress,
+  Modal,
+  Typography,
+  Button,
+} from "@mui/material";
+import Logo from "../assets/img/logo.png";
 import { customMuiTheme } from "../config/customMuiTheme";
 
 export default function BeeventsModal({
@@ -8,9 +14,10 @@ export default function BeeventsModal({
   message,
   processMessageIncludes,
   errorMessageIncludes,
-  tryAgainMessage
+  tryAgainMessage,
+  subMessage,
+  onConfirm,
 }) {
-
   const contrastGreen = customMuiTheme.colors;
   const style = {
     position: "absolute",
@@ -29,6 +36,10 @@ export default function BeeventsModal({
     boxShadow: 24,
     p: 2,
   };
+
+  function isNonEmptyString(value) {
+    return typeof value === "string" && value.trim().length > 0;
+  }
 
   return (
     <Modal
@@ -58,7 +69,9 @@ export default function BeeventsModal({
             mt: 2,
             textAlign: "center",
             fontWeight: 500,
-            color: message.includes(errorMessageIncludes) ? "red" : contrastGreen,
+            color: message.includes(errorMessageIncludes)
+              ? "red"
+              : contrastGreen,
             textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
           }}
         >
@@ -72,18 +85,32 @@ export default function BeeventsModal({
             textAlign: "center",
             fontSize: "14px",
           }}
-        > {message.includes(errorMessageIncludes)
-          ? tryAgainMessage
-          : "Solo tomará un momento"
-          }
+        >
+          {" "}
+          {message.includes(errorMessageIncludes)
+            ? tryAgainMessage
+            : isNonEmptyString(subMessage)
+            ? subMessage
+            : "Solo tomará un momento"}
         </Typography>
-        {message.includes(processMessageIncludes)
-          ? <Box display="flex" justifyContent="center" alignItems="center">
+        {message.includes(processMessageIncludes) ? (
+          <Box display="flex" justifyContent="center" alignItems="center">
             <CircularProgress size={30} />
           </Box>
-          : <></>
-        }
+        ) : (
+          <></>
+        )}
+        {onConfirm && (
+          <Box display="flex" justifyContent="space-evenly" width="100%">
+            <Button variant="outlined" color="primary" onClick={handleClose}>
+              Cancelar
+            </Button>
+            <Button variant="contained" color="primary" onClick={onConfirm}>
+              Confirmar
+            </Button>
+          </Box>
+        )}
       </Box>
     </Modal>
-  )
+  );
 }
