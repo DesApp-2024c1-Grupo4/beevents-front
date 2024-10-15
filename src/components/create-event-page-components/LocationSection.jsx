@@ -201,7 +201,7 @@ export default function LocationSection({
           />
         </Stack>
       )}
-      {locationId && (
+      {locationId && !eventId && (
         <>
           <SectorsSection
             sectors={sectors}

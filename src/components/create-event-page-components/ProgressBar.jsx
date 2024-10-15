@@ -1,16 +1,16 @@
 import { Box, Button, Slider, Stack } from "@mui/material";
 import { customMuiTheme } from "../../config/customMuiTheme";
 
-function ProgressBar({ currentStep, setStep }) {
+function ProgressBar({ currentStep, setStep, eventId }) {
   const { contrastGreen } = customMuiTheme.colors;
   const getStepValue = (step) => {
     switch (step) {
       case 1:
         return 0;
       case 2:
-        return 33;
+        return eventId? 50 : 33;
       case 3:
-        return 66;
+        return eventId? 100: 66;
       case 4:
         return 100
       default:
@@ -90,7 +90,7 @@ function ProgressBar({ currentStep, setStep }) {
         <SliderButton step={"1"} />
         <SliderButton step={"2"} />
         <SliderButton step={"3"} />
-        <SliderButton step={"4"} />
+        {!eventId && <SliderButton step={"4"} />}
       </Box>
     </Stack>
   );

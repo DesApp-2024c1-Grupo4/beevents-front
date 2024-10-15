@@ -219,12 +219,12 @@ export function CreateEventPage() {
                 }}
                 />
               </Tooltip>
-              <ProgressBar currentStep={step} setStep={setStep} />
+              <ProgressBar currentStep={step} setStep={setStep} eventId={eventId}/>
             </Stack>
             <Container maxWidth="sm">
               {step === 1 && <MainDataSection handleChange={handleChange} formData={formData} />}
-              {step === 2 && <DatesSection dates={dates} setDates={setDates} />}
-              {step === 3 && <LocationSection
+              {step === 2 && !eventId && <DatesSection dates={dates} setDates={setDates} />}
+              {step === (eventId? 2 : 3) && <LocationSection
                 locationId={locationId}
                 setLocationId={setLocationId}
                 sectors={sectors}
@@ -232,7 +232,7 @@ export function CreateEventPage() {
                 setSelectedLocationName={setSelectedLocationName}
                 selectedLocationName={selectedLocationName}
               />}
-              {step === 4 && <Confirmation
+              {step === (eventId? 3 : 4) && <Confirmation
                 handleSubmit={handleSubmit}
                 formData={formData}
                 selectedLocationName={selectedLocationName}
