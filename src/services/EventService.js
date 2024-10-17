@@ -52,7 +52,7 @@ export async function createEvent(event) {
 
 export async function updateEvent(event, id) {
   try {
-    const response = await api.put(`/event/${id}`, event, {
+    const response = await api.patch(`/event/${id}`, event, {
       headers: {
         Authorization: `Bearer ${us.getUserFromLocalStorage().access_token}`,
       },
