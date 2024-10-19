@@ -42,6 +42,13 @@ export function CreateEventPage() {
   const [step, setStep] = useState(1);
   const [selectedLocationName, setSelectedLocationName] = useState("");
   const [selectedLocation, setSelectedLocation] = useState({});
+  const [initialDates, setInitialDates] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [createdEventId, setEventCreatedId] = useState(null);
+  const [publicated, setPublicated] = useState(false);
+  const [edited, setEdited] = useState(false);
+  const [configurationsTemplates, setConfigurationsTemplates] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     artist: "",
@@ -51,12 +58,6 @@ export function CreateEventPage() {
     user_id: loggedUser.id,
     dates: datesArray
   });
-  const [open, setOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
-  const [createdEventId, setEventCreatedId] = useState(null);
-  const [publicated, setPublicated] = useState(false);
-  const [edited, setEdited] = useState(false);
-  const [configurationsTemplates, setConfigurationsTemplates] = useState([]);
 
   const navButtonStyle = {
     position: "fixed",
@@ -119,6 +120,7 @@ export function CreateEventPage() {
       getLocation();
       const dateTimes = event.dates.map((date) => date.date_time)
       setDates(dateTimes);
+      setInitialDates(event.dates.map(date => ({ id: date._id, date_time: date.date_time })))
       const dateTimesWithReservations = dateTimes.filter((date, idx) => hasReservationsDate(idx))
       setDatesWithReservations(dateTimesWithReservations)
       const existentSectors = event.dates[0].sectors
@@ -175,7 +177,11 @@ export function CreateEventPage() {
   const updateAnEvent = async (formData) => {
     setModalMessage("Editando evento...");
     setOpen(true);
-    const updated = await updateEvent(formData, eventId);
+    const finalDates = initialDates.filter(date => !dates.includes(date.date_time));
+    formData.delete_date_times_id = finalDates.map(date => date.id)
+    //console.log(formData.delete_date_times_id)
+    //const updated = await updateEvent(formData, eventId);
+    const updated = false;
     if (updated) {
       setModalMessage("¡Evento editado!");
       setEdited(true);
