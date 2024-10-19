@@ -27,7 +27,8 @@ export default function LocationSection({
   sectors,
   setSectors,
   setSelectedLocationName,
-  selectedLocationName
+  selectedLocationName,
+  sectorsWithReservations
 }) {
   const { contrastGreen } = customMuiTheme.colors;
   const [showForm, setShowForm] = useState(false);
@@ -208,6 +209,7 @@ export default function LocationSection({
             setSectors={setSectors}
             configurationsTemplates={configurationsTemplates}
             eventId={eventId}
+            sectorsWithReservations={sectorsWithReservations}
           />
           {!eventId && sectors?.length > 0 && (
             <Typography

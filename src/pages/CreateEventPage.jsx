@@ -30,6 +30,7 @@ export function CreateEventPage() {
   const [sectors, setSectors] = useState([]);
   const [dates, setDates] = useState([]);
   const [datesWithReservations, setDatesWithReservations] = useState([]);
+  const [sectorsWithReservations, setSectorsWithReservations] = useState([]);
   const [locationId, setLocationId] = useState("");
   const [event, setEvent] = useState(null);
   const { contrastGreen, oceanicBlue } = customMuiTheme.colors;
@@ -109,17 +110,34 @@ export function CreateEventPage() {
       setLocationId(event.location_id);
       const dateTimes = event.dates.map((date) => date.date_time)
       setDates(dateTimes);
-      event.dates[0] ? setSectors(event.dates[0].sectors) : setSectors([]);
-      setDatesWithReservations(dateTimes.filter((date, idx) => hasReservations(idx)))
+      const dateTimesWithReservations = dateTimes.filter((date, idx) => hasReservationsDate(idx))
+      setDatesWithReservations(dateTimesWithReservations)
+      const existentSectors = event.dates[0].sectors
+      setSectors(existentSectors);
+      const existentSectorsNames = existentSectors.map(sector => sector.name);
+      setSectorsWithReservations(existentSectorsNames.filter((sector, idx) => hasReservationsSector(idx)));
     }
   }, [event]);
 
-  const hasReservations = (dateIdx) => {
+  const hasReservationsDate = (dateIdx) => {
     const ocupedArray = event.dates[dateIdx].sectors.map((sector) => sector.ocuped)
     var hasReservations = false;
     var i = 0
     while (!hasReservations && i < ocupedArray.length) {
       if (ocupedArray[i]) { hasReservations = true }
+      i++
+    }
+    return hasReservations
+  }
+
+  const hasReservationsSector = (sectorIdx) => {
+    console.log("Me ejecuté")
+    var hasReservations = false
+    var i = 0
+    while (!hasReservations && i < event.dates.length) {
+      if (event.dates[i].sectors[sectorIdx].ocuped) {
+        hasReservations = true
+      }
       i++
     }
     return hasReservations
@@ -250,6 +268,7 @@ export function CreateEventPage() {
                 setSectors={setSectors}
                 setSelectedLocationName={setSelectedLocationName}
                 selectedLocationName={selectedLocationName}
+                sectorsWithReservations={sectorsWithReservations}
               />}
               {step === 4 && <Confirmation
                 handleSubmit={handleSubmit}

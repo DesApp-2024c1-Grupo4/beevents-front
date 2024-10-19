@@ -1,12 +1,17 @@
 import { Delete } from "@mui/icons-material";
 import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 
-export default function SectorsDisplay({ sectors, setSectors }) {
+export default function SectorsDisplay({ sectors, setSectors, sectorsWithReservations }) {
   const deleteSector = (sector) => {
     setSectors((current) =>
       current.filter((storedSector) => storedSector !== sector)
     );
   };
+
+  const hasReservations = (sector) => {
+    return sectorsWithReservations.includes(sector.name)
+  }
+
   return (
     <Stack>
       <Typography>{sectors.length > 0 ? "" : "Ninguno"}</Typography>
@@ -23,8 +28,8 @@ export default function SectorsDisplay({ sectors, setSectors }) {
             ${sector.rowsNumber * sector.seatsNumber - sector.eliminated.length}`}
           </Typography>
           <Tooltip
-            title="Eliminar sector"
-            placement="bottom-end"
+            title={hasReservations(sector) ? "No puedes eliminar este sector porque tiene lugares reservados para alguna fecha" : "Eliminar sector"}
+            placement="top-end"
             componentsProps={{
               tooltip: {
                 sx: {
@@ -43,9 +48,14 @@ export default function SectorsDisplay({ sectors, setSectors }) {
             }}
             arrow
           >
-            <IconButton onClick={() => deleteSector(sector)}>
-              <Delete />
-            </IconButton>
+            <Stack>
+              <IconButton
+                onClick={() => deleteSector(sector)}
+                disabled={hasReservations(sector)}
+              >
+                <Delete />
+              </IconButton>
+            </Stack>
           </Tooltip>
         </Stack>
       ))}

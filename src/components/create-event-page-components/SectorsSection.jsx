@@ -21,6 +21,7 @@ export default function SectorsSection({
   setSectors,
   configurationsTemplates,
   eventId,
+  sectorsWithReservations
 }) {
   const [showForm, setShowForm] = useState(false);
   const [selectedConfiguration, setSelectedConfiguration] = useState("");
@@ -118,7 +119,11 @@ export default function SectorsSection({
           </FormControl>
         </>
       )}
-      <SectorsDisplay sectors={sectors} setSectors={setSectors} />
+      <SectorsDisplay
+        sectors={sectors}
+        setSectors={setSectors}
+        sectorsWithReservations={sectorsWithReservations}
+      />
       {!showForm && (
         <Button
           size="medium"
