@@ -23,11 +23,13 @@ import Confirmation from "../components/create-event-page-components/Confirmatio
 import ProgressBar from "../components/create-event-page-components/ProgressBar";
 import { ArrowBackIos, ArrowForwardIos, CheckCircle, Info } from "@mui/icons-material";
 import BeeventsModal from "../components/BeeventsModal";
+import { indexOf } from "lodash";
 
 export function CreateEventPage() {
   const [datesArray, setDatesArray] = useState([]);
   const [sectors, setSectors] = useState([]);
   const [dates, setDates] = useState([]);
+  const [datesWithReservations, setDatesWithReservations] = useState([]);
   const [locationId, setLocationId] = useState("");
   const [event, setEvent] = useState(null);
   const { contrastGreen, oceanicBlue } = customMuiTheme.colors;
@@ -105,10 +107,23 @@ export function CreateEventPage() {
         description: event.description,
       });
       setLocationId(event.location_id);
-      setDates(event.dates.map((date) => date.date_time));
+      const dateTimes = event.dates.map((date) => date.date_time)
+      setDates(dateTimes);
       event.dates[0] ? setSectors(event.dates[0].sectors) : setSectors([]);
+      setDatesWithReservations(dateTimes.filter((date, idx) => hasReservations(idx)))
     }
   }, [event]);
+
+  const hasReservations = (dateIdx) => {
+    const ocupedArray = event.dates[dateIdx].sectors.map((sector) => sector.ocuped)
+    var hasReservations = false;
+    var i = 0
+    while (!hasReservations && i < ocupedArray.length) {
+      if (ocupedArray[i]) { hasReservations = true }
+      i++
+    }
+    return hasReservations
+  }
 
   const handleSubmit = (formData) => {
     eventId ? updateAnEvent(formData) : createNewEvent(formData);
@@ -197,7 +212,7 @@ export function CreateEventPage() {
                     sx: {
                       bgcolor: "#000000",
                       color: "white",
-                      fontSize: {xs: "12px", sm: "14px"},
+                      fontSize: { xs: "12px", sm: "14px" },
                       borderRadius: "4px",
                       textAlign: "center",
                       p: 1,
@@ -223,7 +238,11 @@ export function CreateEventPage() {
             </Stack>
             <Container maxWidth="sm">
               {step === 1 && <MainDataSection handleChange={handleChange} formData={formData} />}
-              {step === 2 && <DatesSection dates={dates} setDates={setDates} />}
+              {step === 2 && <DatesSection
+                dates={dates}
+                setDates={setDates}
+                datesWithReservations={datesWithReservations}
+              />}
               {step === 3 && <LocationSection
                 locationId={locationId}
                 setLocationId={setLocationId}
