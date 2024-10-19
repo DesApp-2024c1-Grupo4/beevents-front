@@ -4,42 +4,32 @@ import {
   Stack,
   TextField,
   Typography,
-  Modal,
-  Box,
   CircularProgress,
 } from "@mui/material";
 import LocationForm from "./LocationForm";
-import { customMuiTheme } from "../../config/customMuiTheme";
 import { useEffect, useState } from "react";
 import { AddCircleOutlineOutlined } from "@mui/icons-material";
-import {
-  getAllLocations,
-  getLocationById,
-  patchLocation,
-} from "../../services/LocationService";
-import SectorsSection from "./SectorsSection";
+import { getAllLocations } from "../../services/LocationService";
 import validator from "validator";
-import { useParams } from "react-router-dom";
 
 export default function LocationSection({
   locationId,
   setLocationId,
-  sectors,
-  setSectors,
   setSelectedLocationName,
   selectedLocationName,
-  sectorsWithReservations
+  setConfigurationsTemplates,
+  setSelectedLocation
 }) {
-  const { contrastGreen } = customMuiTheme.colors;
+  //const { contrastGreen } = customMuiTheme.colors;
   const [showForm, setShowForm] = useState(false);
   const [fetchedLocations, setFetchedLocations] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState({});
-  const [configurationsTemplates, setConfigurationsTemplates] = useState([]);
-  const [configName, setConfigName] = useState("");
-  const [configDescription, setConfigDescription] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [error, setError] = useState(false);
-  const { eventId } = useParams();
+  //const [selectedLocation, setSelectedLocation] = useState({});
+  //const [configurationsTemplates, setConfigurationsTemplates] = useState([]);
+  //const [configName, setConfigName] = useState("");
+  //const [configDescription, setConfigDescription] = useState("");
+  //const [modalOpen, setModalOpen] = useState(false);
+  //const [error, setError] = useState(false);
+  //const { eventId } = useParams();
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -47,16 +37,6 @@ export default function LocationSection({
     };
     fetchLocations();
   }, []);
-
-  useEffect(() => {
-    const getLocationName = async () => {
-      const location = await getLocationById(locationId);
-      setSelectedLocationName(location.name);
-    };
-    if (eventId && !selectedLocationName) {
-      getLocationName();
-    }
-  }, [locationId]);
 
   const getLocationOptions = () => {
     const options = [];
@@ -88,40 +68,40 @@ export default function LocationSection({
   const [displayChangeButton, setDisplayChangeButton] = useState(
     !validator.isEmpty(locationId) && true
   );
-
-  const handleSaveConfig = async () => {
-    if (configName.trim() === "") {
-      setError(true);
-      return;
-    }
-    try {
-      const config = {
-        name: configName,
-        description: configDescription,
-        sectors: sectors,
-      };
-      selectedLocation.configurations.push(config);
-      await patchLocation(selectedLocation);
-      window.alert("¡Configuración guardada con exito!");
-    } catch (error) {
-      console.log(error);
-      window.alert("¡Hubo un error al guardar la configuración!");
-    } finally {
-      handleCloseModal();
-    }
-  };
-
-  const handleOpenModal = () => setModalOpen(true);
-
+  /*  
+    const handleSaveConfig = async () => {
+      if (configName.trim() === "") {
+        setError(true);
+        return;
+      }
+      try {
+        const config = {
+          name: configName,
+          description: configDescription,
+          sectors: sectors,
+        };
+        selectedLocation.configurations.push(config);
+        await patchLocation(selectedLocation);
+        window.alert("¡Configuración guardada con exito!");
+      } catch (error) {
+        console.log(error);
+        window.alert("¡Hubo un error al guardar la configuración!");
+      } finally {
+        handleCloseModal();
+      }
+    };
+  */
+  //const handleOpenModal = () => setModalOpen(true);
+  /*  
   const handleCloseModal = () => {
     setModalOpen(false);
     setConfigName("");
     setConfigDescription("");
     setError(false);
   };
-
+*/
   return (
-    <Stack spacing={3} px={{xs: 3, sm: 6}}>
+    <Stack spacing={3} px={{ xs: 3, sm: 6 }}>
       <Typography
         variant="h1"
         alignSelf="center"
@@ -202,6 +182,7 @@ export default function LocationSection({
           />
         </Stack>
       )}
+      {/*  
       {locationId && (
         <>
           <SectorsSection
@@ -228,6 +209,7 @@ export default function LocationSection({
           )}
         </>
       )}
+        
       <Modal
         open={modalOpen}
         onClose={handleCloseModal}
@@ -299,6 +281,7 @@ export default function LocationSection({
           </Stack>
         </Box>
       </Modal>
+      */}
     </Stack>
   );
 }

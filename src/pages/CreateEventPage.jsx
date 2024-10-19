@@ -23,7 +23,8 @@ import Confirmation from "../components/create-event-page-components/Confirmatio
 import ProgressBar from "../components/create-event-page-components/ProgressBar";
 import { ArrowBackIos, ArrowForwardIos, CheckCircle, Info } from "@mui/icons-material";
 import BeeventsModal from "../components/BeeventsModal";
-import { indexOf } from "lodash";
+import { getLocationById } from "../services/LocationService";
+import SectorsSection from "../components/create-event-page-components/SectorsSection";
 
 export function CreateEventPage() {
   const [datesArray, setDatesArray] = useState([]);
@@ -40,6 +41,7 @@ export function CreateEventPage() {
   const loggedUser = userService.getUserFromLocalStorage();
   const [step, setStep] = useState(1);
   const [selectedLocationName, setSelectedLocationName] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState({});
   const [formData, setFormData] = useState({
     name: "",
     artist: "",
@@ -54,6 +56,7 @@ export function CreateEventPage() {
   const [createdEventId, setEventCreatedId] = useState(null);
   const [publicated, setPublicated] = useState(false);
   const [edited, setEdited] = useState(false);
+  const [configurationsTemplates, setConfigurationsTemplates] = useState([]);
 
   const navButtonStyle = {
     position: "fixed",
@@ -100,6 +103,11 @@ export function CreateEventPage() {
 
   useEffect(() => {
     if (event) {
+      const getLocation = async () => {
+        const location = await getLocationById(event.location_id);
+        setSelectedLocationName(location.name);
+        setSelectedLocation(location)
+      };
       setFormData({
         ...formData,
         name: event.name,
@@ -108,6 +116,7 @@ export function CreateEventPage() {
         description: event.description,
       });
       setLocationId(event.location_id);
+      getLocation();
       const dateTimes = event.dates.map((date) => date.date_time)
       setDates(dateTimes);
       const dateTimesWithReservations = dateTimes.filter((date, idx) => hasReservationsDate(idx))
@@ -131,7 +140,6 @@ export function CreateEventPage() {
   }
 
   const hasReservationsSector = (sectorIdx) => {
-    console.log("Me ejecuté")
     var hasReservations = false
     var i = 0
     while (!hasReservations && i < event.dates.length) {
@@ -264,13 +272,20 @@ export function CreateEventPage() {
               {step === 3 && <LocationSection
                 locationId={locationId}
                 setLocationId={setLocationId}
-                sectors={sectors}
-                setSectors={setSectors}
                 setSelectedLocationName={setSelectedLocationName}
                 selectedLocationName={selectedLocationName}
-                sectorsWithReservations={sectorsWithReservations}
+                setConfigurationsTemplates={setConfigurationsTemplates}
+                setSelectedLocation={setSelectedLocation}
               />}
-              {step === 4 && <Confirmation
+              {step === 4 && <SectorsSection
+                sectors={sectors}
+                setSectors={setSectors}
+                configurationsTemplates={configurationsTemplates}
+                eventId={eventId}
+                sectorsWithReservations={sectorsWithReservations}
+                selectedLocation={selectedLocation}
+              />}
+              {step === 5 && <Confirmation
                 handleSubmit={handleSubmit}
                 formData={formData}
                 selectedLocationName={selectedLocationName}
@@ -295,7 +310,7 @@ export function CreateEventPage() {
               <ArrowBackIos sx={{ fontSize: 50 }} />
             </Button>
           }
-          {step !== 4
+          {step !== 5
             &&
             <Button
               onClick={() => nextStep()}

@@ -8,6 +8,9 @@ import {
   FormControl,
   Tooltip,
   IconButton,
+  Modal,
+  Box,
+  TextField,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import SectorsDisplay from "./SectorsDisplay";
@@ -15,20 +18,23 @@ import SectorForm from "./SectorForm";
 import { AddCircleOutlineOutlined, InfoOutlined } from "@mui/icons-material";
 import { customMuiTheme } from "../../config/customMuiTheme";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { patchLocation } from "../../services/LocationService";
 
 export default function SectorsSection({
   sectors,
   setSectors,
   configurationsTemplates,
   eventId,
-  sectorsWithReservations
+  sectorsWithReservations,
+  selectedLocation
 }) {
   const [showForm, setShowForm] = useState(false);
   const [selectedConfiguration, setSelectedConfiguration] = useState("");
-  const [
-    selectedConfigurationDescription,
-    setSelectedConfigurationDescription,
-  ] = useState("");
+  const [selectedConfigurationDescription, setSelectedConfigurationDescription] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [configName, setConfigName] = useState("");
+  const [error, setError] = useState(false);
+  const [configDescription, setConfigDescription] = useState("");
   const { contrastGreen } = customMuiTheme.colors;
   const isMobile = useMediaQuery("(max-width:1240px)");
 
@@ -49,12 +55,40 @@ export default function SectorsSection({
     }
   }, [selectedConfiguration, configurationsTemplates]);
 
+  const handleSaveConfig = async () => {
+    if (configName.trim() === "") {
+      setError(true);
+      return;
+    }
+    try {
+      const config = {
+        name: configName,
+        description: configDescription,
+        sectors: sectors,
+      };
+      selectedLocation.configurations.push(config);
+      await patchLocation(selectedLocation);
+      window.alert("¡Configuración guardada con exito!");
+    } catch (error) {
+      console.log(error);
+      window.alert("¡Hubo un error al guardar la configuración!");
+    } finally {
+      handleCloseModal();
+    }
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setConfigName("");
+    setConfigDescription("");
+    setError(false);
+  };
+
   return (
-    <Stack spacing={3} px={0}>
+    <Stack spacing={3} px={{ xs: 3, sm: 6 }}>
       <Typography
         variant="h1"
-        gutterBottom
-        sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
+        alignSelf="center"
       >
         Sectores
       </Typography>
@@ -119,6 +153,21 @@ export default function SectorsSection({
           </FormControl>
         </>
       )}
+      {!eventId && selectedLocation.name && sectors?.length > 0 && (
+        <Typography
+          variant="body1"
+          sx={{
+            cursor: "pointer",
+            color: contrastGreen,
+            alignSelf: "center",
+            fontSize: "14px",
+            textAlign: "center",
+          }}
+          onClick={()=> setModalOpen(true)}
+        >
+          ¿Quieres guardar esta configuración de sectores?
+        </Typography>
+      )}
       <SectorsDisplay
         sectors={sectors}
         setSectors={setSectors}
@@ -143,7 +192,6 @@ export default function SectorsSection({
           </Stack>
         </Button>
       )}
-
       {showForm && (
         <SectorForm
           sectors={sectors}
@@ -152,6 +200,77 @@ export default function SectorsSection({
           setShowForm={setShowForm}
         />
       )}
+      <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "95vw",
+            maxWidth: "300px",
+            boxShadow: 24,
+            borderRadius: "5px",
+            bgcolor: "#13273D",
+            border: "1px solid #000",
+            p: 4,
+          }}
+        >
+          <Typography
+            id="modal-title"
+            variant="p"
+            sx={{
+              color: contrastGreen,
+              fontSize: "17px",
+              fontWeight: 500,
+            }}
+            required
+          >
+            Guardar configuración de sectores
+          </Typography>
+          <TextField
+            id="config-name"
+            label="Nombre de la configuración"
+            value={configName}
+            onChange={(e) => {
+              setConfigName(e.target.value);
+              if (e.target.value.trim() !== "") {
+                setError(false);
+              }
+            }}
+            fullWidth
+            margin="normal"
+            required
+            error={error}
+            helperText={error ? "Este campo es obligatorio" : ""}
+            sx={{ mt: 3 }}
+          />
+          <TextField
+            id="config-desc"
+            label="Descripción"
+            value={configDescription}
+            onChange={(e) => setConfigDescription(e.target.value)}
+            fullWidth
+            multiline
+            rows={2}
+            variant="outlined"
+            margin="normal"
+          />
+          <Stack direction="row" justifyContent="space-between" mt={3}>
+            <Button onClick={handleCloseModal} variant="outlined">
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveConfig} variant="contained">
+              Guardar
+            </Button>
+          </Stack>
+        </Box>
+      </Modal>
     </Stack>
   );
 }
