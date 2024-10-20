@@ -11,6 +11,7 @@ import {
   Modal,
   Box,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import SectorsDisplay from "./SectorsDisplay";
@@ -19,6 +20,7 @@ import { AddCircleOutlineOutlined, InfoOutlined } from "@mui/icons-material";
 import { customMuiTheme } from "../../config/customMuiTheme";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { patchLocation } from "../../services/LocationService";
+import BeeventsModal from "../BeeventsModal";
 
 export default function SectorsSection({
   sectors,
@@ -35,6 +37,10 @@ export default function SectorsSection({
   const [configName, setConfigName] = useState("");
   const [error, setError] = useState(false);
   const [configDescription, setConfigDescription] = useState("");
+  const [modalMessage, setModalMessage] = useState("");
+  const [subMessage, setSubMessage] = useState("");
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const { contrastGreen } = customMuiTheme.colors;
   const isMobile = useMediaQuery("(max-width:1240px)");
 
@@ -61,18 +67,31 @@ export default function SectorsSection({
       return;
     }
     try {
+      setSaveLoading(true);
       const config = {
         name: configName,
         description: configDescription,
         sectors: sectors,
       };
+      setModalMessage("¡Configuración guardada con éxito!");
+      setSubMessage(
+        "Ya se encuentra disponible entre las opciones de configuraciones predeterminadas."
+      );
       selectedLocation.configurations.push(config);
       await patchLocation(selectedLocation);
-      window.alert("¡Configuración guardada con exito!");
+      setOpen(true);
+      setTimeout(() => {
+        setOpen(false);
+      }, 3000);
     } catch (error) {
       console.log(error);
-      window.alert("¡Hubo un error al guardar la configuración!");
+      setModalMessage("¡Hubo un error al guardar la configuración!");
+      setOpen(true);
+      setTimeout(() => {
+        setOpen(false);
+      }, 2500);
     } finally {
+      setSaveLoading(false);
       handleCloseModal();
     }
   };
@@ -163,7 +182,7 @@ export default function SectorsSection({
             fontSize: "14px",
             textAlign: "center",
           }}
-          onClick={()=> setModalOpen(true)}
+          onClick={() => setModalOpen(true)}
         >
           ¿Quieres guardar esta configuración de sectores?
         </Typography>
@@ -262,15 +281,36 @@ export default function SectorsSection({
             margin="normal"
           />
           <Stack direction="row" justifyContent="space-between" mt={3}>
-            <Button onClick={handleCloseModal} variant="outlined">
+            <Button
+              onClick={handleCloseModal}
+              variant="outlined"
+              style={{ width: "90px" }}
+            >
               Cancelar
             </Button>
-            <Button onClick={handleSaveConfig} variant="contained">
-              Guardar
+            <Button
+              onClick={handleSaveConfig}
+              variant="contained"
+              style={{ width: "90px" }}
+            >
+              {saveLoading ? (
+                <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+              ) : (
+                "Guardar"
+              )}
             </Button>
           </Stack>
         </Box>
       </Modal>
+      <BeeventsModal
+        open={open}
+        handleClose={() => setOpen(false)}
+        message={modalMessage}
+        processMessageIncludes={"ando"}
+        errorMessageIncludes={"error"}
+        tryAgainMessage={"Revisa los datos y vuelve a intentarlo"}
+        subMessage={subMessage}
+      />
     </Stack>
   );
 }
