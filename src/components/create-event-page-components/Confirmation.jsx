@@ -3,7 +3,7 @@ import { indexOf } from "lodash";
 import { customMuiTheme } from "../../config/customMuiTheme";
 import validator from "validator";
 
-export default function Confirmation({ handleSubmit, formData, selectedLocationName, eventId }) {
+export default function Confirmation({ handleSubmit, formData, selectedLocationName, eventId, datesArray }) {
   const { contrastGreen } = customMuiTheme.colors;
 
   const name = formData.name ? formData.name : "Ninguno"
@@ -12,10 +12,10 @@ export default function Confirmation({ handleSubmit, formData, selectedLocationN
   const isValidImage = validator.isURL(image);
   const description = formData.description ? formData.description : "Ninguna"
   const location = selectedLocationName ? selectedLocationName : "Ninguno"
-  const thereIsOneDateAtLeast = formData.dates.length > 0
-  const dates = thereIsOneDateAtLeast && formData.dates.map(date => date.date_time)
-  const thereIsOneSectorAtLeast = thereIsOneDateAtLeast && formData.dates[0].sectors.length > 0
-  const sectors = thereIsOneSectorAtLeast && formData.dates[0].sectors.map(sector => sector.name)
+  const thereIsOneDateAtLeast = datesArray.length > 0
+  const dates = thereIsOneDateAtLeast && datesArray.map(date => date.date_time)
+  const thereIsOneSectorAtLeast = thereIsOneDateAtLeast && datesArray[0].sectors.length > 0
+  const sectors = thereIsOneSectorAtLeast && datesArray[0].sectors.map(sector => sector.name)
   const allowCreateOrEdit = name && artist && image && description && location && thereIsOneDateAtLeast && thereIsOneSectorAtLeast
 
   const formatDate = (date) => {

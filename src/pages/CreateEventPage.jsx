@@ -43,6 +43,7 @@ export function CreateEventPage() {
   const [selectedLocationName, setSelectedLocationName] = useState("");
   const [selectedLocation, setSelectedLocation] = useState({});
   const [initialDates, setInitialDates] = useState([]);
+  const [initialSectors, setInitialSectors] = useState([]);
   const [open, setOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [createdEventId, setEventCreatedId] = useState(null);
@@ -125,6 +126,7 @@ export function CreateEventPage() {
       setDatesWithReservations(dateTimesWithReservations)
       const existentSectors = event.dates[0].sectors
       setSectors(existentSectors);
+      setInitialSectors(existentSectors);
       const existentSectorsNames = existentSectors.map(sector => sector.name);
       setSectorsWithReservations(existentSectorsNames.filter((sector, idx) => hasReservationsSector(idx)));
     }
@@ -177,11 +179,21 @@ export function CreateEventPage() {
   const updateAnEvent = async (formData) => {
     setModalMessage("Editando evento...");
     setOpen(true);
-    const finalDates = initialDates.filter(date => !dates.includes(date.date_time));
-    formData.delete_date_times_id = finalDates.map(date => date.id)
-    //console.log(formData.delete_date_times_id)
-    //const updated = await updateEvent(formData, eventId);
-    const updated = false;
+    
+    const deletedDates = initialDates.filter(date => !dates.includes(date.date_time));
+    formData.delete_date_times_id = deletedDates.map(date => date.id);
+    const deletedSectors = initialSectors.filter(sector => !sectors.includes(sector));
+    formData.delete_sectors_name = deletedSectors.map(sector => sector.name);
+
+    const initialDateTimes = initialDates.map(date => date.date_time);
+    formData.new_date_times = dates.filter(date => !initialDateTimes.includes(date));
+
+    formData.new_sectors = sectors.filter(sector => !initialSectors.includes(sector));
+    
+    delete formData.dates;
+
+    const updated = await updateEvent(formData, eventId);
+    
     if (updated) {
       setModalMessage("¡Evento editado!");
       setEdited(true);
@@ -296,6 +308,7 @@ export function CreateEventPage() {
                 formData={formData}
                 selectedLocationName={selectedLocationName}
                 eventId={eventId}
+                datesArray={datesArray}
               />}
             </Container>
           </Container >
