@@ -40,7 +40,6 @@ export default function LocationSection({
   };
 
   const handleLocationChange = (e, value) => {
-    console.log(value);
     if (value !== null) {
       setLocationId(value.id);
       setSelectedLocationName(value.label);

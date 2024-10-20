@@ -16,7 +16,8 @@ import StarIcon from "@mui/icons-material/Star";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { getNearByEvents } from "../services/EventService";
-import { getLocationById} from "../services/LocationService";
+import { getLocationById } from "../services/LocationService";
+import BeeventsModal from "../components/BeeventsModal";
 
 export function HomePage() {
   const theme = useTheme();
@@ -37,10 +38,8 @@ export function HomePage() {
       //const nearbyEventsData = await getNearByEvents();
       //setNearbyEvents(nearbyEventsData);
 
-
-
       const nearByEvents = await getNearByEvents();
-      
+
       // Obtenemos las ubicaciones para cada evento cercano
       const nearByEventsWithLocation = await Promise.all(
         nearByEvents.map(async (event) => {

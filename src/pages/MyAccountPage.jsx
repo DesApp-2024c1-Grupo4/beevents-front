@@ -48,6 +48,7 @@ import validator from "validator";
 import { getLocationById } from "../services/LocationService";
 import { Link, useNavigate } from "react-router-dom";
 import InputSearch from "../components/InputSearch";
+import BeeventsModal from "../components/BeeventsModal";
 import {
   deleteEvent,
   getAllEventsWithUnpublishedEvents,
@@ -158,6 +159,10 @@ export default function CardHorizontalWBorder({
   const [locationName, setLocationName] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [publishLoading, setPublishLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [subMessage, setSubMessage] = useState("");
+  const [onConfirmAction, setOnConfirmAction] = useState(null);
   const isMobile = useMediaQuery("(max-width:600px)");
   const navigate = useNavigate();
 
@@ -169,190 +174,213 @@ export default function CardHorizontalWBorder({
     getLocationName();
   }, [location]);
 
-  const handleDelete = async (eventId) => {
-    const confirm = window.confirm(
-      "Estás a punto de eliminar este evento. ¿Estás segur@?"
-    );
-    if (confirm) {
-      try {
-        setDeleteLoading(true);
-        await deleteEvent(eventId);
-        await fetchEvents();
-        setSnackbarMessage("Evento eliminado");
-      } catch (error) {
-        console.log(error);
-        setSnackbarMessage("Error al eliminar evento");
-      } finally {
-        setSnackbarOpen(true);
-        setDeleteLoading(false);
-      }
+  const handleDelete = async (eventId, artist) => {
+    setMessage("Eliminar evento");
+    setSubMessage(`¿Estas seguro que deseas eliminar el evento de ${artist}?`);
+    setOnConfirmAction(() => () => handleConfirmDelete(eventId));
+    setOpen(true);
+  };
+
+  const handleConfirmDelete = async (eventId) => {
+    setOpen(false);
+    try {
+      setDeleteLoading(true);
+      await deleteEvent(eventId);
+      await fetchEvents();
+      setSnackbarMessage("Evento eliminado");
+    } catch (error) {
+      console.log(error);
+      setSnackbarMessage("Error al eliminar evento");
+    } finally {
+      setSnackbarOpen(true);
+      setDeleteLoading(false);
     }
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const handlePublish = async (eventId, published) => {
-    const confirm = window.confirm(
-      !published
-        ? "Estás a punto de despublicar este evento. ¿Estás segur@?"
-        : "Estás a punto de publicar este evento. ¿Estás segur@?"
-    );
-    if (confirm) {
-      const state = {
-        publicated: published,
-      };
-      try {
-        setPublishLoading(true);
-        await publishUnpublishEvent(state, eventId);
-        await fetchEvents();
-        setSnackbarMessage(
-          published ? "Evento publicado" : "Evento despublicado"
-        );
-      } catch (error) {
-        console.log(error);
-        setSnackbarMessage("Error al publicar evento");
-      } finally {
-        setSnackbarOpen(true);
-        setPublishLoading(false);
-      }
+    setMessage(published ? "Publicar evento?" : "Despublicar evento");
+    let msg = published
+      ? "El evento pasará a estar visible para todos los usuarios."
+      : "El evento dejara de estar visible para todos los usuarios.";
+    setSubMessage(msg);
+    setOnConfirmAction(() => () => handleConfirmPublish(eventId, published));
+    setOpen(true);
+  };
+
+  const handleConfirmPublish = async (eventId, published) => {
+    setOpen(false);
+    const state = {
+      publicated: published,
+    };
+    try {
+      setPublishLoading(true);
+      await publishUnpublishEvent(state, eventId);
+      await fetchEvents();
+      setSnackbarMessage(
+        published ? "Evento publicado" : "Evento despublicado"
+      );
+    } catch (error) {
+      console.log(error);
+      setSnackbarMessage("Error al publicar evento");
+    } finally {
+      setSnackbarOpen(true);
+      setPublishLoading(false);
     }
   };
 
   return (
-    <Card
-      className="border-grad-right"
-      sx={{
-        background: "transparent",
-        display: { sm: "flex" },
-        p: 2,
-      }}
-    >
-      <Stack
-        direction={{ sm: "row" }}
-        spacing={{ xs: 2 }}
-        textAlign={{ xs: "center", sm: "left" }}
+    <>
+      <BeeventsModal
+        open={open}
+        handleClose={handleClose}
+        message={message}
+        processMessageIncludes={"ando"}
+        errorMessageIncludes={"error"}
+        tryAgainMessage={"Revisa los datos y vuelve a intentarlo"}
+        subMessage={subMessage}
+        onConfirm={onConfirmAction}
+      />{" "}
+      <Card
+        className="border-grad-right"
         sx={{
-          width: "100%",
-          alignItems: { xs: "center", sm: "start" },
-          justifyContent: "space-between",
+          background: "transparent",
+          display: { sm: "flex" },
+          p: 2,
         }}
       >
-        <Stack spacing={1} width={{ xs: "100%", sm: "25%" }}>
+        <Stack
+          direction={{ sm: "row" }}
+          spacing={{ xs: 2 }}
+          textAlign={{ xs: "center", sm: "left" }}
+          sx={{
+            width: "100%",
+            alignItems: { xs: "center", sm: "start" },
+            justifyContent: "space-between",
+          }}
+        >
+          <Stack spacing={1} width={{ xs: "100%", sm: "25%" }}>
+            <Typography
+              variant="h2"
+              sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
+            >
+              {title}
+            </Typography>
+            <Typography
+              variant="h2"
+              sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
+            >
+              {artist}
+            </Typography>
+          </Stack>
           <Typography
             variant="h2"
+            width={{ xs: "100%", sm: "25%" }}
             sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
           >
-            {title}
+            {locationName}
           </Typography>
-          <Typography
-            variant="h2"
-            sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
+          <Stack
+            spacing={1}
+            textAlign={{ xs: "center", sm: "end" }}
+            width={{ xs: "100%", sm: "20%" }}
           >
-            {artist}
-          </Typography>
-        </Stack>
-        <Typography
-          variant="h2"
-          width={{ xs: "100%", sm: "25%" }}
-          sx={{ fontSize: { xs: "1rem", md: "1.2rem" } }}
-        >
-          {locationName}
-        </Typography>
-        <Stack
-          spacing={1}
-          textAlign={{ xs: "center", sm: "end" }}
-          width={{ xs: "100%", sm: "20%" }}
-        >
-          {dates.map((date) => (
-            <Typography
-              variant="info"
-              sx={{ fontSize: { md: "1rem" } }}
-              key={date}
-            >
-              {getFormatedDate(date)}
-            </Typography>
-          ))}
-        </Stack>
-        <Stack width={{ xs: "100%", sm: "15%" }} spacing={1}>
-          {sectors?.map((sector) => (
-            <Typography
-              key={sector.name}
-              variant="info"
-              sx={{ fontSize: { md: "1rem" } }}
-            >
-              {sector.name}
-            </Typography>
-          ))}
-        </Stack>
-        <Stack
-          direction={isMobile ? "row" : "column"}
-          spacing={1}
-          width={{ xs: "100%", sm: "15%" }}
-          justifyContent="center"
-        >
-          <Stack spacing={1} direction={"row"}>
-            <IconButton
-              title="Editar"
-              component={Link}
-              to={`/create_event/${id}`}
-              sx={{
-                bgcolor: contrastGreen,
-                "&:hover": { color: "white" },
-              }}
-            >
-              <Edit />
-            </IconButton>
-            <IconButton
-              title="Eliminar"
-              onClick={() => handleDelete(id)}
-              sx={{ bgcolor: "crimson" }}
-            >
-              {deleteLoading ? (
-                <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+            {dates.map((date) => (
+              <Typography
+                variant="info"
+                sx={{ fontSize: { md: "1rem" } }}
+                key={date}
+              >
+                {getFormatedDate(date)}
+              </Typography>
+            ))}
+          </Stack>
+          <Stack width={{ xs: "100%", sm: "15%" }} spacing={1}>
+            {sectors?.map((sector) => (
+              <Typography
+                key={sector.name}
+                variant="info"
+                sx={{ fontSize: { md: "1rem" } }}
+              >
+                {sector.name}
+              </Typography>
+            ))}
+          </Stack>
+          <Stack
+            direction={isMobile ? "row" : "column"}
+            spacing={1}
+            width={{ xs: "100%", sm: "15%" }}
+            justifyContent="center"
+          >
+            <Stack spacing={1} direction={"row"}>
+              <IconButton
+                title="Editar"
+                component={Link}
+                to={`/create_event/${id}`}
+                sx={{
+                  bgcolor: contrastGreen,
+                  "&:hover": { color: "white" },
+                }}
+              >
+                <Edit />
+              </IconButton>
+              <IconButton
+                title="Eliminar"
+                onClick={() => handleDelete(id, artist)}
+                sx={{ bgcolor: "crimson" }}
+              >
+                {deleteLoading ? (
+                  <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+                ) : (
+                  <DeleteOutlineOutlined />
+                )}
+              </IconButton>
+            </Stack>
+            <Stack spacing={1} direction={"row"}>
+              {!publicated ? (
+                <IconButton
+                  title="Publicar"
+                  onClick={() => handlePublish(id, true)}
+                  sx={{ bgcolor: "#0B6B81" }}
+                >
+                  {publishLoading ? (
+                    <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+                  ) : (
+                    <PublicIcon />
+                  )}
+                </IconButton>
               ) : (
-                <DeleteOutlineOutlined />
+                <IconButton
+                  title="Despublicar"
+                  onClick={() => handlePublish(id, false)}
+                  sx={{ bgcolor: "#0B6B81" }}
+                >
+                  {publishLoading ? (
+                    <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
+                  ) : (
+                    <PublicOffIcon />
+                  )}
+                </IconButton>
               )}
-            </IconButton>
-          </Stack>
-          <Stack spacing={1} direction={"row"}>
-            {!publicated ? (
               <IconButton
-                title="Publicar"
-                onClick={() => handlePublish(id, true)}
-                sx={{ bgcolor: "#0B6B81" }}
+                title="Pre-Reservar"
+                onClick={() => navigate(`/reservation/${id}`)}
+                sx={{
+                  background: publicated ? "grey" : "#E59A0E",
+                  border: publicated ? "1px solid grey" : "",
+                }}
+                disabled={publicated}
               >
-                {publishLoading ? (
-                  <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
-                ) : (
-                  <PublicIcon />
-                )}
+                <EventSeatIcon />
               </IconButton>
-            ) : (
-              <IconButton
-                title="Despublicar"
-                onClick={() => handlePublish(id, false)}
-                sx={{ bgcolor: "#0B6B81" }}
-              >
-                {publishLoading ? (
-                  <CircularProgress size={24} sx={{ color: "whitesmoke" }} />
-                ) : (
-                  <PublicOffIcon />
-                )}
-              </IconButton>
-            )}
-            <IconButton
-              title="Pre-Reservar"
-              onClick={() => navigate(`/reservation/${id}`)}
-              sx={{
-                background: publicated ? "grey" : "#E59A0E",
-                border: publicated ? "1px solid grey" : "",
-              }}
-              disabled={publicated}
-            >
-              <EventSeatIcon />
-            </IconButton>
+            </Stack>
           </Stack>
         </Stack>
-      </Stack>
-    </Card>
+      </Card>
+    </>
   );
 }
 
