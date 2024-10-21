@@ -28,11 +28,14 @@ export default function SectorsSection({
   configurationsTemplates,
   eventId,
   sectorsWithReservations,
-  selectedLocation
+  selectedLocation,
 }) {
   const [showForm, setShowForm] = useState(false);
   const [selectedConfiguration, setSelectedConfiguration] = useState("");
-  const [selectedConfigurationDescription, setSelectedConfigurationDescription] = useState("");
+  const [
+    selectedConfigurationDescription,
+    setSelectedConfigurationDescription,
+  ] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [configName, setConfigName] = useState("");
   const [error, setError] = useState(false);
@@ -89,7 +92,7 @@ export default function SectorsSection({
       setOpen(true);
       setTimeout(() => {
         setOpen(false);
-      }, 2500);
+      }, 3000);
     } finally {
       setSaveLoading(false);
       handleCloseModal();
@@ -105,10 +108,7 @@ export default function SectorsSection({
 
   return (
     <Stack spacing={3} px={{ xs: 3, sm: 6 }}>
-      <Typography
-        variant="h1"
-        alignSelf="center"
-      >
+      <Typography variant="h1" alignSelf="center">
         Sectores
       </Typography>
       {!eventId && configurationsTemplates?.length > 0 && (
