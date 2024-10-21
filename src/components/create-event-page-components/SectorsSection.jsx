@@ -88,7 +88,7 @@ export default function SectorsSection({
       }, 3000);
     } catch (error) {
       console.log(error);
-      setModalMessage("¡Hubo un error al guardar la configuración!");
+      setModalMessage("Hubo un error al guardar la configuración");
       setOpen(true);
       setTimeout(() => {
         setOpen(false);
@@ -308,7 +308,7 @@ export default function SectorsSection({
         message={modalMessage}
         processMessageIncludes={"ando"}
         errorMessageIncludes={"error"}
-        tryAgainMessage={"Revisa los datos y vuelve a intentarlo"}
+        tryAgainMessage={"Vuelve a intentarlo más tarde."}
         subMessage={subMessage}
       />
     </Stack>

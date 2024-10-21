@@ -23,7 +23,7 @@ export async function patchEventReservations(formData) {
     return response.data;
   } catch (error) {
     console.log(error.message);
-    return null;
+    throw error;
   }
 }
 

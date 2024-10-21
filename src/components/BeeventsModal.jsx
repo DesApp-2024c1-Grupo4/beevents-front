@@ -18,7 +18,7 @@ export default function BeeventsModal({
   subMessage,
   onConfirm,
 }) {
-  const contrastGreen = customMuiTheme.colors;
+  const { contrastGreen } = customMuiTheme.colors;
   const style = {
     position: "absolute",
     display: "flex",

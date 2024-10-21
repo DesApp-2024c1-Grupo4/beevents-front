@@ -209,7 +209,7 @@ export default function CardHorizontalWBorder({
     setMessage(published ? "Publicar evento?" : "Despublicar evento");
     let msg = published
       ? "El evento pasará a estar visible para todos los usuarios."
-      : "El evento dejara de estar visible para todos los usuarios.";
+      : "El evento dejará de estar visible para todos los usuarios.";
     setSubMessage(msg);
     setOnConfirmAction(() => () => handleConfirmPublish(eventId, published));
     setOpen(true);

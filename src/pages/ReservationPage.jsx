@@ -19,7 +19,6 @@ import EventSeatIcon from "@mui/icons-material/EventSeat";
 import FestivalIcon from "@mui/icons-material/Festival";
 import LocalActivityIcon from "@mui/icons-material/LocalActivity";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import Logo from "../assets/img/logo.png";
 import { useParams } from "react-router-dom";
 import { customMuiTheme } from "../config/customMuiTheme";
 import SeatMap from "../components/reservation-page-components/SeatMap";
@@ -29,24 +28,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { patchEventReservations } from "../services/ReservationService";
 import NotFound from "../components/NotFound";
-
-const style = {
-  position: "absolute",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  borderRadius: "5px",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "90%",
-  maxWidth: "380px",
-  bgcolor: "#13273D",
-  border: "1px solid #000",
-  boxShadow: 24,
-  p: 2,
-};
+import BeeventsModal from "../components/BeeventsModal";
 
 export function ReservationPage() {
   const { contrastGreen } = customMuiTheme.colors;
@@ -288,13 +270,15 @@ export function ReservationPage() {
       const response = await patchEventReservations(formData);
       setNotNumeredReservationUnconfirmed([]);
       setNumeredReservationUnconfirmed([]);
-      setApiMessage("Tickets reservados exitosamente");
+      setApiMessage("¡Tickets reservados exitosamente!");
       setLoading(false);
       handleOpen();
+      setTimeout(handleClose, 3000);
     } catch (error) {
       console.log(error);
       setApiMessage("Hubo un inconveniente en la reserva de Tickets");
       handleOpen();
+      setTimeout(handleClose, 3000);
     } finally {
       await fetchEvent();
       setLoading(false);
@@ -739,25 +723,14 @@ export function ReservationPage() {
           </Button>
         </Box>
       </Modal>
-      <Modal
+      <BeeventsModal
         open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <img src={Logo} alt="Logo" style={{ width: 100, marginBottom: 5 }} />
-          <Typography
-            id="modal-modal-description"
-            sx={{ mt: 2, textAlign: "center" }}
-          >
-            ¡{apiMessage}!
-          </Typography>
-          <Button onClick={handleClose} variant="contained" sx={{ mt: 3 }}>
-            Cerrar
-          </Button>
-        </Box>
-      </Modal>
+        handleClose={handleClose}
+        message={apiMessage}
+        errorMessageIncludes={"inconveniente"}
+        subMessage={"Ya se agregaron a tus reservas."}
+        tryAgainMessage={"Vuelve a intentarlo más tarde."}
+      />
     </>
   ) : (
     <NotFound />
