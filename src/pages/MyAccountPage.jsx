@@ -147,6 +147,7 @@ export default function CardHorizontalWBorder({
   fetchEvents,
   setSnackbarMessage,
   setSnackbarOpen,
+  setSnackbarSeverity,
   id,
   artist,
   title,
@@ -185,11 +186,14 @@ export default function CardHorizontalWBorder({
     setOpen(false);
     try {
       setDeleteLoading(true);
-      await deleteEvent(eventId);
+      const resp = await deleteEvent(eventId);
+      console.log(resp);
       await fetchEvents();
+      setSnackbarSeverity("success");
       setSnackbarMessage("Evento eliminado");
     } catch (error) {
       console.log(error);
+      setSnackbarSeverity("error");
       setSnackbarMessage("Error al eliminar evento");
     } finally {
       setSnackbarOpen(true);
@@ -220,11 +224,12 @@ export default function CardHorizontalWBorder({
       setPublishLoading(true);
       await publishUnpublishEvent(state, eventId);
       await fetchEvents();
+      setSnackbarSeverity("success");
       setSnackbarMessage(
         published ? "Evento publicado" : "Evento despublicado"
       );
     } catch (error) {
-      console.log(error);
+      setSnackbarSeverity("error");
       setSnackbarMessage("Error al publicar evento");
     } finally {
       setSnackbarOpen(true);
@@ -507,6 +512,7 @@ export function MyAccountPage() {
   const [shownEvents, setShownEvents] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const userService = new UserService();
   const navigate = useNavigate();
@@ -648,7 +654,7 @@ export function MyAccountPage() {
       <SnackBar
         open={snackbarOpen}
         message={snackbarMessage}
-        severity="success"
+        severity={snackbarSeverity}
         handleClose={handleSnackbarClose}
       />
       <Stack spacing={10} my={4}>
@@ -773,6 +779,7 @@ export function MyAccountPage() {
                       fetchEvents={fetchEvents}
                       setSnackbarMessage={setSnackbarMessage}
                       setSnackbarOpen={setSnackbarOpen}
+                      setSnackbarSeverity={setSnackbarSeverity}
                       id={event._id}
                       artist={event.artist}
                       title={event.name}

@@ -74,7 +74,7 @@ export async function publishUnpublishEvent(state, id) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    throw error;
   }
 }
 
@@ -88,6 +88,7 @@ export async function deleteEvent(id) {
     return response.data;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
