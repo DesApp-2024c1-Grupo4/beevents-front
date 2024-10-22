@@ -94,7 +94,17 @@ export async function deleteEvent(id) {
 
 export async function getNearByEvents() {
   try {
-    const response = await api.get("/event/nearby");
+    const geoResponse = await axios.get("https://get.geojs.io/v1/ip/geo.json");
+    const { latitude, longitude } = geoResponse.data;
+    // Hacer la solicitud al backend con las coordenadas
+    const response = await api.get("/event/nearby", {
+      params: {
+        lat: latitude,
+        lon: longitude,
+      },
+    });
+    // Procesar la respuesta de eventos cercanos
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error(error);

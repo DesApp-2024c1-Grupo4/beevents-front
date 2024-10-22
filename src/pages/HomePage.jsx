@@ -34,12 +34,7 @@ export function HomePage() {
       setEventsOrderByDates(sortedEvents);
       const countedTickets = countReservedTickets(allEvents);
       setEventsOrderByTickets(countedTickets);
-      // Llama a getEventsNearBy y guarda los eventos cercanos
-      //const nearbyEventsData = await getNearByEvents();
-      //setNearbyEvents(nearbyEventsData);
-
       const nearByEvents = await getNearByEvents();
-
       // Obtenemos las ubicaciones para cada evento cercano
       const nearByEventsWithLocation = await Promise.all(
         nearByEvents.map(async (event) => {
@@ -52,7 +47,6 @@ export function HomePage() {
           };
         })
       );
-
       setNearByEventsWithLocation(nearByEventsWithLocation);
     };
     fetchEvents();
@@ -255,7 +249,7 @@ export function HomePage() {
           >
             {nearByEventsWithLocation.length > 0 ? (
               nearByEventsWithLocation.map((event, index) => (
-                <Grid item xs={12} sm={6} key={index}>
+                <Grid item xs={9} sm={10} md={10} key={index}>
                   <CardHorizontal
                     id={event._id}
                     title={event.name}
