@@ -23,11 +23,15 @@ import Confirmation from "../components/create-event-page-components/Confirmatio
 import ProgressBar from "../components/create-event-page-components/ProgressBar";
 import { ArrowBackIos, ArrowForwardIos, CheckCircle, Info } from "@mui/icons-material";
 import BeeventsModal from "../components/BeeventsModal";
+import { getLocationById } from "../services/LocationService";
+import SectorsSection from "../components/create-event-page-components/SectorsSection";
 
 export function CreateEventPage() {
   const [datesArray, setDatesArray] = useState([]);
   const [sectors, setSectors] = useState([]);
   const [dates, setDates] = useState([]);
+  const [datesWithReservations, setDatesWithReservations] = useState([]);
+  const [sectorsWithReservations, setSectorsWithReservations] = useState([]);
   const [locationId, setLocationId] = useState("");
   const [event, setEvent] = useState(null);
   const { contrastGreen, oceanicBlue } = customMuiTheme.colors;
@@ -37,6 +41,15 @@ export function CreateEventPage() {
   const loggedUser = userService.getUserFromLocalStorage();
   const [step, setStep] = useState(1);
   const [selectedLocationName, setSelectedLocationName] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState({});
+  const [initialDates, setInitialDates] = useState([]);
+  const [initialSectors, setInitialSectors] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [createdEventId, setEventCreatedId] = useState(null);
+  const [publicated, setPublicated] = useState(false);
+  const [edited, setEdited] = useState(false);
+  const [configurationsTemplates, setConfigurationsTemplates] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     artist: "",
@@ -46,11 +59,6 @@ export function CreateEventPage() {
     user_id: loggedUser.id,
     dates: datesArray
   });
-  const [open, setOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
-  const [createdEventId, setEventCreatedId] = useState(null);
-  const [publicated, setPublicated] = useState(false);
-  const [edited, setEdited] = useState(false);
 
   const navButtonStyle = {
     position: "fixed",
@@ -97,6 +105,11 @@ export function CreateEventPage() {
 
   useEffect(() => {
     if (event) {
+      const getLocation = async () => {
+        const location = await getLocationById(event.location_id);
+        setSelectedLocationName(location.name);
+        setSelectedLocation(location)
+      };
       setFormData({
         ...formData,
         name: event.name,
@@ -105,10 +118,42 @@ export function CreateEventPage() {
         description: event.description,
       });
       setLocationId(event.location_id);
-      setDates(event.dates.map((date) => date.date_time));
-      event.dates[0] ? setSectors(event.dates[0].sectors) : setSectors([]);
+      getLocation();
+      const dateTimes = event.dates.map((date) => date.date_time)
+      setDates(dateTimes);
+      setInitialDates(event.dates.map(date => ({ id: date._id, date_time: date.date_time })))
+      const dateTimesWithReservations = dateTimes.filter((date, idx) => hasReservationsDate(idx))
+      setDatesWithReservations(dateTimesWithReservations)
+      const existentSectors = event.dates[0].sectors
+      setSectors(existentSectors);
+      setInitialSectors(existentSectors);
+      const existentSectorsNames = existentSectors.map(sector => sector.name);
+      setSectorsWithReservations(existentSectorsNames.filter((sector, idx) => hasReservationsSector(idx)));
     }
   }, [event]);
+
+  const hasReservationsDate = (dateIdx) => {
+    const ocupedArray = event.dates[dateIdx].sectors.map((sector) => sector.ocuped)
+    var hasReservations = false;
+    var i = 0
+    while (!hasReservations && i < ocupedArray.length) {
+      if (ocupedArray[i]) { hasReservations = true }
+      i++
+    }
+    return hasReservations
+  }
+
+  const hasReservationsSector = (sectorIdx) => {
+    var hasReservations = false
+    var i = 0
+    while (!hasReservations && i < event.dates.length) {
+      if (event.dates[i].sectors[sectorIdx].ocuped) {
+        hasReservations = true
+      }
+      i++
+    }
+    return hasReservations
+  }
 
   const handleSubmit = (formData) => {
     eventId ? updateAnEvent(formData) : createNewEvent(formData);
@@ -134,7 +179,21 @@ export function CreateEventPage() {
   const updateAnEvent = async (formData) => {
     setModalMessage("Editando evento...");
     setOpen(true);
+    
+    const deletedDates = initialDates.filter(date => !dates.includes(date.date_time));
+    formData.delete_date_times_id = deletedDates.map(date => date.id);
+    const deletedSectors = initialSectors.filter(sector => !sectors.includes(sector));
+    formData.delete_sectors_name = deletedSectors.map(sector => sector.name);
+
+    const initialDateTimes = initialDates.map(date => date.date_time);
+    formData.new_date_times = dates.filter(date => !initialDateTimes.includes(date));
+
+    formData.new_sectors = sectors.filter(sector => !initialSectors.includes(sector));
+    
+    delete formData.dates;
+
     const updated = await updateEvent(formData, eventId);
+    
     if (updated) {
       setModalMessage("¡Evento editado!");
       setEdited(true);
@@ -197,7 +256,7 @@ export function CreateEventPage() {
                     sx: {
                       bgcolor: "#000000",
                       color: "white",
-                      fontSize: {xs: "12px", sm: "14px"},
+                      fontSize: { xs: "12px", sm: "14px" },
                       borderRadius: "4px",
                       textAlign: "center",
                       p: 1,
@@ -223,20 +282,33 @@ export function CreateEventPage() {
             </Stack>
             <Container maxWidth="sm">
               {step === 1 && <MainDataSection handleChange={handleChange} formData={formData} />}
-              {step === 2 && <DatesSection dates={dates} setDates={setDates} />}
+              {step === 2 && <DatesSection
+                dates={dates}
+                setDates={setDates}
+                datesWithReservations={datesWithReservations}
+              />}
               {step === 3 && <LocationSection
                 locationId={locationId}
                 setLocationId={setLocationId}
-                sectors={sectors}
-                setSectors={setSectors}
                 setSelectedLocationName={setSelectedLocationName}
                 selectedLocationName={selectedLocationName}
+                setConfigurationsTemplates={setConfigurationsTemplates}
+                setSelectedLocation={setSelectedLocation}
               />}
-              {step === 4 && <Confirmation
+              {step === 4 && <SectorsSection
+                sectors={sectors}
+                setSectors={setSectors}
+                configurationsTemplates={configurationsTemplates}
+                eventId={eventId}
+                sectorsWithReservations={sectorsWithReservations}
+                selectedLocation={selectedLocation}
+              />}
+              {step === 5 && <Confirmation
                 handleSubmit={handleSubmit}
                 formData={formData}
                 selectedLocationName={selectedLocationName}
                 eventId={eventId}
+                datesArray={datesArray}
               />}
             </Container>
           </Container >
@@ -257,7 +329,7 @@ export function CreateEventPage() {
               <ArrowBackIos sx={{ fontSize: 50 }} />
             </Button>
           }
-          {step !== 4
+          {step !== 5
             &&
             <Button
               onClick={() => nextStep()}

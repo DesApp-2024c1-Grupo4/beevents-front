@@ -1,7 +1,7 @@
 import { Delete } from "@mui/icons-material";
-import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 
-export default function DatesDisplay({ dates, setDates }) {
+export default function DatesDisplay({ dates, setDates, datesWithReservations }) {
   const getFormatedDate = (date) => {
     const thisDate = new Date(date);
     const day = thisDate.getDate()
@@ -13,28 +13,32 @@ export default function DatesDisplay({ dates, setDates }) {
     return ("" + day + " de " + month + " de " + year + ", " + time)
   };
 
-const deleteDate = (date) => {
-  setDates((current) => current.filter((storedDate) => storedDate !== date));
-};
+  const deleteDate = (date) => {
+    setDates((current) => current.filter((storedDate) => storedDate !== date));
+  };
 
-return (
-  <Stack spacing={1}>
-    <Typography>{dates.length > 0 ? "" : "Ninguna"}</Typography>
-    {dates.map((date) => (
-      <Stack
-        key={date}
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={1}
-      >
-        <Stack>
-          <Typography>{`Fecha ${dates.indexOf(date) + 1}:`}</Typography>
-          <Typography sx={{ textAlign: "center" }}>{`${getFormatedDate(date)}`}</Typography>
-        </Stack>
-        <Tooltip
-            title="Eliminar fecha"
-            placement="bottom-end"
+  const hasReservations = (date) => {
+    return datesWithReservations.includes(date)
+  }
+
+  return (
+    <Stack spacing={1}>
+      <Typography>{dates.length > 0 ? "" : "Ninguna"}</Typography>
+      {dates.map((date) => (
+        <Stack
+          key={date}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={1}
+        >
+          <Stack>
+            <Typography>{`Fecha ${dates.indexOf(date) + 1}:`}</Typography>
+            <Typography sx={{ textAlign: "center" }}>{`${getFormatedDate(date)}`}</Typography>
+          </Stack>
+          <Tooltip
+            title={hasReservations(date) ? "No puedes eliminar esta fecha porque tiene lugares reservados" : "Eliminar fecha"}
+            placement="top-end"
             componentsProps={{
               tooltip: {
                 sx: {
@@ -53,12 +57,17 @@ return (
             }}
             arrow
           >
-            <IconButton onClick={() => deleteDate(date)}>
-              <Delete />
-            </IconButton>
+            <Stack>
+              <IconButton
+                onClick={() => deleteDate(date)}
+                disabled={hasReservations(date)}
+              >
+                <Delete />
+              </IconButton>
+            </Stack>
           </Tooltip>
-      </Stack>
-    ))}
-  </Stack>
-);
+        </Stack>
+      ))}
+    </Stack>
+  );
 }

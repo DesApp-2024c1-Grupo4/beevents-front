@@ -8,10 +8,12 @@ function ProgressBar({ currentStep, setStep }) {
       case 1:
         return 0;
       case 2:
-        return 33;
+        return 25;
       case 3:
-        return 66;
+        return 50;
       case 4:
+        return 75
+      case 5:
         return 100
       default:
         return 0;
@@ -34,6 +36,7 @@ function ProgressBar({ currentStep, setStep }) {
           minWidth: 0,
           p: 0,
           borderRadius: "5px 5px 0px 0px"
+          
         }}
       >
         {`PASO ${step}`}
@@ -91,6 +94,7 @@ function ProgressBar({ currentStep, setStep }) {
         <SliderButton step={"2"} />
         <SliderButton step={"3"} />
         <SliderButton step={"4"} />
+        <SliderButton step={"5"} />
       </Box>
     </Stack>
   );

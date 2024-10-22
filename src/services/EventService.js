@@ -52,7 +52,7 @@ export async function createEvent(event) {
 
 export async function updateEvent(event, id) {
   try {
-    const response = await api.put(`/event/${id}`, event, {
+    const response = await api.patch(`/event/${id}`, event, {
       headers: {
         Authorization: `Bearer ${us.getUserFromLocalStorage().access_token}`,
       },
@@ -74,7 +74,7 @@ export async function publishUnpublishEvent(state, id) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    throw error;
   }
 }
 
@@ -88,12 +88,23 @@ export async function deleteEvent(id) {
     return response.data;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
 export async function getNearByEvents() {
   try {
-    const response = await api.get("/event/nearby");
+    const geoResponse = await axios.get("https://get.geojs.io/v1/ip/geo.json");
+    const { latitude, longitude } = geoResponse.data;
+    // Hacer la solicitud al backend con las coordenadas
+    const response = await api.get("/event/nearby", {
+      params: {
+        lat: latitude,
+        lon: longitude,
+      },
+    });
+    // Procesar la respuesta de eventos cercanos
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error(error);

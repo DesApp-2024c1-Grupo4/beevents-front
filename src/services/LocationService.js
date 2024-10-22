@@ -58,7 +58,7 @@ export async function patchLocation(locationData) {
     return response.data;
   } catch (error) {
     console.log(error.message);
-    return null;
+    throw error;
   }
 }
 

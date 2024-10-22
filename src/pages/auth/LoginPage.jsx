@@ -7,22 +7,19 @@ import {
   InputAdornment,
   Stack,
   TextField,
-  Typography,
-  CircularProgress,
-  Modal,
+  Typography
 } from "@mui/material";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/img/abreviatura.png";
 import { customMuiTheme } from "../../config/customMuiTheme";
 import UserService from "../../services/userService";
-import Logo from "../../assets/img/logo.png";
+import BeeventsModal from "../../components/BeeventsModal";
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [emailValue, setEmailValue] = useState("");
   const [passValue, setPassValue] = useState("");
-  //const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ email: false, password: false });
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -48,24 +45,6 @@ export function LoginPage() {
 
   const handleClose = () => setOpen(false);
 
-  const style = {
-    position: "absolute",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: "5px",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "90%",
-    maxWidth: "380px",
-    bgcolor: "#13273D",
-    border: "1px solid #000",
-    boxShadow: 24,
-    p: 2,
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const emailError = emailValue.trim() === "";
@@ -84,31 +63,10 @@ export function LoginPage() {
       password: passValue
     }
 
-    /** 
-    try {
-      const isLogged = userService.loginUser(user);
-      if (isLogged) {
-        setTimeout(() => {
-          navigate("/");
-        }, 4000);
-      } else {
-        console.error("Error al iniciar sesión.");
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      setLoading(false);
-    }
-    */
     const isLogged = await userService.loginUser(user);
 
     if (isLogged) {
       navigate("/");
-      /**
-      setTimeout(() => {
-        navigate("/");
-      }, 3000);
-       */
     } else {
       setMessage("Ocurrió un error al iniciar sesión");
       setTimeout(() => {
@@ -195,60 +153,14 @@ export function LoginPage() {
           </Stack>
         </Stack>
       </Container>
-      <Modal
+      <BeeventsModal
         open={open}
-        onClose={handleClose}
-        hideBackdrop={message.includes("Iniciando") ? true : false}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        sx={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgba(0, 0, 0, 0.7)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 9999,
-        }}
-      >
-        <Box sx={style}>
-          <img src={Logo} alt="Logo" style={{ width: 100, marginBottom: 5 }} />
-          <Typography
-            id="modal-modal-description"
-            sx={{
-              mt: 2,
-              textAlign: "center",
-              fontWeight: 500,
-              color: message.includes("error") ? "red" : contrastGreen,
-              textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            {message}
-          </Typography>
-          <Typography
-            id="modal-modal-description"
-            sx={{
-              mt: 1,
-              mb: 3,
-              textAlign: "center",
-              fontSize: "14px",
-            }}
-          > {message.includes("error")
-            ? "Revisa tus datos y vuelve a intentarlo"
-            : "Solo tomará un momento"
-            }
-          </Typography>
-          {message.includes("Iniciando")
-            ? <Box display="flex" justifyContent="center" alignItems="center">
-              <CircularProgress size={30} />
-            </Box>
-            : <></>
-          }
-        </Box>
-      </Modal>
+        handleClose={handleClose}
+        message={message}
+        errorMessageIncludes={"error"}
+        processMessageIncludes={"ando"}
+        tryAgainMessage={"Vuelve a intentarlo más tarde."}
+      />
     </>
   );
 }
