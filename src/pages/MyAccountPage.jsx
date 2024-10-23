@@ -206,7 +206,7 @@ export default function CardHorizontalWBorder({
   };
 
   const handlePublish = async (eventId, published) => {
-    setMessage(published ? "Publicar evento?" : "Despublicar evento");
+    setMessage(published ? "Publicar evento" : "Despublicar evento");
     let msg = published
       ? "El evento pasará a estar visible para todos los usuarios."
       : "El evento dejará de estar visible para todos los usuarios.";
@@ -670,7 +670,7 @@ export function MyAccountPage() {
               alignSelf: "flex-start",
             }}
           >
-            ¡Hola!
+            ¡Hola {loggedUser.names}!
           </Typography>
           <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}>
             Acá podés ver{" "}

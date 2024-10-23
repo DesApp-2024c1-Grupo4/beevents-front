@@ -1,11 +1,35 @@
-import { ArrowBackOutlined, CheckCircleOutlineOutlined, Close } from "@mui/icons-material";
-import { Box, Button, FormControlLabel, FormGroup, IconButton, Input, Modal, Slider, Stack, Switch, TextField, Tooltip, Typography } from "@mui/material";
+import {
+  ArrowBackOutlined,
+  CheckCircleOutlineOutlined,
+  Close,
+} from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
+  Input,
+  Modal,
+  Slider,
+  Stack,
+  Switch,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import validator from "validator";
+import SnackBar from "../../components/SnackBar";
 import { customMuiTheme } from "../../config/customMuiTheme";
 import SectorDistributionMap from "./SectorDistributionMap";
 
-export default function SectorForm({ sectors, setSectors, showForm, setShowForm }) {
+export default function SectorForm({
+  sectors,
+  setSectors,
+  showForm,
+  setShowForm,
+}) {
   const { contrastGreen } = customMuiTheme.colors;
   const [isNumbered, setIsNumbered] = useState(false);
   const [rows, setRows] = useState(1);
@@ -15,50 +39,52 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
   const [openNumbered, setOpenNumbered] = useState(false);
   const [seatMap, setSeatMap] = useState({ name: name, rows: [] });
   const [eliminatedSeats, setEliminatedSeats] = useState([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const resetSeatMap = () => {
     const newRows = [];
     for (var i = 0; i < rows; i++) {
       newRows[i] = [];
       for (var j = 0; j < seats; j++) {
-        const seat = { _id: [i, j], available: true, reservedBy: "vacio" }
+        const seat = { _id: [i, j], available: true, reservedBy: "vacio" };
         newRows[i][j] = seat;
       }
     }
-    setSeatMap(prevSeatMap => ({
+    setSeatMap((prevSeatMap) => ({
       ...prevSeatMap,
-      rows: newRows
+      rows: newRows,
     }));
-  }
+  };
 
   const updateSeatMapAfterCancel = () => {
     const newRows = seatMap.rows.slice();
     for (var i = 0; i < eliminatedSeats.length; i++) {
-      const seat = newRows[eliminatedSeats[i][0]][eliminatedSeats[i][1]]
+      const seat = newRows[eliminatedSeats[i][0]][eliminatedSeats[i][1]];
       seat.available = true;
       seat.reservedBy = "vacio";
     }
-    setSeatMap(prevSeatMap => ({
+    setSeatMap((prevSeatMap) => ({
       ...prevSeatMap,
-      rows: newRows
+      rows: newRows,
     }));
-  }
+  };
 
   const resetAll = () => {
     resetSeatMap();
     setEliminatedSeats([]);
-  }
+  };
 
   useEffect(() => {
     resetAll();
-  }, [rows, seats])
+  }, [rows, seats]);
 
   useEffect(() => {
-    setSeatMap(prevSeatMap => ({
+    setSeatMap((prevSeatMap) => ({
       ...prevSeatMap,
-      name: name
+      name: name,
     }));
-  }, [name])
+  }, [name]);
 
   const handleRowSliderChange = (e, newValue) => {
     setRows(newValue);
@@ -100,7 +126,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
     numbered: isNumbered,
     rowsNumber: isNumbered ? rows : 1,
     seatsNumber: isNumbered ? seats : Number(capacity),
-    eliminated: eliminatedSeats
+    eliminated: eliminatedSeats,
   };
 
   const isValidSector = (sector) => {
@@ -112,55 +138,68 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
       setSectors([...sectors, newSector]);
       setShowForm(!showForm);
     } else {
-      alert("Ya existe un sector con ese nombre"); //Convertir en notificación
+      setSnackbarMessage("¡Ya existe un sector con ese nombre!");
+      setSnackbarOpen(true);
     }
-    console.log(newSector)
   };
 
   const handleOpen = () => {
     rows < 1 || seats < 1
-      ? alert("El sector debe tener al menos un asiento")
+      ? (() => {
+          setSnackbarMessage("¡El sector debe tener al menos un asiento!");
+          setSnackbarOpen(true);
+        })()
       : setOpenNumbered(true);
-  }
+  };
 
   const handleCloseNumbered = () => {
-    const eliminated = []
+    const eliminated = [];
     for (var i = 0; i < rows; i++) {
       for (var j = 0; j < seats; j++) {
-        const seat = seatMap.rows[i][j]
+        const seat = seatMap.rows[i][j];
         if (!seat.available) {
-          eliminated.push(seat._id)
+          eliminated.push(seat._id);
         }
       }
     }
     setEliminatedSeats(eliminated);
-    setOpenNumbered(false)
-  }
+    setOpenNumbered(false);
+  };
 
   const handleSeatClick = (clickedSeat) => {
-    clickedSeat.available = !clickedSeat.available
+    clickedSeat.available = !clickedSeat.available;
     const rowsCopy = seatMap.rows.slice();
-    const clickedSeatIdx = clickedSeat._id
-    const clickedSeatCopy = rowsCopy[clickedSeatIdx[0]][clickedSeatIdx[1]]
-    clickedSeatCopy.available = clickedSeat.available
-    setSeatMap(prevSeatMap => ({
+    const clickedSeatIdx = clickedSeat._id;
+    const clickedSeatCopy = rowsCopy[clickedSeatIdx[0]][clickedSeatIdx[1]];
+    clickedSeatCopy.available = clickedSeat.available;
+    setSeatMap((prevSeatMap) => ({
       ...prevSeatMap,
-      rows: rowsCopy
-    }))
-  }
+      rows: rowsCopy,
+    }));
+  };
 
   const handleSwitchChange = () => {
     resetAll();
     setIsNumbered(!isNumbered);
-  }
+  };
 
   const cancelDistribution = () => {
     updateSeatMapAfterCancel();
     setEliminatedSeats([]);
-  }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   return (
     <>
+      <SnackBar
+        open={snackbarOpen}
+        message={snackbarMessage}
+        severity="error"
+        handleClose={handleSnackbarClose}
+      />
       <Stack spacing={3}>
         <TextField
           label="Nombre"
@@ -175,15 +214,12 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
           justifyContent={isNumbered ? "space-between" : "end"}
           spacing={3}
         >
-          {isNumbered &&
-            <Button
-              size="medium"
-              onClick={handleOpen}
-              variant="contained"
-            >
+          {isNumbered && (
+            <Button size="medium" onClick={handleOpen} variant="contained">
               Personalizar disposición
-            </Button>}
-          {eliminatedSeats.length > 0 &&
+            </Button>
+          )}
+          {eliminatedSeats.length > 0 && (
             <Stack direction="row" alignItems="center">
               <Tooltip
                 title="Resetear disposición"
@@ -212,10 +248,16 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
               </Tooltip>
               <Typography color={contrastGreen}>¡Personalizado!</Typography>
             </Stack>
-          }
+          )}
           <FormGroup>
             <FormControlLabel
-              control={<Switch sx={{ ml: 0.5 }} size="small" onChange={handleSwitchChange} />}
+              control={
+                <Switch
+                  sx={{ ml: 0.5 }}
+                  size="small"
+                  onChange={handleSwitchChange}
+                />
+              }
               label={`${isNumbered ? "Numerado" : "No numerado"}`}
               labelPlacement="start"
               sx={{ mr: 0.01 }}
@@ -238,15 +280,16 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
             justifyContent="space-between"
             spacing={{ xs: 4, md: 8 }}
           >
-            <Stack
-              spacing={3}
-              sx={{ width: { xs: "100%", md: "80%" } }}
-            >
+            <Stack spacing={3} sx={{ width: { xs: "100%", md: "80%" } }}>
               <Stack>
                 <Typography id="rows" gutterBottom>
                   Cant. de filas
                 </Typography>
-                <Stack direction="row" spacing={3} justifyContent="space-around">
+                <Stack
+                  direction="row"
+                  spacing={3}
+                  justifyContent="space-around"
+                >
                   <Slider
                     value={typeof rows === "number" ? rows : 1}
                     onChange={handleRowSliderChange}
@@ -277,7 +320,11 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
                 <Typography id="seats" gutterBottom>
                   Cant. de asientos por fila
                 </Typography>
-                <Stack direction="row" spacing={3} justifyContent="space-around">
+                <Stack
+                  direction="row"
+                  spacing={3}
+                  justifyContent="space-around"
+                >
                   <Slider
                     value={typeof seats === "number" ? seats : 1}
                     onChange={handleSeatSliderChange}
@@ -307,7 +354,9 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
             </Stack>
             <Stack alignItems="center" justifyContent="center" p={{ sm: 4 }}>
               <Typography>Capacidad: </Typography>
-              <Typography variant="h1">{rows * seats - eliminatedSeats.length}</Typography>
+              <Typography variant="h1">
+                {rows * seats - eliminatedSeats.length}
+              </Typography>
             </Stack>
           </Stack>
         )}
@@ -345,11 +394,13 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
               width: 115,
               display: "block",
               color: contrastGreen,
-              borderColor: contrastGreen
+              borderColor: contrastGreen,
             }}
           >
             <Stack spacing={1} direction="row" justifyContent="center">
-              <Typography variant="info" color={contrastGreen}>Agregar</Typography>
+              <Typography variant="info" color={contrastGreen}>
+                Agregar
+              </Typography>
               <CheckCircleOutlineOutlined />
             </Stack>
           </Button>
@@ -403,7 +454,7 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
                   color: "white",
                   fontSize: { xs: "10px", sm: "12px" },
                   borderRadius: "4px",
-                  p: 1
+                  p: 1,
                 },
               },
               arrow: {
@@ -420,15 +471,30 @@ export default function SectorForm({ sectors, setSectors, showForm, setShowForm 
               sx={{
                 position: "absolute",
                 top: "-1px",
-                right: "-2px"
-              }}>
+                right: "-2px",
+              }}
+            >
               <Close fontSize="small" />
             </IconButton>
           </Tooltip>
           <Stack direction="row" mt={2} spacing={2}>
-            <Button onClick={() => setOpenNumbered(false)} size="small">Cancelar</Button>
-            <Button onClick={() => resetSeatMap()} variant="outlined" size="small">Resetear</Button>
-            <Button onClick={handleCloseNumbered} variant="contained" size="small">Aceptar</Button>
+            <Button onClick={() => setOpenNumbered(false)} size="small">
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => resetSeatMap()}
+              variant="outlined"
+              size="small"
+            >
+              Resetear
+            </Button>
+            <Button
+              onClick={handleCloseNumbered}
+              variant="contained"
+              size="small"
+            >
+              Aceptar
+            </Button>
           </Stack>
         </Box>
       </Modal>
