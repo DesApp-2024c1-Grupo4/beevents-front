@@ -87,7 +87,6 @@ export default function SectorsSection({
         setOpen(false);
       }, 3000);
     } catch (error) {
-      console.log(error);
       setModalMessage("Hubo un error al guardar la configuración");
       setOpen(true);
       setTimeout(() => {

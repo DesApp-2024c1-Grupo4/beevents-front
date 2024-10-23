@@ -54,7 +54,6 @@ export function ReservationPage() {
 
   async function fetchEvent() {
     const event = await getEventById(eventId);
-    console.log(event);
     setEvent(event);
   }
 
@@ -64,10 +63,6 @@ export function ReservationPage() {
     };
     fetchData();
   }, [eventId]);
-
-  useEffect(() => {
-    console.log(numeredReservationUnconfirmed);
-  }, [numeredReservationUnconfirmed]);
 
   const hasUnconfirmedReservations = () => {
     return (
@@ -107,9 +102,7 @@ export function ReservationPage() {
     }
   }, [event, selectedDateIndex]);
 
-  useEffect(() => {
-    console.log(selectedDate);
-  }, [selectedDate]);
+
 
   const handleSeatClick = (clickedSeat) => {
     if (
@@ -275,7 +268,6 @@ export function ReservationPage() {
       handleOpen();
       setTimeout(handleClose, 3000);
     } catch (error) {
-      console.log(error);
       setApiMessage("Hubo un inconveniente en la reserva de Tickets");
       handleOpen();
       setTimeout(handleClose, 3000);

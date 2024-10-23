@@ -187,12 +187,10 @@ export default function CardHorizontalWBorder({
     try {
       setDeleteLoading(true);
       const resp = await deleteEvent(eventId);
-      console.log(resp);
       await fetchEvents();
       setSnackbarSeverity("success");
       setSnackbarMessage("Evento eliminado");
     } catch (error) {
-      console.log(error);
       setSnackbarSeverity("error");
       setSnackbarMessage("Error al eliminar evento");
     } finally {

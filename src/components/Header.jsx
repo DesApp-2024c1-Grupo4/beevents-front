@@ -30,7 +30,6 @@ export function Header() {
 
   useEffect(() => {
     const currentUser = userService.getUserFromLocalStorage();
-    console.log(currentUser);
     setUser(currentUser);
   }, [location]);
 

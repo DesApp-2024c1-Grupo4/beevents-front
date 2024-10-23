@@ -29,7 +29,6 @@ export function EventsPage() {
     const fetchLocations = async () => {
       const allLocations = await getAllLocations();
       setLocations(allLocations);
-      console.log(locations);
     };
     fetchLocations();
   }, []);

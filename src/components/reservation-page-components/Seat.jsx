@@ -7,7 +7,6 @@ import preReservedByAdminIcon from "../../assets/img/reservedByAdmin-seat.png";
 import UserService from "../../services/userService";
 
 const getSeatStatus = (seat) => {
-  console.log(seat);
   if (seat.available == "true" && seat.reservedBy != "pre-reserved") {
     return "Disponible";
   } else if (seat.available === "preReserved" || seat.available === "false") {
@@ -59,7 +58,6 @@ const Seat = ({ seat, onSeatClick }) => {
   };
 
   const getSeatStyle = (seat) => {
-    console.log(seat);
     let backgroundStyle = {
       minWidth: "6px",
       minHeight: "6px",
