@@ -139,6 +139,7 @@ export default function LocationSection({
             showForm={showForm}
             setShowForm={setShowForm}
             setDisplayChangeButton={setDisplayChangeButton}
+            setSelectedLocation={setSelectedLocation}
           />
         </Stack>
       )}

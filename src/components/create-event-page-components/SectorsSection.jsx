@@ -172,7 +172,7 @@ export default function SectorsSection({
           </FormControl>
         </>
       )}
-      {!eventId && selectedLocation && sectors?.length > 0 && (
+      {!eventId && selectedLocation.name && sectors?.length > 0 && (
         <Typography
           variant="body1"
           sx={{
