@@ -20,38 +20,38 @@ export default function CardHorizontal({
   imageUrl,
   locationName,
   locationStreet,
-  locationNumber
+  locationNumber,
 }) {
   const { contrastGreen, iconGrey } = customMuiTheme.colors;
   const isMobile = useMediaQuery("(max-width:600px)");
   const toUpperCase = (text) => text.toUpperCase();
 
   return (
-    <Card sx={{ 
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.8)",
-            height: isMobile ? 370 : 150,
-            transition: "transform 0.3s, background-image 1s ease-in-out",
-            border: "2px solid",
-            borderColor: isMobile 
-              ? contrastGreen
-              : "transparent",
-            borderImage: !isMobile
-              ? `linear-gradient(to left, ${contrastGreen}, gray, transparent) 1`
-              : "none",
-            "&:hover": {
-              transform: "scale(1.05)",
-            }
-          }}>
+    <Card
+      sx={{
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.8)",
+        height: isMobile ? 370 : 150,
+        transition: "transform 0.3s, background-image 1s ease-in-out",
+        border: "2px solid",
+        borderColor: isMobile ? contrastGreen : "transparent",
+        borderImage: !isMobile
+          ? `linear-gradient(to left, ${contrastGreen}, gray, transparent) 1`
+          : "none",
+        "&:hover": {
+          transform: "scale(1.05)",
+        },
+      }}
+    >
       <img
-          src={imageUrl}
-          alt="Event"
-          style={{
-            width: isMobile ? "100%" : "30%",
-            height: isMobile ? "45%" : "100%",
-            objectFit: "cover",
-          }}
+        src={imageUrl}
+        alt="Event"
+        style={{
+          width: isMobile ? "100%" : "30%",
+          height: isMobile ? "45%" : "100%",
+          objectFit: "cover",
+        }}
       />
       <Box
         sx={{
@@ -62,14 +62,14 @@ export default function CardHorizontal({
           color: "white",
         }}
       >
-        <CardContent 
+        <CardContent
           sx={{
             display: "flex",
             flexDirection: isMobile ? "column" : "row",
             alignItems: isMobile ? "flex-start" : "center",
             padding: isMobile ? 1 : 2,
           }}
-          >
+        >
           <RoomIcon
             sx={{
               marginLeft: {
@@ -98,7 +98,13 @@ export default function CardHorizontal({
               },
             }}
           />
-          <Box sx={{flex: isMobile ? "0 0 55%" : "0 0 70%"}}>
+          <Box
+            sx={{
+              flex: isMobile ? "0 0 55%" : "0 0 70%",
+              textAlign: isMobile ? "center" : "left",
+              margin: "auto",
+            }}
+          >
             <Typography
               variant="body2"
               color="text.secondary"
@@ -164,7 +170,7 @@ export default function CardHorizontal({
             to={`/event/${id}`}
             size="medium"
             sx={{
-              flex: "0 0 18%", 
+              flex: "0 0 18%",
               color: contrastGreen,
               fontWeight: "bold",
               border: `1px solid ${contrastGreen}`,
