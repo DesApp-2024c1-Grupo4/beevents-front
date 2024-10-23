@@ -14,7 +14,7 @@ import UserService from "../../services/userService";
 
 const SeatMap = ({ rows, sectorName, onSeatClick }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const userService = new UserService();
 
   const loggedUser = userService.getUserFromLocalStorage();
