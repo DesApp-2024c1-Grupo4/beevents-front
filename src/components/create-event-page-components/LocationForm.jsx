@@ -12,6 +12,7 @@ export default function LocationForm({
   showForm,
   setShowForm,
   setDisplayChangeButton,
+  setSelectedLocation
 }) {
   const { contrastGreen } = customMuiTheme.colors;
   const [name, setName] = useState("Nuevo predio");
@@ -49,10 +50,10 @@ export default function LocationForm({
   };
   const addLocation = async (newLocation) => {
     if (isValidLocation(newLocation)) {
-      const locationCreated = await createLocation(newLocation)
-      //console.log(locationCreated._id)
-      setLocationId(locationCreated._id)
-      setSelectedLocationName(locationCreated.name)
+      const locationCreated = await createLocation(newLocation);
+      setSelectedLocation(locationCreated);
+      setLocationId(locationCreated._id);
+      setSelectedLocationName(locationCreated.name);
       setShowForm(false);
       setDisplayChangeButton(true);
     } else {
