@@ -143,6 +143,8 @@ function TablePaginationActions(props) {
   );
 }
 
+const { contrastGreen } = customMuiTheme.colors;
+
 export default function CardHorizontalWBorder({
   fetchEvents,
   setSnackbarMessage,
@@ -417,7 +419,7 @@ export function TicketsTable({ userId }) {
 
   return (
     <Stack px={2}>
-      {isLoading && <CircularProgress sx={{ alignSelf: "center" }} />}
+      {isLoading && <CircularProgress sx={{ color: contrastGreen, alignSelf: "center" }} />}
       {!isLoading && reservations?.length > 0 && (
         <>
           <TableContainer>
@@ -504,7 +506,7 @@ export function TicketsTable({ userId }) {
 }
 
 export function MyAccountPage() {
-  const { contrastGreen } = customMuiTheme.colors;
+
   const [events, setEvents] = useState([]);
   const [shownEvents, setShownEvents] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -524,7 +526,8 @@ export function MyAccountPage() {
     old_password: "",
     new_password: ""
   });
-
+  const [updatingUser, setUpdatingUser] = useState(false);
+  const [changingPass, setChangingPass] = useState(false);
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width:600px)");
 
@@ -616,8 +619,22 @@ export function MyAccountPage() {
   const handleChange = (e, setForm, form) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
-    console.log(form)
   };
+
+  const updateUser = async () => {
+    try {
+      setUpdatingUser(true);
+      await userService.updateUser(personalDataForm, loggedUser.id);
+      setSnackbarSeverity("success");
+      setSnackbarMessage("¡Datos actualizados!");
+    } catch (error) {
+      setSnackbarSeverity("error");
+      setSnackbarMessage("Ocurrió un error al actualizar los datos");
+    } finally {
+      setSnackbarOpen(true);
+      setUpdatingUser(false);
+    }
+  }
 
   return loggedUser ? (
     <Container maxWidth="md">
@@ -833,14 +850,24 @@ export function MyAccountPage() {
             </Stack>
             <Button
               size="large"
-              sx={{ color: "white", bgcolor: contrastGreen, alignSelf: "end" }}
+              onClick={updateUser}
+              sx={{
+                color: "whitesmoke",
+                bgcolor: contrastGreen,
+                alignSelf: "end",
+                width: "110px"
+              }}
             >
-              <Typography
-                variant="h2"
-                sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
-              >
-                Actualizar
-              </Typography>
+              {
+                updatingUser
+                  ? <CircularProgress size={isMobile? "0.8rem" : "1.2rem"} sx={{ color: "whitesmoke" }} />
+                  : <Typography
+                    variant="h2"
+                    sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
+                  >
+                    Actualizar
+                  </Typography>
+              }
             </Button>
           </Stack>
         </Stack>

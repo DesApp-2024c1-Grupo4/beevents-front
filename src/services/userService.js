@@ -9,11 +9,6 @@ const api = axios.create({
 export default class UserService {
   async createUser(userData) {
     try {
-      //const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
-      //const id = Date.now().toString();
-      //const newUser = { id, email, password };
-      //existingUsers.push(newUser);
-      //localStorage.setItem("users", JSON.stringify(existingUsers));
       console.log(userData);
       const response = await api.post("/auth/register", userData);
       console.log(`User created: ${response.data.email}`);
@@ -27,19 +22,6 @@ export default class UserService {
 
   async loginUser(userData) {
     try {
-      /**
-      const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
-      const user = existingUsers.find(
-        (user) => user.email === email && user.password === password
-      );
-      if (user) {
-        localStorage.setItem("loggedUser", JSON.stringify(user));
-        return { success: true, userId: user.id };
-      
-      } else {
-        return { success: false, message: "Invalid username or password" };
-      }
-     */
       const response = await api.post("/auth/login", userData);
       if (response.status === 201) {
         localStorage.setItem("loggedUser", JSON.stringify(response.data));
@@ -49,6 +31,38 @@ export default class UserService {
     } catch (error) {
       console.error("Error logging in:", error.message);
       return null;
+    }
+  }
+
+  async updateUser(user, id) {
+    try {
+      const userInStorage = localStorage.getItem("loggedUser");
+      const loggedUser = JSON.parse(userInStorage);
+      const response = await api.patch(`/user/${id}`, user, {
+        headers: {
+          Authorization: `Bearer ${loggedUser.access_token}`,
+        },
+      });
+      const updatedUser = { ...loggedUser, names: user.names, surname: user.surname }
+      localStorage.setItem("loggedUser", JSON.stringify(updatedUser));
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw error
+    }
+  }
+
+  async updatePassword(passwords, id) {
+    try {
+      const response = await api.patch(`/user/passchange/${id}`, passwords, {
+        headers: {
+          Authorization: `Bearer ${this.getUserFromLocalStorage.access_token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw error
     }
   }
 
