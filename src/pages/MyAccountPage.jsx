@@ -406,7 +406,6 @@ export function TicketsTable({ userId }) {
   };
 
   const fetchReservations = async () => {
-    //const reservationsById = await getReservationsByUserId(1717478725800);
     const reservationsById = await getReservationsByUserId(userId);
     setReservations(reservationsById);
     setIsLoading(false);
@@ -445,9 +444,9 @@ export function TicketsTable({ userId }) {
               <TableBody>
                 {(rowsPerPage > 0
                   ? reservations.slice(
-                      page * rowsPerPage,
-                      page * rowsPerPage + rowsPerPage
-                    )
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
                   : reservations
                 ).map((r) => (
                   <TableRow
@@ -512,12 +511,23 @@ export function MyAccountPage() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const userService = new UserService();
-  const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [eventsToShow, setEventsToShow] = useState(3);
+  const userService = new UserService();
+  const loggedUser = userService.getUserFromLocalStorage();
+  const [personalDataForm, setPersonalDataForm] = useState({
+    names: loggedUser.names,
+    surname: loggedUser.surname
+  });
+  const [passForm, setPassForm] = useState({
+    old_password: "",
+    new_password: ""
+  });
+
+  const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width:600px)");
+
 
   useEffect(() => {
     fetchEvents();
@@ -537,52 +547,15 @@ export function MyAccountPage() {
     setIsLoading(false);
   };
 
-  const [emailValue, setEmailValue] = useState("fetchedEmail@email.com");
-  const isNotAnEmail = !(
-    validator.isEmpty(emailValue) || validator.isEmail(emailValue)
-  );
-  const getEmailHelperText = isNotAnEmail ? "Escribe un email válido" : "";
-  const handleEmailChange = (e) => {
-    setEmailValue(e.target.value);
-  };
-
-  const [nameValue, setNameValue] = useState("Fetched Name");
-  const handleNameChange = (e) => {
-    setNameValue(e.target.value);
-  };
-
-  const [phoneValue, setPhoneValue] = useState("11-3333-3333");
-  const isNotAPhone = !(
-    validator.isEmpty(phoneValue) || validator.isMobilePhone(phoneValue)
-  );
-  const getPhoneHelperText = isNotAPhone ? "Escribe un teléfono válido" : "";
-  const handlePhoneChange = (e) => {
-    setPhoneValue(e.target.value);
-  };
-
+  const passError = (pass) => {
+    return !(validator.isEmpty(pass) || validator.isStrongPassword(pass));
+  }
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const handleShowCurrentPassword = () =>
-    setShowCurrentPassword((show) => !show);
-  const [currentPassValue, setCurrentPassValue] = useState("");
-  const currentPass = "FetchedPass";
-  const matchCurrentPass = currentPassValue === currentPass;
-  const currentPassError = !(
-    validator.isEmpty(currentPassValue) || matchCurrentPass
-  );
-  const getCurrentPassHelperText = currentPassError
-    ? "La contraseña no coincide con la almacenada"
-    : "";
-  const handleCurrentPassChange = (e) => setCurrentPassValue(e.target.value);
-
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const handleShowNewPassword = () => setShowNewPassword((show) => !show);
-  const [newPassValue, setNewPassValue] = useState("");
-  const isStrongPass = validator.isStrongPassword(newPassValue);
-  const newPassError = !(validator.isEmpty(newPassValue) || isStrongPass);
-  const getNewPassHelperText = newPassError ? (
+  const passHelperText = (
     <>
       La contraseña debe tener:
       <br />
@@ -596,12 +569,7 @@ export function MyAccountPage() {
       <br />
       &ensp;• Al menos 1 símbolo.
     </>
-  ) : (
-    ""
   );
-  function handleNewPassChange(e) {
-    setNewPassValue(e.target.value);
-  }
 
   const handleSearch = (searchValue) => {
     if (filter != "all") {
@@ -645,7 +613,11 @@ export function MyAccountPage() {
     setShownEvents(filteredData.slice(0, eventsToShow));
   };
 
-  const loggedUser = userService.getUserFromLocalStorage();
+  const handleChange = (e, setForm, form) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    console.log(form)
+  };
 
   return loggedUser ? (
     <Container maxWidth="md">
@@ -792,8 +764,8 @@ export function MyAccountPage() {
                     {filter === "unpublished"
                       ? "No hay eventos sin publicar"
                       : filter === "published"
-                      ? "No hay eventos publicados"
-                      : "No hay eventos disponibles"}
+                        ? "No hay eventos publicados"
+                        : "No hay eventos disponibles"}
                   </Typography>
                 )
               ) : (
@@ -845,30 +817,18 @@ export function MyAccountPage() {
           >
             <Stack spacing={3} sx={{ width: { sm: "275px" } }}>
               <TextField
-                label="Email"
-                variant="outlined"
-                value={emailValue}
-                helperText={getEmailHelperText}
-                onChange={handleEmailChange}
-                error={isNotAnEmail}
+                name="names"
+                label={"Nombre(s)"}
+                value={personalDataForm.names}
+                onChange={(e) => handleChange(e, setPersonalDataForm, personalDataForm)}
+                required
               />
               <TextField
-                label="Nombre"
-                variant="outlined"
-                value={nameValue}
-                helperText={
-                  validator.isEmpty(nameValue) ? "Introduce tu nombre" : ""
-                }
-                onChange={handleNameChange}
-                error={validator.isEmpty(nameValue)}
-              />
-              <TextField
-                label="Teléfono"
-                variant="outlined"
-                value={phoneValue}
-                helperText={getPhoneHelperText}
-                onChange={handlePhoneChange}
-                error={isNotAPhone}
+                name="surname"
+                label={"Apellido"}
+                value={personalDataForm.surname}
+                onChange={(e) => handleChange(e, setPersonalDataForm, personalDataForm)}
+                required
               />
             </Stack>
             <Button
@@ -908,18 +868,19 @@ export function MyAccountPage() {
           >
             <Stack spacing={3}>
               <TextField
+                name="old_password"
                 label="Contraseña actual"
-                value={currentPassValue}
-                helperText={getCurrentPassHelperText}
-                onChange={handleCurrentPassChange}
-                error={currentPassError}
+                value={passForm.old_password}
+                helperText={passError(passForm.old_password) ? passHelperText : ""}
+                onChange={(e) => handleChange(e, setPassForm, passForm)}
+                error={passError(passForm.old_password)}
                 type={showCurrentPassword ? "text" : "password"}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
-                        onClick={handleShowCurrentPassword}
+                        onClick={() => setShowCurrentPassword(show => !show)}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
                       >
@@ -934,18 +895,19 @@ export function MyAccountPage() {
                 }}
               />
               <TextField
+                name="new_password"
                 label="Contraseña nueva"
-                value={newPassValue}
-                helperText={getNewPassHelperText}
-                onChange={handleNewPassChange}
-                error={newPassError}
+                value={passForm.new_password}
+                helperText={passError(passForm.new_password) ? passHelperText : ""}
+                onChange={(e) => handleChange(e, setPassForm, passForm)}
+                error={passError(passForm.new_password)}
                 type={showNewPassword ? "text" : "password"}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
-                        onClick={handleShowNewPassword}
+                        onClick={() => setShowNewPassword(show => !show)}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
                       >
