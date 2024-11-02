@@ -558,6 +558,7 @@ export function MyAccountPage() {
     old_password: false,
     new_password: false
   });
+  const [wrongPass, setWrongPass] = useState(false);
 
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width:600px)");
@@ -654,6 +655,7 @@ export function MyAccountPage() {
 
   const handleChange = (e, setForm, form) => {
     const { name, value } = e.target;
+    if (name !== "new_password") { setWrongPass(false); }
     const newEmpties = { ...isEmpty };
     newEmpties[`${name}`] = false;
     if (form === personalDataForm) {
@@ -717,6 +719,7 @@ export function MyAccountPage() {
         setSnackbarMessage("Debes usar una contraseña segura")
       } else if (error.status === 401 || error.status === 403) {
         setSnackbarMessage("Contraseña actual incorrecta. No se cambió la contraseña");
+        setWrongPass(true);
       } else {
         setSnackbarMessage("Ocurrió un error al cambiar la contraseña");
       }
@@ -976,9 +979,9 @@ export function MyAccountPage() {
                 name="old_password"
                 label="Contraseña actual"
                 value={passForm.old_password}
-                helperText={isEmpty.old_password ? "Escribe tu contraseña actual" : ""}
+                helperText={isEmpty.old_password || wrongPass ? "Escribe tu contraseña actual" : ""}
                 onChange={(e) => handleChange(e, setPassForm, passForm)}
-                error={isEmpty.old_password}
+                error={isEmpty.old_password || wrongPass}
                 type={showCurrentPassword ? "text" : "password"}
                 InputProps={{
                   endAdornment: (
