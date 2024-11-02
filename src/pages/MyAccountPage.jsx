@@ -552,7 +552,13 @@ export function MyAccountPage() {
   });
   const [updatingUser, setUpdatingUser] = useState(false);
   const [changingPass, setChangingPass] = useState(false);
-  const [wrongPass, setWrongPass] = useState(false);
+  const [isEmpty, setIsEmpty] = useState({
+    names: false,
+    surname: false,
+    old_password: false,
+    new_password: false
+  });
+
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width:600px)");
 
@@ -574,7 +580,7 @@ export function MyAccountPage() {
     setIsLoading(false);
   };
 
-  const passError = (pass) => {
+  const isWeak = (pass) => {
     return !(validator.isEmpty(pass) || validator.isStrongPassword(pass));
   }
   const handleMouseDownPassword = (event) => {
@@ -582,21 +588,27 @@ export function MyAccountPage() {
   };
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const passHelperText = (
-    <>
-      La contraseña debe tener:
-      <br />
-      &ensp;• Al menos 8 caracteres.
-      <br />
-      &ensp;• Al menos 1 minúscula.
-      <br />
-      &ensp;• Al menos 1 mayúscula.
-      <br />
-      &ensp;• Al menos 1 número.
-      <br />
-      &ensp;• Al menos 1 símbolo.
-    </>
-  );
+  const passHelperText = (pass) => {
+    var text = ""
+    if (isWeak(pass)) {
+      text = (
+        <>
+          La contraseña debe tener:
+          <br />
+          &ensp;• Al menos 8 caracteres.
+          <br />
+          &ensp;• Al menos 1 minúscula.
+          <br />
+          &ensp;• Al menos 1 mayúscula.
+          <br />
+          &ensp;• Al menos 1 número.
+          <br />
+          &ensp;• Al menos 1 símbolo.
+        </>
+      )
+    }
+    return text;
+  };
 
   const handleSearch = (searchValue) => {
     if (filter != "all") {
@@ -642,19 +654,36 @@ export function MyAccountPage() {
 
   const handleChange = (e, setForm, form) => {
     const { name, value } = e.target;
-    if (name != "new_password") { setWrongPass(false); }
+    const newEmpties = { ...isEmpty };
+    newEmpties[`${name}`] = false;
+    if (form === personalDataForm) {
+      newEmpties.old_password = false;
+      newEmpties.new_password = false;
+    } else {
+      newEmpties.names = false;
+      newEmpties.surname = false;
+    }
+    setIsEmpty(newEmpties);
     setForm({ ...form, [name]: value });
   };
 
   const updateUser = async () => {
     try {
       setUpdatingUser(true);
+      const nameIsEmpty = personalDataForm.names.trim() === "";
+      const surnameIsEmpty = personalDataForm.surname.trim() === "";
+      if (nameIsEmpty || surnameIsEmpty) {
+        setIsEmpty({ ...isEmpty, names: nameIsEmpty, surname: surnameIsEmpty });
+        throw new Error("complete");
+      }
       await userService.updateUser(personalDataForm, loggedUser.id);
       setSnackbarSeverity("success");
       setSnackbarMessage("¡Datos actualizados!");
     } catch (error) {
       setSnackbarSeverity("error");
-      setSnackbarMessage("Ocurrió un error al actualizar los datos");
+      error.message === "complete"
+        ? setSnackbarMessage("Completa los campos señalados")
+        : setSnackbarMessage("Ocurrió un error al actualizar los datos");
     } finally {
       setSnackbarOpen(true);
       setUpdatingUser(false);
@@ -664,7 +693,15 @@ export function MyAccountPage() {
   const updatePassword = async () => {
     try {
       setChangingPass(true);
-      const userData = { 
+      const oldPassIsEmpty = passForm.old_password.trim() === "";
+      const newPassIsEmpty = passForm.new_password.trim() === "";
+      if (oldPassIsEmpty || newPassIsEmpty) {
+        setIsEmpty({ ...isEmpty, old_password: oldPassIsEmpty, new_password: newPassIsEmpty });
+        throw new Error("complete");
+      } else if (isWeak(passForm.new_password)) {
+        throw new Error("weak")
+      }
+      const userData = {
         email: loggedUser.email,
         password: passForm.old_password
       };
@@ -674,9 +711,12 @@ export function MyAccountPage() {
       setSnackbarMessage("¡Contraseña cambiada!");
     } catch (error) {
       setSnackbarSeverity("error");
-      if (error.status === 401 || error.status === 403) {
+      if (error.message === "complete") {
+        setSnackbarMessage("Completa los campos señalados")
+      } else if (error.message === "weak") {
+        setSnackbarMessage("Debes usar una contraseña segura")
+      } else if (error.status === 401 || error.status === 403) {
         setSnackbarMessage("Contraseña actual incorrecta. No se cambió la contraseña");
-        setWrongPass(true);
       } else {
         setSnackbarMessage("Ocurrió un error al cambiar la contraseña");
       }
@@ -888,6 +928,8 @@ export function MyAccountPage() {
                 label={"Nombre(s)"}
                 value={personalDataForm.names}
                 onChange={(e) => handleChange(e, setPersonalDataForm, personalDataForm)}
+                error={isEmpty.names}
+                helperText={isEmpty.names ? "Escribe tu nombre" : ""}
                 required
               />
               <TextField
@@ -895,6 +937,8 @@ export function MyAccountPage() {
                 label={"Apellido"}
                 value={personalDataForm.surname}
                 onChange={(e) => handleChange(e, setPersonalDataForm, personalDataForm)}
+                error={isEmpty.surname}
+                helperText={isEmpty.names ? "Escribe tu apellido" : ""}
                 required
               />
             </Stack>
@@ -932,9 +976,9 @@ export function MyAccountPage() {
                 name="old_password"
                 label="Contraseña actual"
                 value={passForm.old_password}
-                helperText={passError(passForm.old_password) ? passHelperText : ""}
+                helperText={isEmpty.old_password ? "Escribe tu contraseña actual" : ""}
                 onChange={(e) => handleChange(e, setPassForm, passForm)}
-                error={wrongPass ? wrongPass : passError(passForm.old_password)}
+                error={isEmpty.old_password}
                 type={showCurrentPassword ? "text" : "password"}
                 InputProps={{
                   endAdornment: (
@@ -959,9 +1003,9 @@ export function MyAccountPage() {
                 name="new_password"
                 label="Contraseña nueva"
                 value={passForm.new_password}
-                helperText={passError(passForm.new_password) ? passHelperText : ""}
+                helperText={isEmpty.new_password ? "Escribe tu nueva contraseña" : passHelperText(passForm.new_password)}
                 onChange={(e) => handleChange(e, setPassForm, passForm)}
-                error={passError(passForm.new_password)}
+                error={isEmpty.new_password || isWeak(passForm.new_password)}
                 type={showNewPassword ? "text" : "password"}
                 InputProps={{
                   endAdornment: (
