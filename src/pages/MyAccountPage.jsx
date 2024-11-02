@@ -551,6 +551,7 @@ export function MyAccountPage() {
   });
   const [updatingUser, setUpdatingUser] = useState(false);
   const [changingPass, setChangingPass] = useState(false);
+  const [wrongPass, setWrongPass] = useState(false);
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width:600px)");
 
@@ -640,6 +641,7 @@ export function MyAccountPage() {
 
   const handleChange = (e, setForm, form) => {
     const { name, value } = e.target;
+    if (name != "new_password") { setWrongPass(false); }
     setForm({ ...form, [name]: value });
   };
 
@@ -666,9 +668,12 @@ export function MyAccountPage() {
       setSnackbarMessage("¡Contraseña cambiada!");
     } catch (error) {
       setSnackbarSeverity("error");
-      error.status === 403
-      ? setSnackbarMessage("Contraseña actual incorrecta. No se cambió la contraseña")
-      : setSnackbarMessage("Ocurrió un error al cambiar la contraseña");
+      if (error.status === 403) {
+        setSnackbarMessage("Contraseña actual incorrecta. No se cambió la contraseña");
+        setWrongPass(true);
+      } else {
+        setSnackbarMessage("Ocurrió un error al cambiar la contraseña");
+      }
     } finally {
       setSnackbarOpen(true);
       setChangingPass(false);
@@ -923,7 +928,7 @@ export function MyAccountPage() {
                 value={passForm.old_password}
                 helperText={passError(passForm.old_password) ? passHelperText : ""}
                 onChange={(e) => handleChange(e, setPassForm, passForm)}
-                error={passError(passForm.old_password)}
+                error={wrongPass ? wrongPass : passError(passForm.old_password)}
                 type={showCurrentPassword ? "text" : "password"}
                 InputProps={{
                   endAdornment: (
