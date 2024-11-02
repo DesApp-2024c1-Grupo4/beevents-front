@@ -33,6 +33,7 @@ import {
   LastPageOutlined,
   Logout,
   ManageAccounts,
+  Password,
   StadiumOutlined,
   Visibility,
   VisibilityOff,
@@ -663,12 +664,17 @@ export function MyAccountPage() {
   const updatePassword = async () => {
     try {
       setChangingPass(true);
+      const userData = { 
+        email: loggedUser.email,
+        password: passForm.old_password
+      };
+      await userService.loginUser(userData);
       await userService.updatePassword(passForm, loggedUser.id);
       setSnackbarSeverity("success");
       setSnackbarMessage("¡Contraseña cambiada!");
     } catch (error) {
       setSnackbarSeverity("error");
-      if (error.status === 403) {
+      if (error.status === 401 || error.status === 403) {
         setSnackbarMessage("Contraseña actual incorrecta. No se cambió la contraseña");
         setWrongPass(true);
       } else {

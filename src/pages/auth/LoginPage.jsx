@@ -46,29 +46,26 @@ export function LoginPage() {
   const handleClose = () => setOpen(false);
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    const emailError = emailValue.trim() === "";
-    const passwordError = passValue.trim() === "";
-
-    if (emailError || passwordError) {
-      setErrors({ email: emailError, password: passwordError });
-      return;
-    }
-
-    setMessage("Iniciando sesión...");
-    handleOpen();
-
-    const user = {
-      email: emailValue,
-      password: passValue
-    }
-
-    const isLogged = await userService.loginUser(user);
-
-    if (isLogged) {
+    try {
+      event.preventDefault();
+      const emailError = emailValue.trim() === "";
+      const passwordError = passValue.trim() === "";
+      if (emailError || passwordError) {
+        setErrors({ email: emailError, password: passwordError });
+        return;
+      }
+      setMessage("Iniciando sesión...");
+      handleOpen();
+      const user = {
+        email: emailValue,
+        password: passValue
+      };
+      await userService.loginUser(user);
       navigate("/");
-    } else {
-      setMessage("Ocurrió un error al iniciar sesión");
+    } catch (error) {
+      error.status === 401
+      ? setMessage("Error: Usuario o contraseña incorrecta")
+      : setMessage("Error al iniciar sesión");
       setTimeout(() => {
         handleClose();
       }, 3000);
@@ -157,7 +154,7 @@ export function LoginPage() {
         open={open}
         handleClose={handleClose}
         message={message}
-        errorMessageIncludes={"error"}
+        errorMessageIncludes={"Error"}
         processMessageIncludes={"ando"}
         tryAgainMessage={"Vuelve a intentarlo más tarde."}
       />
