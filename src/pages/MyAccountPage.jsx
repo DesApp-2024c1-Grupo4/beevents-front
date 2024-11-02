@@ -7,13 +7,11 @@ import {
   Container,
   IconButton,
   InputAdornment,
-  Paper,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
-  TableFooter,
   TableHead,
   TablePagination,
   TableRow,
@@ -21,8 +19,7 @@ import {
   Typography,
   Select,
   MenuItem,
-  FormControl,
-  InputLabel,
+  FormControl
 } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
 import {
@@ -505,6 +502,32 @@ export function TicketsTable({ userId }) {
   );
 }
 
+export function UpdateButton({ onClick, updating, isMobile }) {
+  return (
+    <Button
+      size="large"
+      onClick={onClick}
+      sx={{
+        color: "whitesmoke",
+        bgcolor: contrastGreen,
+        alignSelf: "end",
+        width: "110px"
+      }}
+    >
+      {
+        updating
+          ? <CircularProgress size={isMobile ? "0.8rem" : "1.2rem"} sx={{ color: "whitesmoke" }} />
+          : <Typography
+            variant="h2"
+            sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
+          >
+            Actualizar
+          </Typography>
+      }
+    </Button>
+  );
+}
+
 export function MyAccountPage() {
 
   const [events, setEvents] = useState([]);
@@ -530,7 +553,6 @@ export function MyAccountPage() {
   const [changingPass, setChangingPass] = useState(false);
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width:600px)");
-
 
   useEffect(() => {
     fetchEvents();
@@ -633,6 +655,23 @@ export function MyAccountPage() {
     } finally {
       setSnackbarOpen(true);
       setUpdatingUser(false);
+    }
+  }
+
+  const updatePassword = async () => {
+    try {
+      setChangingPass(true);
+      await userService.updatePassword(passForm, loggedUser.id);
+      setSnackbarSeverity("success");
+      setSnackbarMessage("¡Contraseña cambiada!");
+    } catch (error) {
+      setSnackbarSeverity("error");
+      error.status === 403
+      ? setSnackbarMessage("Contraseña actual incorrecta. No se cambió la contraseña")
+      : setSnackbarMessage("Ocurrió un error al cambiar la contraseña");
+    } finally {
+      setSnackbarOpen(true);
+      setChangingPass(false);
     }
   }
 
@@ -848,27 +887,11 @@ export function MyAccountPage() {
                 required
               />
             </Stack>
-            <Button
-              size="large"
+            <UpdateButton
+              isMobile={isMobile}
+              updating={updatingUser}
               onClick={updateUser}
-              sx={{
-                color: "whitesmoke",
-                bgcolor: contrastGreen,
-                alignSelf: "end",
-                width: "110px"
-              }}
-            >
-              {
-                updatingUser
-                  ? <CircularProgress size={isMobile? "0.8rem" : "1.2rem"} sx={{ color: "whitesmoke" }} />
-                  : <Typography
-                    variant="h2"
-                    sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
-                  >
-                    Actualizar
-                  </Typography>
-              }
-            </Button>
+            />
           </Stack>
         </Stack>
         {/* Password change */}
@@ -945,17 +968,11 @@ export function MyAccountPage() {
                 }}
               />
             </Stack>
-            <Button
-              size="large"
-              sx={{ color: "white", bgcolor: contrastGreen, alignSelf: "end" }}
-            >
-              <Typography
-                variant="h2"
-                sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
-              >
-                Actualizar
-              </Typography>
-            </Button>
+            <UpdateButton
+              isMobile={isMobile}
+              updating={changingPass}
+              onClick={updatePassword}
+            />
           </Stack>
         </Stack>
         <Stack spacing={1} alignItems="center">

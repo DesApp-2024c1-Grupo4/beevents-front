@@ -54,9 +54,11 @@ export default class UserService {
 
   async updatePassword(passwords, id) {
     try {
+      const userInStorage = localStorage.getItem("loggedUser");
+      const loggedUser = JSON.parse(userInStorage);
       const response = await api.patch(`/user/passchange/${id}`, passwords, {
         headers: {
-          Authorization: `Bearer ${this.getUserFromLocalStorage.access_token}`,
+          Authorization: `Bearer ${loggedUser.access_token}`,
         },
       });
       return response.data;
