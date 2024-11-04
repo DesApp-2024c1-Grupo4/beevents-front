@@ -123,52 +123,65 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
             key={rowIndex}
             display="flex"
             justifyContent="center"
+            sx={{ minWidth: "max-content" }}
           >
             <Box
+              display="flex"
+              justifyContent="center"
+              width="auto"
               sx={{
-                width: "30px",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-                color: isEmptyRow(rowBlock) ? "#CDCDCD" : "#01BB89",
-                fontSize: "15px",
+                marginLeft: "1rem",
+                marginRight: "1rem",
+                paddingLeft: "1rem",
+                paddingRight: "1rem",
               }}
             >
-              {rowLabels[rowIndex]}
-            </Box>
-            <Box display="flex" justifyContent="center" width="auto">
-              {isEmptyRow(rowBlock) ? (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    width: `${rowBlock.length * 22}px`,
-                    height: "100%",
-                    fontSize: "12px",
-                    alignItems: "center",
-                    color: "#CDCDCD",
-                    letterSpacing: "5px",
-                  }}
-                >
-                  PASILLO
-                </Box>
-              ) : (
-                <>
-                  {rowBlock.map((seat) => {
-                    const seatWithPreReserved = { ...seat };
-                    return (
-                      <Seat
-                        key={seatWithPreReserved._id}
-                        seat={seatWithPreReserved}
-                        onSeatClick={onSeatClick}
-                        reservedBy={seatWithPreReserved.reservedBy}
-                      />
-                    );
-                  })}
-                </>
-              )}
+              <Box
+                sx={{
+                  width: "30px",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  color: isEmptyRow(rowBlock) ? "#CDCDCD" : "#01BB89",
+                  fontSize: "15px",
+                }}
+              >
+                {rowLabels[rowIndex]}
+              </Box>
+              <Box display="flex" justifyContent="center" width="auto">
+                {isEmptyRow(rowBlock) ? (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      width: `${rowBlock.length * 22}px`,
+                      height: "100%",
+                      fontSize: "12px",
+                      alignItems: "center",
+                      color: "#CDCDCD",
+                      letterSpacing: "5px",
+                    }}
+                  >
+                    - PASILLO -
+                  </Box>
+                ) : (
+                  <>
+                    {rowBlock.map((seat) => {
+                      const seatWithPreReserved = { ...seat };
+                      return (
+                        <Seat
+                          key={seatWithPreReserved._id}
+                          seat={seatWithPreReserved}
+                          onSeatClick={onSeatClick}
+                          reservedBy={seatWithPreReserved.reservedBy}
+                        />
+                      );
+                    })}
+                  </>
+                )}
+              </Box>
             </Box>
           </Grid>
         ))}
