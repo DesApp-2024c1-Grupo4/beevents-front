@@ -12,12 +12,35 @@ import preReservedIcon from "../../assets/img/prereserved-seat.png";
 import preReservedByAdminIcon from "../../assets/img/reservedByAdmin-seat.png";
 import UserService from "../../services/userService";
 
+const generateLabels = (count) => {
+  const labels = [];
+  for (let i = 0; i < count; i++) {
+    let label = "";
+    let n = i;
+    while (n >= 0) {
+      label = String.fromCharCode((n % 26) + 65) + label;
+      n = Math.floor(n / 26) - 1;
+    }
+    labels.push(label);
+  }
+  return labels;
+};
+
+const isEmptyRow = (rowBlock) => {
+  return rowBlock.every((seat) => seat.available === "eliminated");
+};
+
 const SeatMap = ({ rows, sectorName, onSeatClick }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const userService = new UserService();
-
   const loggedUser = userService.getUserFromLocalStorage();
+
+  const rowCount = rows.length;
+  const colCount = rows[0]?.length || 0;
+
+  const rowLabels = generateLabels(rowCount);
+  const colLabels = Array.from({ length: colCount }, (_, i) => i + 1);
 
   return (
     <Box
@@ -67,8 +90,7 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
         UBICACIÓN ESCENARIO
       </div>
       <Grid
-        alignItems="center"
-        justifyContent="center"
+        container
         sx={{
           overflowX: "auto",
           overflowY: "auto",
@@ -76,40 +98,77 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
           maxHeight: "50vh",
           padding: "1rem",
           paddingTop: "2.5rem",
+          position: "relative",
         }}
       >
-        {rows.map((rowBlock) => (
+        {/* <Grid item xs={12} display="flex" justifyContent="start">
+          <Box
+            sx={{
+              display: "flex",
+            }}
+          >
+            <Box width="30px" textAlign="center" color="#fff"></Box>{" "}
+            {colLabels.map((label) => (
+              <Box key={label} width="22px" textAlign="center" color="#fff">
+                {label}
+              </Box>
+            ))}
+          </Box>
+        </Grid> */}
+
+        {rows.map((rowBlock, rowIndex) => (
           <Grid
             item
             xs={12}
-            key={rowBlock[0]._id}
-            sx={{ minWidth: "max-content" }}
+            key={rowIndex}
+            display="flex"
+            justifyContent="center"
           >
             <Box
-              display="flex"
-              justifyContent="center"
-              width="auto"
               sx={{
-                marginLeft: "1rem",
-                marginRight: "1rem",
-                paddingLeft: "1rem",
-                paddingRight: "1rem",
+                width: "30px",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                color: isEmptyRow(rowBlock) ? "#CDCDCD" : "#01BB89",
+                fontSize: "15px",
               }}
             >
-              {rowBlock &&
-                rowBlock.map((seat) => {
-                  const seatWithPreReserved = {
-                    ...seat,
-                  };
-                  return (
-                    <Seat
-                      key={seatWithPreReserved._id}
-                      seat={seatWithPreReserved}
-                      onSeatClick={onSeatClick}
-                      reservedBy={seatWithPreReserved.reservedBy}
-                    />
-                  );
-                })}
+              {rowLabels[rowIndex]}
+            </Box>
+            <Box display="flex" justifyContent="center" width="auto">
+              {isEmptyRow(rowBlock) ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    width: `${rowBlock.length * 22}px`,
+                    height: "100%",
+                    fontSize: "12px",
+                    alignItems: "center",
+                    color: "#CDCDCD",
+                    letterSpacing: "5px",
+                  }}
+                >
+                  PASILLO
+                </Box>
+              ) : (
+                <>
+                  {rowBlock.map((seat) => {
+                    const seatWithPreReserved = { ...seat };
+                    return (
+                      <Seat
+                        key={seatWithPreReserved._id}
+                        seat={seatWithPreReserved}
+                        onSeatClick={onSeatClick}
+                        reservedBy={seatWithPreReserved.reservedBy}
+                      />
+                    );
+                  })}
+                </>
+              )}
             </Box>
           </Grid>
         ))}

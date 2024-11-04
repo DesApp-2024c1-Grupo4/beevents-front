@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import FestivalIcon from "@mui/icons-material/Festival";
+import CloseIcon from "@mui/icons-material/Close";
 import LocalActivityIcon from "@mui/icons-material/LocalActivity";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useParams } from "react-router-dom";
@@ -101,8 +102,6 @@ export function ReservationPage() {
       });
     }
   }, [event, selectedDateIndex]);
-
-
 
   const handleSeatClick = (clickedSeat) => {
     if (
@@ -679,6 +678,7 @@ export function ReservationPage() {
         onClose={handleCloseModal}
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
+        sx={{ maxHeight: "100vh" }}
       >
         <Box
           sx={{
@@ -710,8 +710,23 @@ export function ReservationPage() {
               onSeatClick={handleSeatClick}
             />
           )}
-          <Button onClick={handleCloseModal} variant="contained" sx={{ mt: 2 }}>
-            Cerrar
+          <Button
+            onClick={handleCloseModal}
+            variant="contained"
+            sx={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              backgroundColor: "transparent",
+              minWidth: "auto",
+              padding: "0.5px",
+              border: "0.5px solid #90CAF9",
+              "&:hover": {
+                backgroundColor: "transparent",
+              },
+            }}
+          >
+            <CloseIcon sx={{ color: "#90CAF9" }} />
           </Button>
         </Box>
       </Modal>
