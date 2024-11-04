@@ -678,7 +678,6 @@ export function ReservationPage() {
         onClose={handleCloseModal}
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
-        sx={{ maxHeight: "100vh" }}
       >
         <Box
           sx={{
