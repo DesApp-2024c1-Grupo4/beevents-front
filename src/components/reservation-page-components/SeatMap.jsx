@@ -90,7 +90,8 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
         UBICACIÓN ESCENARIO
       </div>
       <Grid
-        container
+        alignItems="center"
+        justifyContent="center"
         sx={{
           overflowX: "auto",
           overflowY: "auto",
@@ -98,24 +99,8 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
           maxHeight: "50vh",
           padding: "1rem",
           paddingTop: "2.5rem",
-          position: "relative",
         }}
       >
-        {/* <Grid item xs={12} display="flex" justifyContent="start">
-          <Box
-            sx={{
-              display: "flex",
-            }}
-          >
-            <Box width="30px" textAlign="center" color="#fff"></Box>{" "}
-            {colLabels.map((label) => (
-              <Box key={label} width="22px" textAlign="center" color="#fff">
-                {label}
-              </Box>
-            ))}
-          </Box>
-        </Grid> */}
-
         {rows.map((rowBlock, rowIndex) => (
           <Grid
             item
