@@ -155,6 +155,7 @@ export default function CardHorizontalWBorder({
   dates,
   sectors,
   publicated,
+  event
 }) {
   const { contrastGreen } = customMuiTheme.colors;
   const [locationName, setLocationName] = useState("");
@@ -176,11 +177,27 @@ export default function CardHorizontalWBorder({
   }, [location]);
 
   const handleDelete = async (eventId, artist) => {
-    setMessage("Eliminar evento");
-    setSubMessage(`¿Estas seguro que deseas eliminar el evento de ${artist}?`);
+    const hasReservationsEvent = dates.some((date, idx) => hasReservationsDate(idx));
+    setMessage(
+      hasReservationsEvent
+      ? "¡CUIDADO! ¡Este evento ya tiene lugares reservados!"
+      : "Eliminar evento"
+    );
+    setSubMessage(`¿Estás segur@ que deseas eliminar el evento de ${artist}${hasReservationsEvent ? " de todas formas" : ""}?`);
     setOnConfirmAction(() => () => handleConfirmDelete(eventId));
     setOpen(true);
   };
+
+  const hasReservationsDate = (dateIdx) => {
+    const ocupedArray = event.dates[dateIdx].sectors.map((sector) => sector.ocuped)
+    var hasReservations = false;
+    var i = 0
+    while (!hasReservations && i < ocupedArray.length) {
+      if (ocupedArray[i]) { hasReservations = true }
+      i++
+    }
+    return hasReservations
+  }
 
   const handleConfirmDelete = async (eventId) => {
     setOpen(false);
@@ -867,6 +884,7 @@ export function MyAccountPage() {
                       dates={event.dates.map((date) => date.date_time)}
                       sectors={event.dates[0].sectors}
                       publicated={event.publicated}
+                      event={event}
                     />
                   ))
                 ) : (
