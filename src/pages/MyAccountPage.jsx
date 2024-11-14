@@ -19,7 +19,7 @@ import {
   Typography,
   Select,
   MenuItem,
-  FormControl
+  FormControl,
 } from "@mui/material";
 import { customMuiTheme } from "../config/customMuiTheme";
 import {
@@ -41,6 +41,8 @@ import {
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import PublicIcon from "@mui/icons-material/Public";
 import PublicOffIcon from "@mui/icons-material/PublicOff";
+import DownloadIcon from "@mui/icons-material/Download";
+import LogoImg from "../assets/img/encabezado-pdf.png";
 import { useEffect, useState } from "react";
 import validator from "validator";
 import { getLocationById } from "../services/LocationService";
@@ -59,6 +61,8 @@ import { getReservationsByUserId } from "../services/ReservationService";
 import { useTheme } from "@emotion/react";
 import NotFound from "../components/NotFound";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import jsPDF from "jspdf";
+import QRCode from "qrcode-generator";
 
 function getFormatedDate(date) {
   const thisDate = new Date(date);
@@ -392,7 +396,6 @@ export function TicketsTable({ userId }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(3);
   const [isLoading, setIsLoading] = useState(true);
-  // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - reservations.length) : 0;
 
@@ -415,9 +418,71 @@ export function TicketsTable({ userId }) {
     fetchReservations();
   }, []);
 
+  function getSmallFormatedDate(date) {
+    const thisDate = new Date(date);
+    const day = thisDate.getDate();
+    const month = thisDate.toLocaleString("es-AR", { month: "short" });
+    const year = thisDate.getFullYear();
+    const hour = ("0" + thisDate.getHours()).slice(-2);
+    const minutes = ("0" + thisDate.getMinutes()).slice(-2);
+    const time = "" + hour + ":" + minutes + " hs.";
+    return "" + day + month + year + ", " + time;
+  }
+
+  useEffect(() => {
+    console.log("reservations");
+    console.log(reservations);
+  }, []);
+
+  const downloadTicket = (reservation) => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const imageWidth = pageWidth;
+    const imageHeight = pageWidth * 0.15;
+    const formatedDate = getFormatedDate(reservation.date_time);
+
+    doc.addImage(LogoImg, "JPEG", 0, 0, imageWidth, imageHeight);
+    // doc.setTextColor(10, 180, 141);
+    doc.setFontSize(12);
+    doc.text(`Reserva ID: ${reservation.idTicket}`, 10, imageHeight + 10);
+    doc.text(`Evento: ${reservation.eventName}`, 10, imageHeight + 17);
+    doc.text(`Fecha: ${formatedDate}`, 10, imageHeight + 24);
+    doc.text(`Lugar: ${reservation.locationName}`, 10, imageHeight + 31);
+    doc.text(`Dirección: ${reservation.address}`, 10, imageHeight + 38);
+    doc.text(`Sector: ${reservation.sectorName}`, 10, imageHeight + 45);
+    doc.text(
+      reservation.numbered
+        ? `Asiento: ${reservation.displayId}`
+        : `Asiento: No numerado`,
+      10,
+      imageHeight + 52
+    );
+    const qr = QRCode(12, "M");
+    const qrData = reservation.numbered
+      ? `ID: ${reservation.idTicket}\nEvento: ${reservation.eventName}\nLugar: ${reservation.locationName}\nDirección: ${reservation.address}\nFecha: ${formatedDate}\nSector: ${reservation.sectorName}\nAsiento: ${reservation.displayId}`
+      : `ID: ${reservation.idTicket}\nEvento: ${reservation.eventName}\nLugar: ${reservation.locationName}\nDirección: ${reservation.address}\nFecha: ${formatedDate}\nSector: ${reservation.sectorName}\nAsiento: No numerado`;
+    qr.addData(qrData);
+    qr.make();
+    const qrImageData = qr.createDataURL(8);
+    const qrWidth = 40;
+    const qrHeight = 40;
+    doc.addImage(
+      qrImageData,
+      "PNG",
+      pageWidth - qrWidth - 10,
+      imageHeight + 10,
+      qrWidth,
+      qrHeight
+    );
+    doc.save(`ticket_${reservation.idTicket}.pdf`);
+  };
+
   return (
     <Stack px={2}>
-      {isLoading && <CircularProgress sx={{ color: contrastGreen, alignSelf: "center" }} />}
+      {isLoading && (
+        <CircularProgress sx={{ color: contrastGreen, alignSelf: "center" }} />
+      )}
       {!isLoading && reservations?.length > 0 && (
         <>
           <TableContainer>
@@ -439,14 +504,17 @@ export function TicketsTable({ userId }) {
                   <TableCell sx={{ color: "whitesmoke" }} align="center">
                     Asiento/Cantidad
                   </TableCell>
+                  <TableCell sx={{ color: "whitesmoke" }} align="center">
+                    Descargar
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {(rowsPerPage > 0
                   ? reservations.slice(
-                    page * rowsPerPage,
-                    page * rowsPerPage + rowsPerPage
-                  )
+                      page * rowsPerPage,
+                      page * rowsPerPage + rowsPerPage
+                    )
                   : reservations
                 ).map((r) => (
                   <TableRow
@@ -463,13 +531,30 @@ export function TicketsTable({ userId }) {
                     </TableCell>
                     <TableCell align="right">{r.sectorName}</TableCell>
                     <TableCell align="center">
-                      {r.numbered ? r.displayId : r.cantidad}
+                      {r.numbered ? r.displayId : "No numerado"}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => downloadTicket(r)}
+                        sx={{
+                          margin: "auto",
+                          minWidth: 0,
+                          padding: "8px",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <DownloadIcon />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
                 {emptyRows > 0 && (
                   <TableRow style={{ height: 117 * emptyRows }}>
-                    <TableCell colSpan={5} />
+                    <TableCell colSpan={6} />
                   </TableRow>
                 )}
               </TableBody>
@@ -512,25 +597,27 @@ export function UpdateButton({ onClick, updating, isMobile }) {
         color: "whitesmoke",
         bgcolor: contrastGreen,
         alignSelf: "end",
-        width: "110px"
+        width: "110px",
       }}
     >
-      {
-        updating
-          ? <CircularProgress size={isMobile ? "0.8rem" : "1.2rem"} sx={{ color: "whitesmoke" }} />
-          : <Typography
-            variant="h2"
-            sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
-          >
-            Actualizar
-          </Typography>
-      }
+      {updating ? (
+        <CircularProgress
+          size={isMobile ? "0.8rem" : "1.2rem"}
+          sx={{ color: "whitesmoke" }}
+        />
+      ) : (
+        <Typography
+          variant="h2"
+          sx={{ fontSize: { xs: "0.8rem", md: "1.2rem" } }}
+        >
+          Actualizar
+        </Typography>
+      )}
     </Button>
   );
 }
 
 export function MyAccountPage() {
-
   const [events, setEvents] = useState([]);
   const [shownEvents, setShownEvents] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -544,11 +631,11 @@ export function MyAccountPage() {
   const loggedUser = userService.getUserFromLocalStorage();
   const [personalDataForm, setPersonalDataForm] = useState({
     names: loggedUser.names,
-    surname: loggedUser.surname
+    surname: loggedUser.surname,
   });
   const [passForm, setPassForm] = useState({
     old_password: "",
-    new_password: ""
+    new_password: "",
   });
   const [updatingUser, setUpdatingUser] = useState(false);
   const [changingPass, setChangingPass] = useState(false);
@@ -556,7 +643,7 @@ export function MyAccountPage() {
     names: false,
     surname: false,
     old_password: false,
-    new_password: false
+    new_password: false,
   });
   const [wrongPass, setWrongPass] = useState(false);
 
@@ -583,14 +670,14 @@ export function MyAccountPage() {
 
   const isWeak = (pass) => {
     return !(validator.isEmpty(pass) || validator.isStrongPassword(pass));
-  }
+  };
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const passHelperText = (pass) => {
-    var text = ""
+    var text = "";
     if (isWeak(pass)) {
       text = (
         <>
@@ -606,7 +693,7 @@ export function MyAccountPage() {
           <br />
           &ensp;• Al menos 1 símbolo.
         </>
-      )
+      );
     }
     return text;
   };
@@ -655,7 +742,9 @@ export function MyAccountPage() {
 
   const handleChange = (e, setForm, form) => {
     const { name, value } = e.target;
-    if (name !== "new_password") { setWrongPass(false); }
+    if (name !== "new_password") {
+      setWrongPass(false);
+    }
     const newEmpties = { ...isEmpty };
     newEmpties[`${name}`] = false;
     if (form === personalDataForm) {
@@ -690,7 +779,7 @@ export function MyAccountPage() {
       setSnackbarOpen(true);
       setUpdatingUser(false);
     }
-  }
+  };
 
   const updatePassword = async () => {
     try {
@@ -698,14 +787,18 @@ export function MyAccountPage() {
       const oldPassIsEmpty = passForm.old_password.trim() === "";
       const newPassIsEmpty = passForm.new_password.trim() === "";
       if (oldPassIsEmpty || newPassIsEmpty) {
-        setIsEmpty({ ...isEmpty, old_password: oldPassIsEmpty, new_password: newPassIsEmpty });
+        setIsEmpty({
+          ...isEmpty,
+          old_password: oldPassIsEmpty,
+          new_password: newPassIsEmpty,
+        });
         throw new Error("complete");
       } else if (isWeak(passForm.new_password)) {
-        throw new Error("weak")
+        throw new Error("weak");
       }
       const userData = {
         email: loggedUser.email,
-        password: passForm.old_password
+        password: passForm.old_password,
       };
       await userService.loginUser(userData);
       await userService.updatePassword(passForm, loggedUser.id);
@@ -714,11 +807,13 @@ export function MyAccountPage() {
     } catch (error) {
       setSnackbarSeverity("error");
       if (error.message === "complete") {
-        setSnackbarMessage("Completa los campos señalados")
+        setSnackbarMessage("Completa los campos señalados");
       } else if (error.message === "weak") {
-        setSnackbarMessage("Debes usar una contraseña segura")
+        setSnackbarMessage("Debes usar una contraseña segura");
       } else if (error.status === 401 || error.status === 403) {
-        setSnackbarMessage("Contraseña actual incorrecta. No se cambió la contraseña");
+        setSnackbarMessage(
+          "Contraseña actual incorrecta. No se cambió la contraseña"
+        );
         setWrongPass(true);
       } else {
         setSnackbarMessage("Ocurrió un error al cambiar la contraseña");
@@ -727,7 +822,7 @@ export function MyAccountPage() {
       setSnackbarOpen(true);
       setChangingPass(false);
     }
-  }
+  };
 
   return loggedUser ? (
     <Container maxWidth="md">
@@ -874,8 +969,8 @@ export function MyAccountPage() {
                     {filter === "unpublished"
                       ? "No hay eventos sin publicar"
                       : filter === "published"
-                        ? "No hay eventos publicados"
-                        : "No hay eventos disponibles"}
+                      ? "No hay eventos publicados"
+                      : "No hay eventos disponibles"}
                   </Typography>
                 )
               ) : (
@@ -930,7 +1025,9 @@ export function MyAccountPage() {
                 name="names"
                 label={"Nombre(s)"}
                 value={personalDataForm.names}
-                onChange={(e) => handleChange(e, setPersonalDataForm, personalDataForm)}
+                onChange={(e) =>
+                  handleChange(e, setPersonalDataForm, personalDataForm)
+                }
                 error={isEmpty.names}
                 helperText={isEmpty.names ? "Escribe tu nombre" : ""}
                 required
@@ -939,7 +1036,9 @@ export function MyAccountPage() {
                 name="surname"
                 label={"Apellido"}
                 value={personalDataForm.surname}
-                onChange={(e) => handleChange(e, setPersonalDataForm, personalDataForm)}
+                onChange={(e) =>
+                  handleChange(e, setPersonalDataForm, personalDataForm)
+                }
                 error={isEmpty.surname}
                 helperText={isEmpty.names ? "Escribe tu apellido" : ""}
                 required
@@ -979,7 +1078,11 @@ export function MyAccountPage() {
                 name="old_password"
                 label="Contraseña actual"
                 value={passForm.old_password}
-                helperText={isEmpty.old_password || wrongPass ? "Escribe tu contraseña actual" : ""}
+                helperText={
+                  isEmpty.old_password || wrongPass
+                    ? "Escribe tu contraseña actual"
+                    : ""
+                }
                 onChange={(e) => handleChange(e, setPassForm, passForm)}
                 error={isEmpty.old_password || wrongPass}
                 type={showCurrentPassword ? "text" : "password"}
@@ -988,7 +1091,7 @@ export function MyAccountPage() {
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
-                        onClick={() => setShowCurrentPassword(show => !show)}
+                        onClick={() => setShowCurrentPassword((show) => !show)}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
                       >
@@ -1006,7 +1109,11 @@ export function MyAccountPage() {
                 name="new_password"
                 label="Contraseña nueva"
                 value={passForm.new_password}
-                helperText={isEmpty.new_password ? "Escribe tu nueva contraseña" : passHelperText(passForm.new_password)}
+                helperText={
+                  isEmpty.new_password
+                    ? "Escribe tu nueva contraseña"
+                    : passHelperText(passForm.new_password)
+                }
                 onChange={(e) => handleChange(e, setPassForm, passForm)}
                 error={isEmpty.new_password || isWeak(passForm.new_password)}
                 type={showNewPassword ? "text" : "password"}
@@ -1015,7 +1122,7 @@ export function MyAccountPage() {
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
-                        onClick={() => setShowNewPassword(show => !show)}
+                        onClick={() => setShowNewPassword((show) => !show)}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
                       >
