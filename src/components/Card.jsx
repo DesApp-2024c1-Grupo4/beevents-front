@@ -190,10 +190,10 @@ export default function MediaCard({
         )}
         <Button
           component={Link}
-          to={`/event/${id}`}
+          to={`/event/${id}?section=title`}
           size="medium"
           sx={{
-            width: isMobile ? "80%" : "60%",
+            width: "150px",
             color: contrastGreen,
             fontWeight: "bold",
             border: `1px solid ${contrastGreen}`,

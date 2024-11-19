@@ -159,7 +159,7 @@ export default function CardHorizontalWBorder({
   dates,
   sectors,
   publicated,
-  event
+  event,
 }) {
   const { contrastGreen } = customMuiTheme.colors;
   const [locationName, setLocationName] = useState("");
@@ -181,27 +181,37 @@ export default function CardHorizontalWBorder({
   }, [location]);
 
   const handleDelete = async (eventId, artist) => {
-    const hasReservationsEvent = dates.some((date, idx) => hasReservationsDate(idx));
+    const hasReservationsEvent = dates.some((date, idx) =>
+      hasReservationsDate(idx)
+    );
     setMessage(
       hasReservationsEvent
-      ? "¡CUIDADO! ¡Este evento ya tiene lugares reservados!"
-      : "Eliminar evento"
+        ? "¡CUIDADO!\n¡Este evento ya tiene lugares reservados!"
+        : "Eliminar evento"
     );
-    setSubMessage(`¿Estás segur@ que deseas eliminar el evento de ${artist}${hasReservationsEvent ? " de todas formas" : ""}?`);
+    setSubMessage(
+      `¿Estás segur@ que deseas eliminar el evento de ${artist}${
+        hasReservationsEvent ? " de todas formas" : ""
+      }?`
+    );
     setOnConfirmAction(() => () => handleConfirmDelete(eventId));
     setOpen(true);
   };
 
   const hasReservationsDate = (dateIdx) => {
-    const ocupedArray = event.dates[dateIdx].sectors.map((sector) => sector.ocuped)
+    const ocupedArray = event.dates[dateIdx].sectors.map(
+      (sector) => sector.ocuped
+    );
     var hasReservations = false;
-    var i = 0
+    var i = 0;
     while (!hasReservations && i < ocupedArray.length) {
-      if (ocupedArray[i]) { hasReservations = true }
-      i++
+      if (ocupedArray[i]) {
+        hasReservations = true;
+      }
+      i++;
     }
-    return hasReservations
-  }
+    return hasReservations;
+  };
 
   const handleConfirmDelete = async (eventId) => {
     setOpen(false);

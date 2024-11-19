@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -132,15 +131,13 @@ export default function DateCard({ id, date, artist, imageUrl }) {
         >
           {toUpperCase(artist)}
         </Typography>
-
         <Button
           component={Link}
-          to={`/event/${id}`}
+          to={`/event/${id}?section=title`}
           size="medium"
           sx={{
-            width: isMobile ? "80%" : "60%",
+            width: "150px",
             color: contrastGreen,
-            // backgroundColor: "#FFCA42",
             fontWeight: "bold",
             border: `1px solid ${contrastGreen}`,
             textDecoration: "none",

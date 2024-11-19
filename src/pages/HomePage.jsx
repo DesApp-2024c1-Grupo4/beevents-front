@@ -249,7 +249,7 @@ export function HomePage() {
           >
             {nearByEventsWithLocation.length > 0 ? (
               nearByEventsWithLocation.map((event, index) => (
-                <Grid item xs={9} sm={10} md={10} key={index}>
+                <Grid item xs={9} sm={12} md={12} key={index}>
                   <CardHorizontal
                     id={event._id}
                     title={event.name}

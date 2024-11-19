@@ -5,6 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import RoomIcon from "@mui/icons-material/Room";
+import MapIcon from "@mui/icons-material/Map";
 import { customMuiTheme } from "../config/customMuiTheme";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -29,6 +30,7 @@ export default function CardHorizontal({
   return (
     <Card
       sx={{
+        position: "relative", // Necesario para posicionar la superposición
         display: "flex",
         flexDirection: isMobile ? "column" : "row",
         boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.8)",
@@ -44,15 +46,71 @@ export default function CardHorizontal({
         },
       }}
     >
-      <img
-        src={imageUrl}
-        alt="Event"
-        style={{
+      <Box
+        sx={{
+          position: "relative", // Para posicionar el overlay
           width: isMobile ? "100%" : "30%",
           height: isMobile ? "45%" : "100%",
-          objectFit: "cover",
+          overflow: "hidden",
         }}
-      />
+      >
+        <img
+          src={imageUrl}
+          alt="Event"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transition: "transform 0.3s ease-in-out",
+          }}
+        />
+        <Box
+          component={Link}
+          to={`/event/${id}?section=map`}
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            color: "white",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            textDecoration: "none",
+            opacity: 0,
+            transition: "opacity 0.3s ease-in-out",
+            "&:hover": {
+              opacity: 1,
+            },
+          }}
+        >
+          <MapIcon
+            sx={{
+              color: contrastGreen,
+              marginRight: {
+                xs: 1,
+              },
+              fontSize: 25,
+              alignSelf: {
+                xs: "center",
+                sm: "center",
+              },
+            }}
+          />
+          <Typography
+            sx={{
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+              color: contrastGreen,
+            }}
+          >
+            Ir al mapa
+          </Typography>
+        </Box>
+      </Box>
       <Box
         sx={{
           display: "flex",
@@ -70,34 +128,71 @@ export default function CardHorizontal({
             padding: isMobile ? 1 : 2,
           }}
         >
-          <RoomIcon
-            sx={{
-              marginLeft: {
-                xs: 0,
-                sm: 0,
-              },
-              marginRight: {
-                xs: 1,
-                sm: 1.5,
-              },
-              fontSize: {
-                xs: 20,
-                md: 25,
-              },
-              flex: {
-                xs: "0 0 10%",
-                sm: "0 0 7%",
-              },
-              alignSelf: {
-                xs: "center",
-                sm: "center",
-              },
-              padding: {
-                xs: 1,
-                sm: 0,
-              },
-            }}
-          />
+          {isMobile ? (
+            <Box
+              component={Link}
+              to={`/event/${id}?section=map`}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignSelf: "center",
+                marginBottom: "0.3rem",
+              }}
+            >
+              {" "}
+              <RoomIcon
+                sx={{
+                  color: contrastGreen,
+                  marginRight: {
+                    xs: 1,
+                  },
+                  fontSize: 25,
+                  alignSelf: {
+                    xs: "center",
+                    sm: "center",
+                  },
+                }}
+              />
+              <Typography
+                sx={{
+                  fontSize: "1.2rem",
+                  fontWeight: "bold",
+                  color: contrastGreen,
+                }}
+              >
+                Ir al mapa
+              </Typography>
+            </Box>
+          ) : (
+            <RoomIcon
+              sx={{
+                marginLeft: {
+                  xs: 0,
+                  sm: 0,
+                },
+                marginRight: {
+                  xs: 1,
+                  sm: 1.5,
+                },
+                fontSize: {
+                  xs: 20,
+                  md: 25,
+                },
+                flex: {
+                  xs: "0 0 10%",
+                  sm: "0 0 7%",
+                },
+                alignSelf: {
+                  xs: "center",
+                  sm: "center",
+                },
+                padding: {
+                  xs: 1,
+                  sm: 0,
+                },
+              }}
+            />
+          )}
           <Box
             sx={{
               flex: isMobile ? "0 0 55%" : "0 0 70%",
@@ -167,10 +262,9 @@ export default function CardHorizontal({
           </Box>
           <Button
             component={Link}
-            to={`/event/${id}`}
-            size="medium"
+            to={`/event/${id}?section=title`}
             sx={{
-              flex: "0 0 18%",
+              width: "150px",
               color: contrastGreen,
               fontWeight: "bold",
               border: `1px solid ${contrastGreen}`,

@@ -73,6 +73,7 @@ export default function BeeventsModal({
               ? "red"
               : contrastGreen,
             textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
+            whiteSpace: "pre-wrap",
           }}
         >
           {message}
