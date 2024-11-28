@@ -176,7 +176,7 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
           color: "#fff",
           fontSize: isMobile ? "10px" : "12px",
           letterSpacing: "2px",
-          marginTop: "1rem",
+          marginTop: "0.5rem",
           display: "flex",
           flexDirection: "row",
         }}
@@ -190,17 +190,13 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
                 flexDirection: "column",
               }}
             >
-              <Box display="flex" alignItems="center">
+              <Box display="flex" alignItems="center" sx={{ margin: "3px" }}>
                 <img src={availableIcon} style={customStyles.seat}></img>
                 <p style={{ margin: "5px 5px 0px 1px" }}>Disponible</p>
               </Box>
-              <Box display="flex" alignItems="center">
+              <Box display="flex" alignItems="center" sx={{ margin: "3px" }}>
                 <img src={notAvailableIcon} style={customStyles.seat}></img>
-                <p style={{ margin: "5px 5px 0px 1px" }}>
-                  Reservado
-                  <br />
-                  (Con evento publicado)
-                </p>
+                <p style={{ margin: "5px 5px 0px 1px" }}>Reservado</p>
               </Box>
             </Box>
             <Box
@@ -210,20 +206,16 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
                 flexDirection: "column",
               }}
             >
-              <Box display="flex" alignItems="center">
+              <Box display="flex" alignItems="center" sx={{ margin: "3px" }}>
                 <img src={preReservedIcon} style={customStyles.seat}></img>
-                <p style={{ margin: "5px 5px 0px 1px" }}>Pre-reservado</p>
+                <p style={{ margin: "5px 5px 0px 1px" }}>Seleccionado</p>
               </Box>
-              <Box display="flex" alignItems="center">
+              <Box display="flex" alignItems="center" sx={{ margin: "3px" }}>
                 <img
                   src={preReservedByAdminIcon}
                   style={customStyles.seat}
                 ></img>
-                <p style={{ margin: "5px 5px 0px 1px" }}>
-                  Reservado
-                  <br />
-                  (En creación de sector)
-                </p>
+                <p style={{ margin: "5px 5px 0px 1px" }}>Pre-Reservado</p>
               </Box>
             </Box>
           </>
@@ -239,7 +231,7 @@ const SeatMap = ({ rows, sectorName, onSeatClick }) => {
             </Box>
             <Box display="flex" alignItems="center">
               <img src={preReservedIcon} style={customStyles.seat}></img>
-              <p style={{ margin: "5px 5px 0px 1px" }}>Pre-reservado</p>
+              <p style={{ margin: "5px 5px 0px 1px" }}>Seleccionado</p>
             </Box>
           </>
         )}
